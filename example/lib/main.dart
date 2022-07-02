@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   headerBuilder: (BuildContext context) {
                     return const TablesCell(child: Text("Id"));
                   },
-                  cellBuilder: (context, int x, int y, Employee data) {
+                  cellBuilder: (context, int x, int y, data) {
                     return TablesCell(child: Text("${data.id}"));
                   },
                 ),
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   headerBuilder: (BuildContext context) {
                     return const TablesCell(child: Text("Name"));
                   },
-                  cellBuilder: (context, int x, int y, Employee data) {
+                  cellBuilder: (context, int x, int y, data) {
                     return TablesCell(child: SelectableText("${data.name}"));
                   },
                 ),
@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   headerBuilder: (BuildContext context) {
                     return const TablesCell(child: Text("Designation"));
                   },
-                  cellBuilder: (context, int x, int y, Employee data) {
+                  cellBuilder: (context, int x, int y, data) {
                     return TablesCell(child: Text("${data.designation}"));
                   },
                 ),
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   headerBuilder: (BuildContext context) {
                     return const TablesCell(child: Text("Salary"));
                   },
-                  cellBuilder: (context, int x, int y, Employee data) {
+                  cellBuilder: (context, int x, int y, data) {
                     return TablesCell(child: InkWell(child: Text("${data.salary}"),onTap: (){},));
                   },
                 ),

@@ -2,37 +2,20 @@ import 'package:flutter/widgets.dart';
 import 'package:hbuf_flutter/tables/tables.dart';
 
 class TablesBuild<T> {
-  final double headerHeight;
-  final Color? headerColor;
-  final double rowHeight;
-  final List<TablesColumn<T>> columns;
-  final Border? border;
-  final RowBuilder<T> rowBuilder;
-  final EdgeInsetsGeometry? padding;
-  final int rowCount;
-  final Color? color;
-  final double? widthFactor;
-  final double? heightFactor;
-  final AlignmentGeometry alignment;
-  final Clip clipBehavior;
-  final Key? key;
-
-  TablesBuild({
-    this.key,
-    this.widthFactor,
-    this.heightFactor,
-    this.alignment = Alignment.center,
-    this.headerColor,
-    this.headerHeight = 50,
-    this.rowHeight = 35,
-    required this.rowCount,
-    required this.columns,
-    required this.rowBuilder,
-    this.border,
-    this.padding,
-    this.color,
-    this.clipBehavior = Clip.none,
-  });
+  double headerHeight = 50;
+  Color? headerColor;
+  double rowHeight = 35;
+  List<TablesColumn<T>> columns = [];
+  Border? border;
+  RowBuilder<T>? rowBuilder;
+  EdgeInsetsGeometry? padding;
+  int rowCount = 0;
+  Color? color;
+  double? widthFactor;
+  double? heightFactor;
+  AlignmentGeometry alignment = Alignment.center;
+  Clip clipBehavior = Clip.none;
+  Key? key;
 
   Tables build(BuildContext context) {
     return Tables(
@@ -45,7 +28,7 @@ class TablesBuild<T> {
       rowHeight: rowHeight,
       rowCount: rowCount,
       columns: columns,
-      rowBuilder: rowBuilder,
+      rowBuilder: rowBuilder!,
       border: border,
       padding: padding,
       color: color,
