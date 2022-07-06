@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Builder(builder: (context) {
+      body: LayoutBuilder(builder: (context,c) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(

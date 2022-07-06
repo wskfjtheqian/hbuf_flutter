@@ -458,6 +458,7 @@ class TablesElement<T> extends RenderObjectElement {
       }
     }
     assert(!debugChildrenHaveDuplicateKeys(widget, _widgetList));
+    updateChildren(_children, _widgetList);
   }
 }
 
@@ -479,7 +480,15 @@ class RenderTables extends RenderBox
   })  : _columnWidths = columnWidths,
         _headerHeight = headerHeight,
         _rowHeight = rowHeight,
-        _clipBehavior = clipBehavior;
+        _clipBehavior = clipBehavior {
+    double width = 0;
+    for (var item in _columnWidths) {
+      _columnOffset.add(width);
+      width += item;
+    }
+    markNeedsPaint();
+    markNeedsSemanticsUpdate();
+  }
 
   double get headerHeight => _headerHeight;
   double _headerHeight = 0;
