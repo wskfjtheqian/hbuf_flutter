@@ -10,7 +10,7 @@ class TablesBuild<T> {
   RowBuilder<T>? rowBuilder;
   EdgeInsetsGeometry? padding;
   int rowCount = 0;
-  Color? color;
+  Color color =const Color(0xffffffff);
   double? widthFactor;
   double? heightFactor;
   AlignmentGeometry alignment = Alignment.center;

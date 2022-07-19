@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MenuFormBuild<T> {
   Key? key;
@@ -32,37 +31,40 @@ class MenuFormBuild<T> {
   AlignmentGeometry alignment = AlignmentDirectional.centerStart;
   BorderRadius? borderRadius;
 
-  DropdownButtonFormField<T> build(BuildContext context) {
-    return DropdownButtonFormField<T>(
-      key: key,
-      items: items,
-      selectedItemBuilder: selectedItemBuilder,
-      value: value,
-      hint: hint,
-      disabledHint: disabledHint,
-      onChanged: onChanged,
-      onTap: onTap,
-      elevation: elevation,
-      style: style,
-      icon: icon,
-      iconDisabledColor: iconDisabledColor,
-      iconEnabledColor: iconEnabledColor,
-      iconSize: iconSize,
-      isDense: isDense,
-      isExpanded: isExpanded,
-      itemHeight: itemHeight,
-      focusColor: focusColor,
-      focusNode: focusNode,
-      autofocus: autofocus,
-      dropdownColor: dropdownColor,
-      decoration: decoration,
-      onSaved: onSaved,
-      validator: validator,
-      autovalidateMode: autovalidateMode,
-      menuMaxHeight: menuMaxHeight,
-      enableFeedback: enableFeedback,
-      alignment: alignment,
-      borderRadius: borderRadius,
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+      child: DropdownButtonFormField<T>(
+        key: key,
+        items: items,
+        selectedItemBuilder: selectedItemBuilder,
+        value: value,
+        hint: hint,
+        disabledHint: disabledHint,
+        onChanged: onChanged ?? (val) {},
+        onTap: onTap,
+        elevation: elevation,
+        style: style,
+        icon: icon,
+        iconDisabledColor: iconDisabledColor,
+        iconEnabledColor: iconEnabledColor,
+        iconSize: iconSize,
+        isDense: isDense,
+        isExpanded: isExpanded,
+        itemHeight: itemHeight,
+        focusColor: focusColor,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        dropdownColor: dropdownColor,
+        decoration: decoration,
+        onSaved: onSaved,
+        validator: validator,
+        autovalidateMode: autovalidateMode,
+        menuMaxHeight: menuMaxHeight,
+        enableFeedback: enableFeedback,
+        alignment: alignment,
+        borderRadius: borderRadius,
+      ),
     );
   }
 }
