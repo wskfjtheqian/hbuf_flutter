@@ -37,6 +37,8 @@ dependencies:
   hbuf_flutter:
     path: ../
   syncfusion_flutter_datagrid: ^20.1.61
+  file_selector: ^0.9.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

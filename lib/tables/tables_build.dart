@@ -10,15 +10,16 @@ class TablesBuild<T> {
   RowBuilder<T>? rowBuilder;
   EdgeInsetsGeometry? padding;
   int rowCount = 0;
-  Color color =const Color(0xffffffff);
+  Color color = const Color(0xffffffff);
   double? widthFactor;
   double? heightFactor;
   AlignmentGeometry alignment = Alignment.center;
   Clip clipBehavior = Clip.none;
   Key? key;
+  VerticalLean? headerLean;
 
   Tables build(BuildContext context) {
-    return Tables(
+    return Tables<T>(
       key: key,
       widthFactor: widthFactor,
       heightFactor: heightFactor,
@@ -33,6 +34,8 @@ class TablesBuild<T> {
       padding: padding,
       color: color,
       clipBehavior: clipBehavior,
+      headerLean: headerLean,
+
     );
   }
 }

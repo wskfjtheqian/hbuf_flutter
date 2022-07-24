@@ -481,7 +481,7 @@ class TablesElement<T> extends RenderObjectElement {
       _widgetList.add(_TablesCellRenderWidget(
         x: x,
         y: -1,
-        key: cell.key,
+        key: cell.key ?? ValueKey("${hashCode}_${x.toString().padLeft(10, "0")}_hander"),
         lean: _getLean(column.lean, widget.headerLean),
         color: cell.color ?? column.color ?? widget.headerColor,
         alignment: cell.alignment ?? column.alignment ?? widget.alignment,
@@ -501,7 +501,7 @@ class TablesElement<T> extends RenderObjectElement {
         _widgetList.add(_TablesCellRenderWidget(
           x: x,
           y: y,
-          key: cell.key,
+          key: cell.key ?? ValueKey("${hashCode}_${x.toString().padLeft(10, "0")}x${y.toString().padLeft(10, "0")}"),
           lean: _getLean(column.lean, row.lean),
           alignment: cell.alignment ?? column.alignment ?? row.alignment ?? widget.alignment,
           widthFactor: cell.widthFactor ?? column.widthFactor ?? row.widthFactor ?? widget.widthFactor,
@@ -856,7 +856,7 @@ class RenderTables extends RenderBox
   }
 
   @override
-  bool hitTestChildren(BoxHitTestResult result, { required Offset position }) {
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     return defaultHitTestChildren(result, position: position);
   }
 
