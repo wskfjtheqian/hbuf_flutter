@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/from/image.dart';
-import 'package:hbuf_flutter/pagination.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,7 +29,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Pagination(pageSize: 12, onChange: (int page, int pageSize) {  }, count: 500, page: 1,),
+      body: Form(
+        child: Column(
+          children: [
+            ImageFormField(
+              maxCount: 4,
+              onAdd: (context, field, width, height) async {},
+              outWidth: 300,
+              outHeight: 300,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

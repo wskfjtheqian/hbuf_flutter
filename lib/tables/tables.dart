@@ -121,11 +121,11 @@ class _RenderTablesCell extends RenderPositionedBox {
     AlignmentGeometry alignment = Alignment.center,
     TextDirection? textDirection,
   }) : super(
-          widthFactor: widthFactor,
-          heightFactor: heightFactor,
-          textDirection: textDirection,
-          alignment: alignment,
-        ) {
+    widthFactor: widthFactor,
+    heightFactor: heightFactor,
+    textDirection: textDirection,
+    alignment: alignment,
+  ) {
     _x = x;
     _y = y;
     _color = color;
@@ -213,7 +213,8 @@ class _RenderTablesCell extends RenderPositionedBox {
   void paint(PaintingContext context, Offset offset) {
     Rect rect = offset & size;
     if (null != _color) {
-      context.canvas.drawRect(rect, Paint()..color = _color!);
+      context.canvas.drawRect(rect, Paint()
+        ..color = _color!);
     }
 
     super.paint(context, offset);
@@ -420,7 +421,7 @@ class TablesElement<T> extends RenderObjectElement {
               ErrorSummary('The children of `TablesElement` must each has an associated render object.'),
               ErrorHint(
                 'This typically means that the `${newChild.widget}` or its children\n'
-                'are not a subtype of `RenderObjectWidget`.',
+                    'are not a subtype of `RenderObjectWidget`.',
               ),
               newChild.describeElement('The following element does not have an associated render object'),
               DiagnosticsDebugCreator(DebugCreator(newChild)),
@@ -519,7 +520,6 @@ class TablesElement<T> extends RenderObjectElement {
     assert(!debugChildrenHaveDuplicateKeys(widget, _widgetList));
     _children = updateChildren(_children, _widgetList, forgottenChildren: _forgottenChildren);
     _forgottenChildren.clear();
-    renderObject.markNeedsBuild();
   }
 
   CellTablesLean? _getLean(HorizontalLean? horizontalLean, VerticalLean? verticalLean) {
@@ -616,7 +616,8 @@ class RenderTables extends RenderBox
     required ViewportOffset xOffset,
     required ViewportOffset yOffset,
     required List<_RanderColumnWidth> widths,
-  })  : _widths = widths,
+  })
+      : _widths = widths,
         _headerHeight = headerHeight,
         _rowHeight = rowHeight,
         _rowCount = rowCount,
@@ -738,7 +739,7 @@ class RenderTables extends RenderBox
 
   void markNeedsBuild() {
     _needsBuild = true;
-    markNeedsLayout();
+    markNeedsPaint();
   }
 
   Constraints? _previousConstraints;
@@ -828,13 +829,13 @@ class RenderTables extends RenderBox
   void performLayout() {
     final BoxConstraints constraints = this.constraints;
 
-    RenderBox? child = firstChild;
     size = constraints.biggest;
     if (null == _columnWidths) {
       _performWidth();
     }
     rebuildIfNecessary();
 
+    RenderBox? child = firstChild;
     while (child != null) {
       final TablesParentData childParentData = child.parentData! as TablesParentData;
       final width = _columnWidths![childParentData.x];
@@ -862,7 +863,8 @@ class RenderTables extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    context.canvas.drawRect(offset & size, Paint()..color = color);
+    context.canvas.drawRect(offset & size, Paint()
+      ..color = color);
     _clipRectLayer.layer = context.pushClipRect(
       needsCompositing,
       offset,
@@ -1049,8 +1051,8 @@ class _RanderColumnWidth extends ColumnWidth {
     required ColumnWidth width,
     required this.lean,
   }) : super(
-          flex: width.flex,
-          max: width.max,
-          min: width.min,
-        );
+    flex: width.flex,
+    max: width.max,
+    min: width.min,
+  );
 }

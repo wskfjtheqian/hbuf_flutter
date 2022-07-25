@@ -42,6 +42,8 @@ class ImageFormField extends FormField<List<NetworkImage>> {
 
   final double outHeight;
 
+  final bool readOnly;
+
   ImageFormField({
     Key? key,
     FormFieldSetter<List<NetworkImage>>? onSaved,
@@ -61,6 +63,7 @@ class ImageFormField extends FormField<List<NetworkImage>> {
     this.maxCount = 1,
     required this.outWidth,
     required this.outHeight,
+    this.readOnly = false,
   }) : super(
           key: key,
           restorationId: restorationId,
@@ -82,10 +85,14 @@ class ImageFormField extends FormField<List<NetworkImage>> {
                 height: height,
                 fit: fit,
                 onAdd: (context) {
-                  (onAdd ?? onImageFormFieldAdd)?.call(context, _OnImageFormField(field, onChanged), outWidth, outHeight);
+                  if (!readOnly) {
+                    (onAdd ?? onImageFormFieldAdd)?.call(context, _OnImageFormField(field, onChanged), outWidth, outHeight);
+                  }
                 },
                 onTap: (context, list, item) {
-                  (onTap ?? onImageFormFieldTap)?.call(context, list, item);
+                  if (!readOnly) {
+                    (onTap ?? onImageFormFieldTap)?.call(context, list, item);
+                  }
                 },
                 onDel: (context, list, item) {
                   field.value?.remove(item);
@@ -276,6 +283,7 @@ class ImageFormBuild {
   OnImageFormFieldAdd? onAdd;
   OnImageFormFieldTap? onTap;
   bool enabled = true;
+  bool readOnly = true;
 
   Widget build(BuildContext context) {
     return Theme(
@@ -297,6 +305,7 @@ class ImageFormBuild {
         outWidth: outWidth,
         outHeight: outHeight,
         enabled: enabled,
+        readOnly: readOnly,
       ),
     );
   }

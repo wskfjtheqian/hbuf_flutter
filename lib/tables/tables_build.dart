@@ -8,7 +8,7 @@ class TablesBuild<T> {
   List<TablesColumn<T>> columns = [];
   Border? border;
   RowBuilder<T>? rowBuilder;
-  EdgeInsetsGeometry? padding;
+  EdgeInsetsGeometry? padding = EdgeInsets.all(4);
   int rowCount = 0;
   Color color = const Color(0xffffffff);
   double? widthFactor;

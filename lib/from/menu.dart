@@ -30,6 +30,7 @@ class MenuFormBuild<T> {
   bool? enableFeedback;
   AlignmentGeometry alignment = AlignmentDirectional.centerStart;
   BorderRadius? borderRadius;
+  bool readOnly = false;
 
   Widget build(BuildContext context) {
     return Theme(
