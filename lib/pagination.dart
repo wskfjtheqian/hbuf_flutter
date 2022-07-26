@@ -37,17 +37,22 @@ class _PaginationState extends State<Pagination> {
     super.initState();
     _page = widget.page;
     _pageSize = widget.pageSize;
-    _pageNumber = {widget.pageSize, ...widget.pageNumber};
+    _pageNumber = {...widget.pageNumber, widget.pageSize};
     _pageController = TextEditingController(text: "$_page");
   }
 
   @override
   Widget build(BuildContext context) {
-    return ButtonTheme(
-      minWidth: 36,
-      height: 36,
-      padding: EdgeInsets.all(4),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+              padding: MaterialStateProperty.all(const EdgeInsets.all(4)),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: MaterialStateProperty.all(const Size(36, 36))),
+        ),
+        visualDensity: VisualDensity(),
+      ),
       child: Row(
         children: <Widget>[
           Text("共 ${widget.count} 条  "),
@@ -59,28 +64,33 @@ class _PaginationState extends State<Pagination> {
   }
 
   Widget _buildPopupMenu(BuildContext context) {
-    return Container(
-      width: 105,
-      height: 36,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      child: DropdownButtonFormField<int>(
-        value: _pageSize,
-        items: [
-          for (var e in _pageNumber)
-            DropdownMenuItem(
-              value: e,
-              child: Text("$e条/页"),
-            )
-        ],
-        onChanged: (val) {
-          setState(() {
-            _pageSize = val ?? 1;
-          });
-          int total = (widget.count / _pageSize).ceil();
-          _page = _page < total ? total : _page;
-          _pageController.text = _page.toString();
-          widget.onChange.call(_page, _pageSize);
-        },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: SizedBox(
+        width: 105,
+        height: 36,
+        child: DropdownButtonFormField<int>(
+          value: _pageSize,
+          items: [
+            for (var e in _pageNumber)
+              DropdownMenuItem(
+                value: e,
+                child: Text("$e条/页"),
+              )
+          ],
+          onChanged: (val) {
+            setState(() {
+              _pageSize = val ?? 1;
+            });
+            int total = (widget.count / _pageSize).ceil();
+            _page = _page < total ? total : _page;
+            _pageController.text = _page.toString();
+            widget.onChange.call(_page, _pageSize);
+          },
+          decoration: const InputDecoration(
+            isDense: true,
+          ),
+        ),
       ),
     );
   }
@@ -104,7 +114,7 @@ class _PaginationState extends State<Pagination> {
         ));
       } else if (start == i) {
         children.add(TextButton(
-          child: Text("1"),
+          child: const Text("1"),
           onPressed: () => page = 1,
         ));
       } else if (end == i) {
@@ -113,8 +123,8 @@ class _PaginationState extends State<Pagination> {
           onPressed: () => page = total,
         ));
       } else if ((start + 1 == i && i != 2) || end - 1 == i && i != total - 1) {
-        children.add(TextButton(
-          onPressed: () {},
+        children.add(const TextButton(
+          onPressed: null,
           child: Icon(Icons.more_horiz, size: 18),
         ));
       } else {
