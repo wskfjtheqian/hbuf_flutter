@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Pagination(pageSize: 12, onChange: (int page, int pageSize) {  }, count: 500, page: 1,),
+      body: Pagination(offset: 12, onChange: (int page, int pageSize) {  }, total: 500, limit: 1,),
     );
   }
 }

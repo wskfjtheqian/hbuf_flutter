@@ -1,13 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class Pagination extends StatefulWidget {
-  final int count;
+  final int total;
 
-  final int page;
+  final int limit;
 
-  final int pageSize;
+  final int offset;
 
-  final void Function(int page, int pageSize) onChange;
+  final void Function(int offset, int limit) onChange;
 
   final Set<int> pageNumber;
 
@@ -15,30 +17,35 @@ class Pagination extends StatefulWidget {
   _PaginationState createState() => _PaginationState();
 
   Pagination({
-    required this.count,
-    required this.page,
-    required this.pageSize,
+    required this.total,
+    required this.limit,
+    required this.offset,
     required this.onChange,
     this.pageNumber = const {10, 20, 40, 80, 100},
   });
 }
 
 class _PaginationState extends State<Pagination> {
-  late int _page;
-
-  late int _pageSize;
-
-  late TextEditingController _pageController;
+  int _page = 1;
 
   late Set<int> _pageNumber;
 
+  late int _limit;
+
   @override
   void initState() {
+    _limit = widget.limit;
+    _page = (widget.offset / widget.limit).ceil() + 1;
+    _pageNumber = {...widget.pageNumber, widget.limit};
     super.initState();
-    _page = widget.page;
-    _pageSize = widget.pageSize;
-    _pageNumber = {...widget.pageNumber, widget.pageSize};
-    _pageController = TextEditingController(text: "$_page");
+  }
+
+  @override
+  void didUpdateWidget(covariant Pagination oldWidget) {
+    _limit = widget.limit;
+    _page = (widget.offset / widget.limit).ceil() + 1;
+    _pageNumber = {...widget.pageNumber, widget.limit};
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -55,7 +62,7 @@ class _PaginationState extends State<Pagination> {
       ),
       child: Row(
         children: <Widget>[
-          Text("共 ${widget.count} 条  "),
+          Text("共 ${widget.total} 条  "),
           _buildPopupMenu(context),
           ..._buildButton(context),
         ],
@@ -70,7 +77,7 @@ class _PaginationState extends State<Pagination> {
         width: 105,
         height: 36,
         child: DropdownButtonFormField<int>(
-          value: _pageSize,
+          value: _limit,
           items: [
             for (var e in _pageNumber)
               DropdownMenuItem(
@@ -80,12 +87,11 @@ class _PaginationState extends State<Pagination> {
           ],
           onChanged: (val) {
             setState(() {
-              _pageSize = val ?? 1;
+              _limit = val ?? 1;
             });
-            int total = (widget.count / _pageSize).ceil();
-            _page = _page < total ? total : _page;
-            _pageController.text = _page.toString();
-            widget.onChange.call(_page, _pageSize);
+            int total = (widget.total / _limit).ceil();
+            _page = max(1, min(total, _page));
+            widget.onChange.call((_page - 1) * _limit, _limit);
           },
           decoration: const InputDecoration(
             isDense: true,
@@ -97,7 +103,7 @@ class _PaginationState extends State<Pagination> {
 
   List<Widget> _buildButton(BuildContext context) {
     var children = <Widget>[];
-    int total = (widget.count / _pageSize).ceil();
+    int total = (widget.total / _limit).ceil();
     int temp = total < 6 ? total : 6;
     int start = _page - temp ~/ 2;
     start = start < 1 ? 1 : start;
@@ -110,17 +116,20 @@ class _PaginationState extends State<Pagination> {
       if (i == _page) {
         children.add(TextButton(
           onPressed: () {},
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor.withOpacity(0.2)),
+          ),
           child: Text("$i"),
         ));
       } else if (start == i) {
         children.add(TextButton(
-          child: const Text("1"),
           onPressed: () => page = 1,
+          child: const Text("1"),
         ));
       } else if (end == i) {
         children.add(TextButton(
-          child: Text("$total"),
           onPressed: () => page = total,
+          child: Text("$total"),
         ));
       } else if ((start + 1 == i && i != 2) || end - 1 == i && i != total - 1) {
         children.add(const TextButton(
@@ -129,8 +138,8 @@ class _PaginationState extends State<Pagination> {
         ));
       } else {
         children.add(TextButton(
-          child: Text("$i"),
           onPressed: () => page = i,
+          child: Text("$i"),
         ));
       }
     }
@@ -139,7 +148,6 @@ class _PaginationState extends State<Pagination> {
 
   set page(int val) {
     setState(() => _page = val);
-    widget.onChange.call(val, _pageSize);
-    _pageController.text = val.toString();
+    widget.onChange.call((_page - 1) * _limit, _limit);
   }
 }
