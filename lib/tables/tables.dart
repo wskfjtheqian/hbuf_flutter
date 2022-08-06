@@ -121,11 +121,11 @@ class _RenderTablesCell extends RenderPositionedBox {
     AlignmentGeometry alignment = Alignment.center,
     TextDirection? textDirection,
   }) : super(
-    widthFactor: widthFactor,
-    heightFactor: heightFactor,
-    textDirection: textDirection,
-    alignment: alignment,
-  ) {
+          widthFactor: widthFactor,
+          heightFactor: heightFactor,
+          textDirection: textDirection,
+          alignment: alignment,
+        ) {
     _x = x;
     _y = y;
     _color = color;
@@ -213,8 +213,7 @@ class _RenderTablesCell extends RenderPositionedBox {
   void paint(PaintingContext context, Offset offset) {
     Rect rect = offset & size;
     if (null != _color) {
-      context.canvas.drawRect(rect, Paint()
-        ..color = _color!);
+      context.canvas.drawRect(rect, Paint()..color = _color!);
     }
 
     super.paint(context, offset);
@@ -263,19 +262,20 @@ class TablesColumn<T> {
   final double? widthFactor;
   final double? heightFactor;
   final AlignmentGeometry? alignment;
+  final int index;
 
-  TablesColumn({
-    this.widthFactor,
-    this.heightFactor,
-    this.alignment,
-    required this.headerBuilder,
-    required this.cellBuilder,
-    this.lean,
-    this.border,
-    this.padding,
-    this.color,
-    this.width = const ColumnWidth(),
-  });
+  TablesColumn(
+      {this.widthFactor,
+      this.heightFactor,
+      this.alignment,
+      required this.headerBuilder,
+      required this.cellBuilder,
+      this.lean,
+      this.border,
+      this.padding,
+      this.color,
+      this.width = const ColumnWidth(),
+      this.index = 0});
 }
 
 class _TablesView<T> extends RenderObjectWidget {
@@ -421,7 +421,7 @@ class TablesElement<T> extends RenderObjectElement {
               ErrorSummary('The children of `TablesElement` must each has an associated render object.'),
               ErrorHint(
                 'This typically means that the `${newChild.widget}` or its children\n'
-                    'are not a subtype of `RenderObjectWidget`.',
+                'are not a subtype of `RenderObjectWidget`.',
               ),
               newChild.describeElement('The following element does not have an associated render object'),
               DiagnosticsDebugCreator(DebugCreator(newChild)),
@@ -474,8 +474,11 @@ class TablesElement<T> extends RenderObjectElement {
 
   void layoutCallback(Constraints constraints) {
     _widgetList.clear();
-    for (var x = 0; x < widget.columns.length; x++) {
-      var column = widget.columns[x];
+    var columns = widget.columns;
+    columns.sort((a, b) => a.index.compareTo(b.index));
+
+    for (var x = 0; x < columns.length; x++) {
+      var column = columns[x];
       var cell = column.headerBuilder(this);
 
       var padding = cell.padding ?? column.padding ?? widget.padding;
@@ -494,8 +497,8 @@ class TablesElement<T> extends RenderObjectElement {
     }
     for (var y = 0; y < widget.rowCount; y++) {
       var row = widget.rowBuilder(this, y);
-      for (var x = 0; x < widget.columns.length; x++) {
-        var column = widget.columns[x];
+      for (var x = 0; x < columns.length; x++) {
+        var column = columns[x];
         var cell = column.cellBuilder(this, x, y, row.data);
 
         var padding = cell.padding ?? column.padding ?? widget.padding;
@@ -616,8 +619,7 @@ class RenderTables extends RenderBox
     required ViewportOffset xOffset,
     required ViewportOffset yOffset,
     required List<_RanderColumnWidth> widths,
-  })
-      : _widths = widths,
+  })  : _widths = widths,
         _headerHeight = headerHeight,
         _rowHeight = rowHeight,
         _rowCount = rowCount,
@@ -863,8 +865,7 @@ class RenderTables extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    context.canvas.drawRect(offset & size, Paint()
-      ..color = color);
+    context.canvas.drawRect(offset & size, Paint()..color = color);
     _clipRectLayer.layer = context.pushClipRect(
       needsCompositing,
       offset,
@@ -1051,8 +1052,8 @@ class _RanderColumnWidth extends ColumnWidth {
     required ColumnWidth width,
     required this.lean,
   }) : super(
-    flex: width.flex,
-    max: width.max,
-    min: width.min,
-  );
+          flex: width.flex,
+          max: width.max,
+          min: width.min,
+        );
 }

@@ -5,7 +5,7 @@ class TablesBuild<T> {
   double headerHeight = 50;
   Color? headerColor;
   double rowHeight = 35;
-  List<TablesColumn<T>> columns = [];
+  Map<String, TablesColumn<T>> columns = {};
   Border? border;
   RowBuilder<T>? rowBuilder;
   EdgeInsetsGeometry? padding = EdgeInsets.all(4);
@@ -28,14 +28,13 @@ class TablesBuild<T> {
       headerHeight: headerHeight,
       rowHeight: rowHeight,
       rowCount: rowCount,
-      columns: columns,
+      columns: columns.values.toList(),
       rowBuilder: rowBuilder!,
       border: border,
       padding: padding,
       color: color,
       clipBehavior: clipBehavior,
       headerLean: headerLean,
-
     );
   }
 }
