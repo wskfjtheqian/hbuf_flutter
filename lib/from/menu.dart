@@ -42,7 +42,7 @@ class MenuFormBuild<T> {
         value: value,
         hint: hint,
         disabledHint: disabledHint,
-        onChanged: onChanged ?? (val) {},
+        onChanged: readOnly ? null : onChanged,
         onTap: onTap,
         elevation: elevation,
         style: style,

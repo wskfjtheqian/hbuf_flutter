@@ -84,15 +84,12 @@ class ImageFormField extends FormField<List<NetworkImage>> {
                 width: width,
                 height: height,
                 fit: fit,
+                readOnly: readOnly,
                 onAdd: (context) {
-                  if (!readOnly) {
-                    (onAdd ?? onImageFormFieldAdd)?.call(context, _OnImageFormField(field, onChanged), outWidth, outHeight);
-                  }
+                  (onAdd ?? onImageFormFieldAdd)?.call(context, _OnImageFormField(field, onChanged), outWidth, outHeight);
                 },
                 onTap: (context, list, item) {
-                  if (!readOnly) {
-                    (onTap ?? onImageFormFieldTap)?.call(context, list, item);
-                  }
+                  (onTap ?? onImageFormFieldTap)?.call(context, list, item);
                 },
                 onDel: (context, list, item) {
                   field.value?.remove(item);
@@ -135,6 +132,8 @@ class _ImageField extends StatefulWidget {
 
   final OnImageFormFieldTap onDel;
 
+  final bool readOnly;
+
   const _ImageField({
     Key? key,
     required this.decoration,
@@ -147,6 +146,7 @@ class _ImageField extends StatefulWidget {
     required this.onAdd,
     required this.onTap,
     required this.onDel,
+    required this.readOnly,
   }) : super(key: key);
 
   @override
@@ -216,19 +216,20 @@ class _ImageFieldState extends State<_ImageField> {
                         ),
                       ),
                     ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: InkWell(
-                        onTap: () => widget.onDel(context, widget.value, item),
-                        child: const Icon(Icons.close),
+                    if (!widget.readOnly)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: () => widget.onDel(context, widget.value, item),
+                          child: const Icon(Icons.close),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
             ),
-          if (widget.value.length < widget.maxCount)
+          if (widget.value.length < widget.maxCount && !widget.readOnly)
             OutlinedButton(
               onPressed: () => widget.onAdd(context),
               style: ButtonStyle(
