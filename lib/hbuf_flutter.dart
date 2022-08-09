@@ -7,4 +7,5 @@ export 'from/image.dart';
 export 'tables/tables.dart';
 export 'tables/tables_build.dart';
 export 'utils/datetime.dart';
-export 'pagination.dart';
+export 'widget/pagination.dart';
+export 'widget/auto_layout.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/widget/auto_layout.dart';
+import 'package:hbuf_flutter/from/image.dart';
+import 'package:hbuf_flutter/pagination.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,17 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AutoLayout(
-        child: ColoredBox(
-          child: Text("adfasd"),
-          color: Colors.blue,
-        ),
-        maxHeight: 80,
-        sizes: {
-          400: 24,
-          800: 12,
-        },
-      ),
+      body: Pagination(offset: 12, onChange: (int page, int pageSize) {  }, total: 500, limit: 1,),
     );
   }
 }
