@@ -23,7 +23,8 @@ class AutoLayout extends SingleChildRenderObjectWidget {
     this.minHeight,
     this.maxHeight,
     this.count = 24,
-  })  : assert(!(null != minHeight && null != maxHeight && minHeight <= maxHeight), "minHeight > maxHeight"),
+  })
+      : assert(!(null != minHeight && null != maxHeight && minHeight > maxHeight), "minHeight > maxHeight"),
         super(key: key, child: child);
 
   @override
@@ -49,7 +50,8 @@ class AutoLayout extends SingleChildRenderObjectWidget {
 
 class AutoLayoutRender extends RenderProxyBox {
   AutoLayoutRender(this._sizes, this._minHeight, this._maxHeight, this._count) {
-    _keys = _sizes.keys.toList()..sort((a, b) => (b - a).ceil());
+    _keys = _sizes.keys.toList()
+      ..sort((a, b) => (b - a).ceil());
   }
 
   List<double> _keys = [];
@@ -65,7 +67,8 @@ class AutoLayoutRender extends RenderProxyBox {
 
   set sizes(Map<double, int> value) {
     _sizes = value;
-    _keys = _sizes.keys.toList()..sort((a, b) => (b - a).ceil());
+    _keys = _sizes.keys.toList()
+      ..sort((a, b) => (b - a).ceil());
     markNeedsLayout();
   }
 
@@ -136,7 +139,8 @@ class AutoLayoutRender extends RenderProxyBox {
     assert(() {
       final Paint paint;
       if (child == null || child!.size.isEmpty) {
-        paint = Paint()..color = const Color(0x90909090);
+        paint = Paint()
+          ..color = const Color(0x90909090);
         context.canvas.drawRect(offset & size, paint);
       }
       return true;
@@ -149,7 +153,7 @@ class AutoLayoutRender extends RenderProxyBox {
     var winSize = Size.zero;
     do {
       temp = temp!.parent;
-      if (temp is RenderBox && temp.hasSize) {
+      if (temp is RenderView) {
         winSize = temp.size;
       }
     } while (null != temp!.parent);
@@ -172,9 +176,10 @@ class AutoLayoutRender extends RenderProxyBox {
     _additionalConstraints = BoxConstraints(
       minWidth: width,
       maxWidth: width,
-      minHeight: _minHeight ?? _maxHeight ?? double.infinity,
-      maxHeight: _maxHeight ?? _minHeight ?? double.infinity,
+      minHeight: _minHeight ?? 0.0,
+      maxHeight: _maxHeight ?? double.infinity,
     );
+
     if (child != null) {
       child!.layout(_additionalConstraints.enforce(constraints), parentUsesSize: true);
       size = child!.size;
