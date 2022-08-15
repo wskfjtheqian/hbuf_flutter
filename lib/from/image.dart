@@ -185,62 +185,65 @@ class _ImageFieldState extends State<_ImageField> {
       decoration: widget.decoration,
       isFocused: _focusNode?.hasFocus ?? false,
       textAlign: TextAlign.left,
-      child: Wrap(
-        spacing: 8,
-        children: [
-          for (var item in widget.value)
-            OutlinedButton(
-              onPressed: () => widget.onTap(context, widget.value, item),
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(Size(widget.width, widget.height)),
-                padding: MaterialStateProperty.all(EdgeInsets.zero),
-                visualDensity: const VisualDensity(),
-              ),
-              child: SizedBox(
-                width: widget.width,
-                height: widget.height,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 1,
-                      bottom: 1,
-                      right: 1,
-                      left: 1,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(3),
-                        child: Image(
-                          image: item,
-                          fit: widget.fit,
-                          width: widget.width,
-                          height: widget.height,
-                        ),
-                      ),
-                    ),
-                    if (!widget.readOnly)
+      child: Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Wrap(
+          spacing: 8,
+          children: [
+            for (var item in widget.value)
+              OutlinedButton(
+                onPressed: () => widget.onTap(context, widget.value, item),
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all(Size(widget.width, widget.height)),
+                  padding: MaterialStateProperty.all(EdgeInsets.zero),
+                  visualDensity: const VisualDensity(),
+                ),
+                child: SizedBox(
+                  width: widget.width,
+                  height: widget.height,
+                  child: Stack(
+                    children: [
                       Positioned(
-                        top: 0,
-                        right: 0,
-                        child: InkWell(
-                          onTap: () => widget.onDel(context, widget.value, item),
-                          child: const Icon(Icons.close),
+                        top: 1,
+                        bottom: 1,
+                        right: 1,
+                        left: 1,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: Image(
+                            image: item,
+                            fit: widget.fit,
+                            width: widget.width,
+                            height: widget.height,
+                          ),
                         ),
                       ),
-                  ],
+                      if (!widget.readOnly)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: InkWell(
+                            onTap: () => widget.onDel(context, widget.value, item),
+                            child: const Icon(Icons.close),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          if (widget.value.length < widget.maxCount && !widget.readOnly)
-            OutlinedButton(
-              onPressed: () => widget.onAdd(context),
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(Size(widget.width, widget.height)),
-                padding: MaterialStateProperty.all(EdgeInsets.zero),
-                tapTargetSize: MaterialTapTargetSize.padded,
-                visualDensity: const VisualDensity(),
-              ),
-              child: const Icon(Icons.add),
-            )
-        ],
+            if (widget.value.length < widget.maxCount && !widget.readOnly)
+              OutlinedButton(
+                onPressed: () => widget.onAdd(context),
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all(Size(widget.width, widget.height)),
+                  padding: MaterialStateProperty.all(EdgeInsets.zero),
+                  tapTargetSize: MaterialTapTargetSize.padded,
+                  visualDensity: const VisualDensity(),
+                ),
+                child: const Icon(Icons.add),
+              )
+          ],
+        ),
       ),
     );
   }
@@ -285,28 +288,32 @@ class ImageFormBuild {
   OnImageFormFieldTap? onTap;
   bool enabled = true;
   bool readOnly = true;
+  double minHeight = 124;
 
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
-      child: ImageFormField(
-        key: key,
-        onChanged: onChanged ?? (val) {},
-        focusNode: focusNode,
-        decoration: decoration,
-        onSaved: onSaved,
-        validator: validator,
-        autovalidateMode: autovalidateMode,
-        maxCount: maxCount,
-        onAdd: onAdd,
-        onTap: onTap,
-        initialValue: initialValue,
-        width: width,
-        height: height,
-        outWidth: outWidth,
-        outHeight: outHeight,
-        enabled: enabled,
-        readOnly: readOnly,
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: minHeight),
+      child: Theme(
+        data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+        child: ImageFormField(
+          key: key,
+          onChanged: onChanged ?? (val) {},
+          focusNode: focusNode,
+          decoration: decoration,
+          onSaved: onSaved,
+          validator: validator,
+          autovalidateMode: autovalidateMode,
+          maxCount: maxCount,
+          onAdd: onAdd,
+          onTap: onTap,
+          initialValue: initialValue,
+          width: width,
+          height: height,
+          outWidth: outWidth,
+          outHeight: outHeight,
+          enabled: enabled,
+          readOnly: readOnly,
+        ),
       ),
     );
   }
