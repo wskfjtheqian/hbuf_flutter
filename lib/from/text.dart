@@ -54,7 +54,7 @@ class TextFormBuild {
   String? restorationId;
   bool enableIMEPersonalizedLearning = true;
   MouseCursor? mouseCursor;
-  double minHeight = 62;
+  double minHeight = 76;
 
   Widget build(BuildContext context) {
     return ConstrainedBox(
