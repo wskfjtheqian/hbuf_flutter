@@ -1,5 +1,6 @@
+import 'package:example/page/page_chinese_calendar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,16 +30,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AutoLayout(
-        child: ColoredBox(
-          child: Text("adfasd"),
-          color: Colors.blue,
-        ),
-        maxHeight: 80,
-        sizes: {
-          400: 24,
-          800: 12,
-        },
+      body: ListView(
+        children: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageChineseCalendar();
+              }));
+            },
+            child: const Text("chinese calendar"),
+          ),
+        ],
       ),
     );
   }

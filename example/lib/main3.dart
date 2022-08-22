@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/from/image.dart';
-import 'package:hbuf_flutter/pagination.dart';
+import 'package:hbuf_flutter/widget/pagination.dart';
+
 
 void main() {
   runApp(MyApp());
