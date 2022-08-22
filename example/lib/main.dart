@@ -1,4 +1,5 @@
 import 'package:example/page/page_chinese_calendar.dart';
+import 'package:example/page/page_from.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,14 @@ class _MyHomePageState extends State<MyHomePage> {
               }));
             },
             child: const Text("chinese calendar"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageFrom();
+              }));
+            },
+            child: const Text("from"),
           ),
         ],
       ),

@@ -189,14 +189,14 @@ class _CalendarSelectState extends State<CalendarSelect> {
   }
 }
 
-Future<List<DateTime>> showSelectDateRangePicker(
+Future<List<DateTime>?> showSelectDateRangePicker(
   BuildContext context, {
 
   ///是否选择范围
   bool isRange = true,
 
   ///初妈时间
-  DateTime? initDateTime,
+  required DateTime initDateTime,
 
   ///开始时间
   DateTime? startDateTime,
@@ -214,7 +214,6 @@ Future<List<DateTime>> showSelectDateRangePicker(
   ///显示农历
   bool? showLunary,
 }) async {
-  assert(null != initDateTime);
   return await showDialog(
     context: context,
     builder: (context) {
