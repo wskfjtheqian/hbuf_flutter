@@ -227,6 +227,36 @@ class _RenderTablesCell extends RenderPositionedBox {
       _border!.paint(context.canvas, rect);
     }
   }
+
+  @override
+  bool get debugDoingThisResize => super.debugDoingThisResize;
+
+  @override
+  bool? get debugDisposed => super.debugDisposed;
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+  }
+
+  @override
+  List<DiagnosticsNode> debugDescribeChildren() {
+    return super.debugDescribeChildren();
+  }
+
+  @override
+  ContainerLayer? get debugLayer => super.debugLayer;
+
+  @override
+  void debugRegisterRepaintBoundaryPaint({bool includedParent = true, bool includedChild = false}) {
+    super.debugRegisterRepaintBoundaryPaint(includedParent: includedParent, includedChild: includedChild);
+  }
+
+  @override
+  bool get debugDoingThisPaint => super.debugDoingThisPaint;
+
+  @override
+  bool get debugDoingThisLayout => super.debugDoingThisLayout;
 }
 
 class TablesRow<T> {
@@ -365,8 +395,6 @@ class TablesElement<T> extends RenderObjectElement {
   @override
   _TablesView<T> get widget => super.widget as _TablesView<T>;
 
-  @protected
-  @visibleForTesting
   Iterable<Element> get children => _children.where((Element child) => !_forgottenChildren.contains(child));
 
   late List<Element> _children;
