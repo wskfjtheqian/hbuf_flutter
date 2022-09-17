@@ -279,6 +279,28 @@ class TablesRow<T> {
     this.alignment,
     this.lean,
   });
+
+  TablesRow copyWith({
+    Color? color,
+    Border? border,
+    EdgeInsetsGeometry? padding,
+    T? data,
+    double? widthFactor,
+    double? heightFactor,
+    AlignmentGeometry? alignment,
+    VerticalLean? lean,
+  }) {
+    return TablesRow(
+      color: color ?? this.color,
+      border: border ?? this.border,
+      padding: padding ?? this.padding,
+      data: data ?? this.data,
+      widthFactor: widthFactor ?? this.widthFactor,
+      heightFactor: heightFactor ?? this.heightFactor,
+      alignment: alignment ?? this.alignment,
+      lean: lean ?? this.lean,
+    );
+  }
 }
 
 class TablesColumn<T> {

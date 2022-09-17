@@ -1,5 +1,6 @@
 import 'package:example/page/page_chinese_calendar.dart';
 import 'package:example/page/page_from.dart';
+import 'package:example/page/page_menu_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -48,6 +49,13 @@ class _MyHomePageState extends State<MyHomePage> {
               }));
             },
             child: const Text("from"),
+          ),TextButton(
+            onPressed: () {
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageMenuBar();
+              }));
+            },
+            child: const Text("MenuBar"),
           ),
         ],
       ),

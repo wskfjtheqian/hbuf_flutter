@@ -43,7 +43,7 @@ class MenuFormBuild<T> {
           items: items,
           selectedItemBuilder: selectedItemBuilder,
           value: value,
-          hint: SizedBox(),
+          hint: SizedBox.shrink(),
           disabledHint: disabledHint,
           onChanged: readOnly ? null : (onChanged ?? (val) {}),
           onTap: onTap,
