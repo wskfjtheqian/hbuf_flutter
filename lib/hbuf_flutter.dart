@@ -10,3 +10,4 @@ export 'tables/tables_build.dart';
 export 'utils/datetime.dart';
 export 'widget/pagination.dart';
 export 'widget/auto_layout.dart';
+export 'widget/menu_bar.dart';

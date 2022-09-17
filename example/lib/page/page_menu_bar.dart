@@ -10,66 +10,69 @@ class PageMenuBar extends StatelessWidget {
       appBar: AppBar(
         title: const Text("MenuBar"),
       ),
-      body: MenuBar(
+      body: const MenuBar(
         alignment: Alignment.centerRight,
         children: [
-          TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-         TextButton(
-            onPressed: () {},
+          MenuBarItem(
             child: Text(
               "button1",
               style: TextStyle(color: Colors.red),
             ),
           ),
-
+          MenuBarItem(
+            child: Text(
+              "button1",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+          MenuBarItem(
+            child: Text(
+              "button1",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
         ],
       ),
     );

@@ -2,8 +2,230 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class MenuBar extends MultiChildRenderObjectWidget {
+const double _kMenuHorizontalPadding = 8.0;
+
+class MenuBarItem<T> extends PopupMenuEntry<T> {
+  const MenuBarItem({
+    super.key,
+    this.value,
+    this.onTap,
+    this.enabled = true,
+    this.height = kMinInteractiveDimension,
+    this.padding,
+    this.textStyle,
+    this.mouseCursor,
+    required this.child,
+  })
+      : assert(enabled != null),
+        assert(height != null);
+
+  final T? value;
+
+  final VoidCallback? onTap;
+
+  final bool enabled;
+
+  @override
+  final double height;
+
+  final EdgeInsets? padding;
+
+  final TextStyle? textStyle;
+
+  final MouseCursor? mouseCursor;
+
+  final Widget? child;
+
+  @override
+  bool represents(T? value) => value == this.value;
+
+  @override
+  MenuBarItemState<T, MenuBarItem<T>> createState() => MenuBarItemState<T, MenuBarItem<T>>();
+}
+
+class MenuBarItemState<T, W extends MenuBarItem<T>> extends State<W> {
+  Widget? buildChild() => widget.child;
+
+  void handleTap() {
+    widget.onTap?.call();
+    if (null == context.findAncestorStateOfType<_MenuBarState>()) {
+      Navigator.pop<T>(context, widget.value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(context);
+    TextStyle style = widget.textStyle ?? popupMenuTheme.textStyle ?? theme.textTheme.subtitle1!;
+
+    if (!widget.enabled) {
+      style = style.copyWith(color: theme.disabledColor);
+    }
+
+    Widget item = AnimatedDefaultTextStyle(
+      style: style,
+      duration: kThemeChangeDuration,
+      child: Container(
+        alignment: AlignmentDirectional.centerStart,
+        constraints: BoxConstraints(minHeight: widget.height),
+        padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: _kMenuHorizontalPadding),
+        child: buildChild(),
+      ),
+    );
+
+    if (!widget.enabled) {
+      final bool isDark = theme.brightness == Brightness.dark;
+      item = IconTheme.merge(
+        data: IconThemeData(opacity: isDark ? 0.5 : 0.38),
+        child: item,
+      );
+    }
+
+    return MergeSemantics(
+      child: Semantics(
+        enabled: widget.enabled,
+        button: true,
+        child: InkWell(
+          onTap: widget.enabled ? handleTap : null,
+          canRequestFocus: widget.enabled,
+          mouseCursor: _EffectiveMouseCursor(widget.mouseCursor, popupMenuTheme.mouseCursor),
+          child: item,
+        ),
+      ),
+    );
+  }
+}
+
+class _EffectiveMouseCursor extends MaterialStateMouseCursor {
+  const _EffectiveMouseCursor(this.widgetCursor, this.themeCursor);
+
+  final MouseCursor? widgetCursor;
+  final MaterialStateProperty<MouseCursor?>? themeCursor;
+
+  @override
+  MouseCursor resolve(Set<MaterialState> states) {
+    return MaterialStateProperty.resolveAs<MouseCursor?>(widgetCursor, states) ??
+        themeCursor?.resolve(states) ??
+        MaterialStateMouseCursor.clickable.resolve(states);
+  }
+
+  @override
+  String get debugDescription => 'MaterialStateMouseCursor(MenuBarItemState)';
+}
+
+class MenuBar<T> extends StatefulWidget {
   final Alignment alignment;
+
+  final Widget? more;
+
+  final List<MenuBarItem<T>> children;
+
+  final PopupMenuPosition menuPosition;
+
+  final Offset menuOffset;
+
+  final EdgeInsetsGeometry menuPadding;
+
+  final double? menuElevation;
+
+  final BoxConstraints? menuConstraints;
+
+  final ShapeBorder? menuShape;
+
+  final Color? menuColor;
+
+  const MenuBar({
+    super.key,
+    this.menuPosition = PopupMenuPosition.over,
+    this.menuShape,
+    this.menuColor,
+    this.menuPadding = const EdgeInsets.all(8.0),
+    this.menuOffset = Offset.zero,
+    this.menuElevation,
+    this.menuConstraints,
+    this.alignment = Alignment.centerRight,
+    this.more,
+    this.children = const [],
+  });
+
+  @override
+  State<MenuBar<T>> createState() => _MenuBarState<T>();
+}
+
+class _MenuBarState<T> extends State<MenuBar<T>> {
+  GlobalKey _moreKey = GlobalKey();
+
+  GlobalKey _menuKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return _MenuBarRenderWidget(
+      key: _menuKey,
+      children: [
+        ...widget.children,
+        MenuBarItem(
+          key: _moreKey,
+          child: Icon(Icons.more_horiz),
+          onTap: () => _onMore(context),
+        )
+      ],
+      alignment: widget.alignment,
+      more: widget.more,
+      menuPosition: widget.menuPosition,
+      menuOffset: widget.menuOffset,
+      menuPadding: widget.menuPadding,
+      menuElevation: widget.menuElevation,
+      menuConstraints: widget.menuConstraints,
+      menuShape: widget.menuShape,
+      menuColor: widget.menuColor,
+    );
+  }
+
+  void _onMore(BuildContext context) {
+    final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(context);
+    final RenderBox button = _moreKey.currentContext!.findRenderObject()! as RenderBox;
+    final RenderBox overlay = Navigator
+        .of(context)
+        .overlay!
+        .context
+        .findRenderObject()! as RenderBox;
+    Offset? offset;
+    switch (widget.menuPosition) {
+      case PopupMenuPosition.over:
+        offset = widget.menuOffset;
+        break;
+      case PopupMenuPosition.under:
+        offset = Offset(0.0, button.size.height - (widget.menuPadding.vertical / 2)) + widget.menuOffset;
+        break;
+    }
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(offset! + button.size.bottomRight(Offset.zero) , ancestor: overlay),
+        button.localToGlobal(button.size.bottomRight(Offset.zero) +button.size.bottomRight(Offset.zero) + offset, ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    List<PopupMenuEntry> items = [];
+    for (int i = (_menuKey.currentContext as _MenuBarElement).showCount; i < widget.children.length; i++) {
+      items.add(widget.children[i]);
+    }
+    showMenu(
+      context: context,
+      elevation: widget.menuElevation ?? popupMenuTheme.elevation,
+      items: items,
+      position: position,
+      shape: widget.menuShape ?? popupMenuTheme.shape,
+      color: widget.menuColor ?? popupMenuTheme.color,
+      constraints: widget.menuConstraints,
+    );
+  }
+}
+
+class _MenuBarRenderWidget extends MultiChildRenderObjectWidget {
+  final Alignment alignment;
+
   final Widget? more;
 
   final PopupMenuPosition menuPosition;
@@ -20,7 +242,8 @@ class MenuBar extends MultiChildRenderObjectWidget {
 
   final Color? menuColor;
 
-  MenuBar({
+  _MenuBarRenderWidget({
+    super.key,
     this.menuPosition = PopupMenuPosition.over,
     this.menuShape,
     this.menuColor,
@@ -28,7 +251,6 @@ class MenuBar extends MultiChildRenderObjectWidget {
     this.menuOffset = Offset.zero,
     this.menuElevation,
     this.menuConstraints,
-    super.key,
     super.children,
     this.alignment = Alignment.centerRight,
     this.more,
@@ -52,74 +274,12 @@ class MenuBar extends MultiChildRenderObjectWidget {
 }
 
 class _MenuBarElement extends MultiChildRenderObjectElement {
-  var _moreKey = GlobalKey();
-
   _MenuBarElement(super.widget);
-
-  void addMore() {
-    var more = widget.more ??
-        InkWell(
-          key: _moreKey,
-          child: Icon(Icons.more_horiz),
-          onTap: _onMore,
-        );
-
-    widget.children.add(more);
-  }
-
-  @override
-  void mount(Element? parent, Object? newSlot) {
-    addMore();
-    super.mount(parent, newSlot);
-  }
-
-  @override
-  void update(covariant MultiChildRenderObjectWidget newWidget) {
-    super.update(newWidget);
-    addMore();
-  }
-
-  @override
-  MenuBar get widget => super.widget as MenuBar;
 
   @override
   _RenderMenuBar get renderObject => super.renderObject as _RenderMenuBar;
 
-  void _onMore() {
-    final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(this);
-    final RenderBox button = _moreKey.currentContext!.findRenderObject()! as RenderBox;
-    final RenderBox overlay = Navigator.of(this).overlay!.context.findRenderObject()! as RenderBox;
-    Offset? offset;
-    switch (widget.menuPosition) {
-      case PopupMenuPosition.over:
-        offset = widget.menuOffset;
-        break;
-      case PopupMenuPosition.under:
-        offset = Offset(0.0, button.size.height - (widget.menuPadding.vertical / 2)) + widget.menuOffset;
-        break;
-    }
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(offset!, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero) + offset, ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
-
-    List<PopupMenuEntry> items = [];
-    for (int i = renderObject.count; i < renderObject.childCount - 1; i++) {
-      items.add(PopupMenuItem(child: widget.children[i]));
-    }
-    showMenu(
-      context: this,
-      elevation: widget.menuElevation ?? popupMenuTheme.elevation,
-      items: items,
-      position: position,
-      shape: widget.menuShape ?? popupMenuTheme.shape,
-      color: widget.menuColor ?? popupMenuTheme.color,
-      constraints: widget.menuConstraints,
-    );
-  }
+  int get showCount => renderObject.count;
 }
 
 class _MenuBarParentData extends ContainerBoxParentData<RenderBox> {
