@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+const double mm = 375;
 const double sm = 540;
 const double md = 720;
 const double lg = 960;
@@ -45,6 +46,14 @@ class AutoLayout extends SingleChildRenderObjectWidget {
       ..maxHeight = maxHeight
       ..count = count;
     super.updateRenderObject(context, renderObject);
+  }
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('minHeight', minHeight));
+    properties.add(DoubleProperty('maxHeight', maxHeight));
+    properties.add(DiagnosticsProperty<Map<double, int>>('sizes', sizes));
+    properties.add(IntProperty('count', count));
   }
 }
 

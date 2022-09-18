@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 typedef OnImageFormFieldAdd = void Function(BuildContext context, _OnImageFormField field, double outWidth, double outHeight);
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<NetworkImage>? list, NetworkImage item);
@@ -289,30 +290,38 @@ class ImageFormBuild {
   bool enabled = true;
   bool readOnly = true;
   double minHeight = 124;
+  int widthCount = 24;
+  Map<double, int> widthSizes = {};
+  EdgeInsetsGeometry padding = const EdgeInsets.only();
 
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(minHeight: minHeight),
-      child: Theme(
-        data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
-        child: ImageFormField(
-          key: key,
-          onChanged: onChanged ?? (val) {},
-          focusNode: focusNode,
-          decoration: decoration,
-          onSaved: onSaved,
-          validator: validator,
-          autovalidateMode: autovalidateMode,
-          maxCount: maxCount,
-          onAdd: onAdd,
-          onTap: onTap,
-          initialValue: initialValue,
-          width: width,
-          height: height,
-          outWidth: outWidth,
-          outHeight: outHeight,
-          enabled: enabled,
-          readOnly: readOnly,
+    return AutoLayout(
+      minHeight: minHeight,
+      sizes: widthSizes,
+      count: widthCount,
+      child: Padding(
+        padding: padding,
+        child: Theme(
+          data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+          child: ImageFormField(
+            key: key,
+            onChanged: onChanged ?? (val) {},
+            focusNode: focusNode,
+            decoration: decoration,
+            onSaved: onSaved,
+            validator: validator,
+            autovalidateMode: autovalidateMode,
+            maxCount: maxCount,
+            onAdd: onAdd,
+            onTap: onTap,
+            initialValue: initialValue,
+            width: width,
+            height: height,
+            outWidth: outWidth,
+            outHeight: outHeight,
+            enabled: enabled,
+            readOnly: readOnly,
+          ),
         ),
       ),
     );
