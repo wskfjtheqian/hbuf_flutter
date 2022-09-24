@@ -407,6 +407,10 @@ class _TablesView<T> extends RenderObjectWidget {
 class TablesElement<T> extends RenderObjectElement {
   final List<_TablesCellRenderWidget> _widgetList = [];
 
+  int _rowCount = 0;
+
+  double _dy = 0;
+
   TablesElement(_TablesView<T> widget) : super(widget);
 
   @override
@@ -518,11 +522,22 @@ class TablesElement<T> extends RenderObjectElement {
     super.performRebuild();
   }
 
-  void _layout(Constraints constraints) {
-    owner!.buildScope(this, () => layoutCallback(constraints));
+  void _layout(BoxConstraints constraints, Offset offset, bool isScrolled) {
+    owner!.buildScope(this, () => layoutCallback(constraints, offset, isScrolled));
   }
 
-  void layoutCallback(Constraints constraints) {
+  void layoutCallback(BoxConstraints constraints, Offset offset, bool isScrolled) {
+    double dy = -offset.dy;
+    double dHeight = dy + constraints.biggest.height;
+    int iy = (dy / widget.rowHeight).floor();
+    int rowCount = (dHeight / widget.rowHeight).ceil();
+
+    if (isScrolled && _rowCount == rowCount && _dy == dy) {
+      return;
+    }
+    _rowCount = rowCount;
+    _dy = dy;
+
     _widgetList.clear();
     var columns = widget.columns;
     columns.sort((a, b) => a.index.compareTo(b.index));
@@ -545,8 +560,10 @@ class TablesElement<T> extends RenderObjectElement {
         child: null == padding ? cell.child : Padding(padding: padding, child: cell.child),
       ));
     }
-    for (var y = 0; y < widget.rowCount; y++) {
+
+    for (var y = iy; y < rowCount - 1 && y < widget.rowCount; y++) {
       var row = widget.rowBuilder(this, y);
+
       for (var x = 0; x < columns.length; x++) {
         var column = columns[x];
         var cell = column.cellBuilder(this, x, y, row.data);
@@ -658,8 +675,12 @@ class TablesParentData extends ContainerBoxParentData<RenderBox> {
   }
 }
 
+typedef TableLayoutCallback<T extends Constraints> = void Function(T, Offset offset, bool isScrolled);
+
 class RenderTables extends RenderBox
     with ContainerRenderObjectMixin<RenderBox, TablesParentData>, RenderBoxContainerDefaultsMixin<RenderBox, TablesParentData> {
+  bool _scrolled = false;
+
   RenderTables({
     required Clip clipBehavior,
     required double headerHeight,
@@ -725,6 +746,7 @@ class RenderTables extends RenderBox
   }
 
   void _hasScrolled() {
+    _scrolled = true;
     markNeedsLayout();
     markNeedsSemanticsUpdate();
   }
@@ -779,9 +801,9 @@ class RenderTables extends RenderBox
   List<double>? _columnWidths;
   List<double>? _columnOffset;
 
-  LayoutCallback<BoxConstraints>? _callback;
+  TableLayoutCallback<BoxConstraints>? _callback;
 
-  void updateCallback(LayoutCallback<BoxConstraints>? value) {
+  void updateCallback(TableLayoutCallback<BoxConstraints>? value) {
     if (value == _callback) return;
     _callback = value;
     markNeedsLayout();
@@ -798,10 +820,11 @@ class RenderTables extends RenderBox
 
   void rebuildIfNecessary() {
     assert(_callback != null);
-    if (_needsBuild || constraints != _previousConstraints) {
+    if (_needsBuild || constraints != _previousConstraints || _scrolled) {
       _previousConstraints = constraints;
       _needsBuild = false;
-      invokeLayoutCallback(_callback!);
+      invokeLayoutCallback((BoxConstraints constraints) => _callback?.call(constraints, _offset, _scrolled));
+      _scrolled = false;
     }
   }
 
@@ -1047,8 +1070,14 @@ class _TablesState<T> extends State<Tables<T>> {
   void initState() {
     _xController = ScrollController();
     _yController = ScrollController();
-
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _xController?.dispose();
+    _yController?.dispose();
+    super.dispose();
   }
 
   @override
