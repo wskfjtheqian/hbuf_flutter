@@ -140,59 +140,46 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
     final TextSelectionThemeData selectionTheme = TextSelectionTheme.of(context);
     final TextStyle style = theme.textTheme.subtitle1!.merge(widget.style);
 
-    return InkWell(
-      onTap: () async {
-        var ret = await showSelectDateRangePicker(context, initDateTime: DateTime.now());
-        if (null == ret || ret.isEmpty) {
-          return;
-        }
-        _controller1.value = TextEditingValue(text: ret[0].format("yyyy/MM/dd"));
-        if (1 == ret.length) {
-          return;
-        }
-        _controller2.value = TextEditingValue(text: ret[1].format("yyyy/MM/dd"));
-      },
-      child: InputDecorator(
-        decoration: widget.decoration,
-        isFocused: _focusNode1.hasFocus || _focusNode2.hasFocus,
-        textAlign: TextAlign.left,
-        child: Row(
-          children: [
-            Expanded(
-              child: RepaintBoundary(
-                child: UnmanagedRestorationScope(
-                  bucket: bucket,
-                  child: EditableText(
-                    key: editableTextKey1,
-                    backgroundCursorColor: Colors.white,
-                    controller: _controller1,
-                    cursorColor: Colors.blue,
-                    style: style,
-                    focusNode: _focusNode1,
-                    onSelectionChanged: (selection, cause) => _handleSelectionChanged(selection, cause, _editableText1, _controller1),
-                  ),
+    return InputDecorator(
+      decoration: widget.decoration,
+      isFocused: _focusNode1.hasFocus || _focusNode2.hasFocus,
+      textAlign: TextAlign.left,
+      child: Row(
+        children: [
+          Expanded(
+            child: RepaintBoundary(
+              child: UnmanagedRestorationScope(
+                bucket: bucket,
+                child: EditableText(
+                  key: editableTextKey1,
+                  backgroundCursorColor: Colors.white,
+                  controller: _controller1,
+                  cursorColor: Colors.blue,
+                  style: style,
+                  focusNode: _focusNode1,
+                  onSelectionChanged: (selection, cause) => _handleSelectionChanged(selection, cause, _editableText1, _controller1),
                 ),
               ),
             ),
-            Text("To"),
-            Expanded(
-              child: RepaintBoundary(
-                child: UnmanagedRestorationScope(
-                  bucket: bucket,
-                  child: EditableText(
-                    key: editableTextKey2,
-                    backgroundCursorColor: Colors.white,
-                    controller: _controller2,
-                    cursorColor: Colors.blue,
-                    style: style,
-                    focusNode: _focusNode2,
-                    onSelectionChanged: (selection, cause) => _handleSelectionChanged(selection, cause, _editableText2, _controller2),
-                  ),
+          ),
+          Text("To"),
+          Expanded(
+            child: RepaintBoundary(
+              child: UnmanagedRestorationScope(
+                bucket: bucket,
+                child: EditableText(
+                  key: editableTextKey2,
+                  backgroundCursorColor: Colors.white,
+                  controller: _controller2,
+                  cursorColor: Colors.blue,
+                  style: style,
+                  focusNode: _focusNode2,
+                  onSelectionChanged: (selection, cause) => _handleSelectionChanged(selection, cause, _editableText2, _controller2),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

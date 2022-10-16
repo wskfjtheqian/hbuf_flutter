@@ -7,7 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:flutter/widgets.dart';
 
-class LikeAnimationController extends ChangeNotifier {
+class ParticleAnimationController extends ChangeNotifier {
   final List<Offset> _position = [];
 
   void addPosition(Offset offset) {
@@ -16,8 +16,8 @@ class LikeAnimationController extends ChangeNotifier {
   }
 }
 
-class LikeAnimation extends RenderObjectWidget {
-  final LikeAnimationController controller;
+class ParticleAnimation extends RenderObjectWidget {
+  final ParticleAnimationController controller;
 
   final List<ImageProvider> providers;
 
@@ -72,7 +72,7 @@ class LikeAnimation extends RenderObjectWidget {
   //图标向上
   final bool isUpward;
 
-  const LikeAnimation({
+  const ParticleAnimation({
     Key? key,
     required this.controller,
     required this.providers,
@@ -103,13 +103,13 @@ class LikeAnimation extends RenderObjectWidget {
         super(key: key);
 
   @override
-  LikeAnimationElement createElement() {
-    return LikeAnimationElement(this);
+  ParticleAnimationElement createElement() {
+    return ParticleAnimationElement(this);
   }
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return LikeAnimationRenderObject();
+    return ParticleAnimationRenderObject();
   }
 
   @override
@@ -118,10 +118,10 @@ class LikeAnimation extends RenderObjectWidget {
   }
 }
 
-class LikeAnimationElement extends RenderObjectElement implements TickerProvider {
+class ParticleAnimationElement extends RenderObjectElement implements TickerProvider {
   final List<ui.Image> _image = [];
 
-  LikeAnimationController? _controller;
+  ParticleAnimationController? _controller;
 
   List<ImageProvider> _providers = [];
 
@@ -129,13 +129,13 @@ class LikeAnimationElement extends RenderObjectElement implements TickerProvider
 
   AnimationController? _animation;
 
-  LikeAnimationElement(RenderObjectWidget widget) : super(widget);
+  ParticleAnimationElement(RenderObjectWidget widget) : super(widget);
 
   @override
-  LikeAnimationRenderObject get renderObject => super.renderObject as LikeAnimationRenderObject;
+  ParticleAnimationRenderObject get renderObject => super.renderObject as ParticleAnimationRenderObject;
 
   @override
-  LikeAnimation get widget => super.widget as LikeAnimation;
+  ParticleAnimation get widget => super.widget as ParticleAnimation;
 
   void _resolveImages() {
     _image.clear();
@@ -161,7 +161,7 @@ class LikeAnimationElement extends RenderObjectElement implements TickerProvider
   }
 
   @override
-  void update(LikeAnimation newWidget) {
+  void update(ParticleAnimation newWidget) {
     super.update(newWidget);
     if (_providers != newWidget.providers) {
       _providers = widget.providers;
@@ -328,7 +328,7 @@ class _Curve {
   });
 }
 
-class LikeAnimationRenderObject extends RenderProxyBox {
+class ParticleAnimationRenderObject extends RenderProxyBox {
   final List<_Spirit> _list = [];
 
   @override
@@ -369,6 +369,10 @@ class LikeAnimationRenderObject extends RenderProxyBox {
       }
       return true;
     }());
+  }
+  @override
+  bool hitTestSelf(ui.Offset position) {
+    return true;
   }
 }
 
@@ -440,4 +444,5 @@ class _Spirit {
         ..style = PaintingStyle.stroke,
     );
   }
+
 }
