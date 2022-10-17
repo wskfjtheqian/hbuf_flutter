@@ -14,7 +14,19 @@ enum ColorSliderDirection {
 class ColorBox extends RenderObjectWidget {
   final HSVColor color;
 
-  const ColorBox({super.key, required this.color});
+  final double backBoxSize;
+
+  final Color backBoxColor0;
+
+  final Color backBoxColor1;
+
+  const ColorBox({
+    super.key,
+    required this.color,
+    this.backBoxSize = 6,
+    this.backBoxColor0 = Colors.grey,
+    this.backBoxColor1 = Colors.white,
+  });
 
   @override
   RenderObjectElement createElement() {
@@ -23,18 +35,30 @@ class ColorBox extends RenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _ColorBoxRender(color: color);
+    return _ColorBoxRender(
+      color: color,
+      backBoxSize: backBoxSize,
+      backBoxColor0: backBoxColor0,
+      backBoxColor1: backBoxColor1,
+    );
   }
 
   @override
   void updateRenderObject(BuildContext context, covariant _ColorBoxRender renderObject) {
-    renderObject.color = color;
+    renderObject
+      ..color = color
+      ..backBoxSize = backBoxSize
+      ..backBoxColor1 = backBoxColor1
+      ..backBoxColor0 = backBoxColor0;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<HSVColor>('color', color));
+    properties.add(DoubleProperty('backBoxSize', backBoxSize));
+    properties.add(ColorProperty('backBoxColor0', backBoxColor0));
+    properties.add(ColorProperty('backBoxColor1', backBoxColor1));
   }
 }
 
@@ -43,8 +67,11 @@ class _ColorBoxElement extends RenderObjectElement {
 }
 
 class _ColorBoxRender extends RenderProxyBox {
-  _ColorBoxRender({required HSVColor color}) {
+  _ColorBoxRender({required HSVColor color, required double backBoxSize, required Color backBoxColor0, required Color backBoxColor1}) {
     _color = color;
+    backBoxSize = backBoxSize;
+    backBoxColor0 = backBoxColor0;
+    backBoxColor1 = backBoxColor1;
   }
 
   double _backBoxSize = 6.0;
@@ -101,9 +128,18 @@ class _ColorBoxRender extends RenderProxyBox {
 
 class ColorOpacitySlider extends RenderObjectWidget {
   final ColorSliderDirection direction;
+
   final HSVColor color;
+
   final HSVColor value;
+
   final OnColorChanged onChanged;
+
+  final double backBoxSize;
+
+  final Color backBoxColor0;
+
+  final Color backBoxColor1;
 
   const ColorOpacitySlider({
     super.key,
@@ -111,6 +147,9 @@ class ColorOpacitySlider extends RenderObjectWidget {
     required this.value,
     required this.onChanged,
     this.direction = ColorSliderDirection.horizontal,
+    this.backBoxSize = 6,
+    this.backBoxColor0 = Colors.grey,
+    this.backBoxColor1 = Colors.white,
   });
 
   @override
@@ -125,6 +164,9 @@ class ColorOpacitySlider extends RenderObjectWidget {
       color: color,
       value: value,
       onChanged: onChanged,
+      backBoxSize: backBoxSize,
+      backBoxColor0: backBoxColor0,
+      backBoxColor1: backBoxColor1,
     );
   }
 
@@ -132,7 +174,22 @@ class ColorOpacitySlider extends RenderObjectWidget {
   void updateRenderObject(BuildContext context, covariant _ColorOpacitySliderRender renderObject) {
     renderObject
       ..direction = direction
-      ..color = color;
+      ..color = color
+      ..onChanged = onChanged
+      ..backBoxSize = backBoxSize
+      ..backBoxColor1 = backBoxColor1
+      ..backBoxColor0 = backBoxColor0;
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(EnumProperty<ColorSliderDirection>('direction', direction));
+    properties.add(DiagnosticsProperty<HSVColor>('color', color));
+    properties.add(DiagnosticsProperty<HSVColor>('value', value));
+    properties.add(DoubleProperty('backBoxSize', backBoxSize));
+    properties.add(ColorProperty('backBoxColor0', backBoxColor0));
+    properties.add(ColorProperty('backBoxColor1', backBoxColor1));
   }
 }
 
@@ -164,10 +221,16 @@ class _ColorOpacitySliderRender extends RenderProxyBox {
     required ColorSliderDirection direction,
     required HSVColor value,
     required OnColorChanged onChanged,
+    required double backBoxSize,
+    required Color backBoxColor0,
+    required Color backBoxColor1,
   }) {
     _direction = direction;
     _color = color;
     _onChanged = onChanged;
+    backBoxSize = backBoxSize;
+    backBoxColor0 = backBoxColor0;
+    backBoxColor1 = backBoxColor1;
     _alignment = value.alpha * 2 - 1;
     createGradient();
   }
@@ -325,6 +388,13 @@ class ColorLinearSlider extends RenderObjectWidget {
   @override
   void updateRenderObject(BuildContext context, covariant _ColorLinearSliderRender renderObject) {
     renderObject.direction = direction;
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(EnumProperty<ColorSliderDirection>('direction', direction));
+    properties.add(DiagnosticsProperty<HSVColor>('value', value));
   }
 }
 
@@ -607,12 +677,39 @@ class _ColorBrightSliderRender extends RenderProxyBox {
 
 class ColorSelect extends StatefulWidget {
   final Color color;
+
   final double spacing;
 
-  const ColorSelect({Key? key, required this.color, this.spacing = 12}) : super(key: key);
+  final OnColorChanged changed;
+
+  final double backBoxSize;
+
+  final Color backBoxColor0;
+
+  final Color backBoxColor1;
+
+  const ColorSelect({
+    Key? key,
+    required this.color,
+    this.spacing = 12,
+    required this.changed,
+    this.backBoxSize = 6,
+    this.backBoxColor0 = Colors.grey,
+    this.backBoxColor1 = Colors.white,
+  }) : super(key: key);
 
   @override
   _ColorSelectState createState() => _ColorSelectState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('color', color));
+    properties.add(DoubleProperty('spacing', spacing));
+    properties.add(DoubleProperty('backBoxSize', backBoxSize));
+    properties.add(ColorProperty('backBoxColor0', backBoxColor0));
+    properties.add(ColorProperty('backBoxColor1', backBoxColor1));
+  }
 }
 
 class _ColorSelectState extends State<ColorSelect> {
@@ -638,6 +735,7 @@ class _ColorSelectState extends State<ColorSelect> {
                       _opacityColor = color;
                       _color = _opacityColor.withAlpha(_color.alpha);
                     });
+                    widget.changed(_color);
                   },
                 ),
               ),
@@ -653,6 +751,7 @@ class _ColorSelectState extends State<ColorSelect> {
                         _opacityColor = _opacityColor.withHue(color.hue);
                         _color = _opacityColor.withAlpha(_color.alpha);
                       });
+                      widget.changed(_color);
                     },
                   ),
                 ),
@@ -668,12 +767,16 @@ class _ColorSelectState extends State<ColorSelect> {
               children: [
                 Expanded(
                   child: ColorOpacitySlider(
+                    backBoxSize: widget.backBoxSize,
+                    backBoxColor0: widget.backBoxColor0,
+                    backBoxColor1: widget.backBoxColor1,
                     color: _opacityColor,
                     value: _color,
                     onChanged: (HSVColor color) {
                       setState(() {
                         _color = color;
                       });
+                      widget.changed(_color);
                     },
                   ),
                 ),
@@ -683,6 +786,9 @@ class _ColorSelectState extends State<ColorSelect> {
                     width: 26,
                     height: 26,
                     child: ColorBox(
+                      backBoxSize: widget.backBoxSize,
+                      backBoxColor0: widget.backBoxColor0,
+                      backBoxColor1: widget.backBoxColor1,
                       color: _color,
                     ),
                   ),
@@ -694,6 +800,106 @@ class _ColorSelectState extends State<ColorSelect> {
         // SelectableText('HEX: 0x${_color.toColor().value.toRadixString(16).padLeft(8, '0')}'),
         // SelectableText('HSV: ${_color.toString()}'),
       ],
+    );
+  }
+}
+
+/// 选择颜色
+/// color 默认颜色
+/// 返回选择的颜色
+Future<Color> showSelectColorPicker(BuildContext context, {required Color color}) async {
+  return await showDialog(
+    context: context,
+    builder: (context) {
+      return Center(
+        child: SelectColorPicker(color: color),
+      );
+    },
+  );
+}
+
+class SelectColorPicker extends StatefulWidget {
+  final Color color;
+
+  const SelectColorPicker({Key? key, required this.color}) : super(key: key);
+
+  @override
+  _SelectColorPickerState createState() => _SelectColorPickerState();
+}
+
+class _SelectColorPickerState extends State<SelectColorPicker> {
+  Color _color = Color(0);
+
+  @override
+  void initState() {
+    _color = widget.color;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      borderRadius: const BorderRadius.all(Radius.circular(4)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 260,
+              height: 260,
+              child: ColorSelect(
+                color: widget.color,
+                changed: (HSVColor color) {
+                  setState(() {
+                    _color = color.toColor();
+                  });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: SizedBox(
+                width: 260,
+                child: SelectableText('HEX: 0x${_color.value.toRadixString(16).toUpperCase().padLeft(8, '0')}'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: SizedBox(
+                width: 260,
+                child: SelectableText('ARGB: (${_color.alpha},${_color.red},${_color.green},${_color.blue})'),
+              ),
+            ),
+            SizedBox(
+              width: 260,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: TextButton(
+                      child: const Text("取消"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(_color);
+                    },
+                    child: const Text(
+                      "确定",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
