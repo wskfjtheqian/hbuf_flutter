@@ -9,7 +9,7 @@ class PageColorSelect extends StatefulWidget {
 }
 
 class _PageColorSelectState extends State<PageColorSelect> {
-  var _color = Colors.green;
+  Color _color = Colors.green;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class _PageColorSelectState extends State<PageColorSelect> {
             width: 260,
             margin: EdgeInsets.all(50),
             child: ColorSelect(
-              color: Color(0xff000000),
+              color: HSVColor.fromColor(Color(0xff000000)),
               changed: (HSVColor color) {},
             ),
           ),
@@ -32,10 +32,16 @@ class _PageColorSelectState extends State<PageColorSelect> {
             child: ColorBox(color: HSVColor.fromColor(_color)),
           ),
           TextButton(
-              onPressed: () {
-                showSelectColorPicker(context, color: Colors.green);
-              },
-              child: Text("选择颜色"))
+            onPressed: () async {
+              var color = await showSelectColorPicker(context, color: Colors.green);
+              if (null != _color) {
+                setState(() {
+                  _color = color;
+                });
+              }
+            },
+            child: Text("选择颜色"),
+          )
         ],
       ),
     );

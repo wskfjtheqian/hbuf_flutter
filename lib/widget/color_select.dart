@@ -676,7 +676,7 @@ class _ColorBrightSliderRender extends RenderProxyBox {
 }
 
 class ColorSelect extends StatefulWidget {
-  final Color color;
+  final HSVColor color;
 
   final double spacing;
 
@@ -704,11 +704,11 @@ class ColorSelect extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(ColorProperty('color', color));
     properties.add(DoubleProperty('spacing', spacing));
     properties.add(DoubleProperty('backBoxSize', backBoxSize));
     properties.add(ColorProperty('backBoxColor0', backBoxColor0));
     properties.add(ColorProperty('backBoxColor1', backBoxColor1));
+    properties.add(DiagnosticsProperty<HSVColor>('color', color));
   }
 }
 
@@ -744,7 +744,7 @@ class _ColorSelectState extends State<ColorSelect> {
                 child: SizedBox(
                   width: 26,
                   child: ColorLinearSlider(
-                    value: HSVColor.fromColor(widget.color),
+                    value: widget.color,
                     onChanged: (HSVColor color) {
                       setState(() {
                         _brightColor = color;
@@ -849,7 +849,7 @@ class _SelectColorPickerState extends State<SelectColorPicker> {
               width: 260,
               height: 260,
               child: ColorSelect(
-                color: widget.color,
+                color: HSVColor.fromColor(widget.color),
                 changed: (HSVColor color) {
                   setState(() {
                     _color = color.toColor();
