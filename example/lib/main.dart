@@ -3,6 +3,7 @@ import 'package:example/page/page_color_select.dart';
 import 'package:example/page/page_from.dart';
 import 'package:example/page/page_menu_bar.dart';
 import 'package:example/page/page_particle_1.dart';
+import 'package:example/page/page_rich_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -67,7 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
               }));
             },
             child: const Text("Particle1"),
-          ),TextButton(
+          ),
+          TextButton(
             onPressed: () {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
                 return const PageColorSelect();
@@ -77,9 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           TextButton(
             onPressed: () {
-
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageRichText();
+              }));
             },
-            child: const Text("Particle1"),
+            child: const Text("Rich Text"),
           ),
         ],
       ),
