@@ -33,9 +33,8 @@ class RImg extends R {
 }
 
 class RA extends RElement {
-  String src = "";
+  String? href;
 }
-
 
 class RichTextEditingController extends TextEditingController {
   RBody body = RBody();
@@ -47,20 +46,22 @@ class RichTextEditingController extends TextEditingController {
     text = document.body?.text ?? "";
   }
 
-  Iterable<R> toR(List<h.Node> list) sync*{
+  Iterable<R> toR(List<h.Node> list) sync* {
     for (var item in list) {
       if (item is h.Text) {
         yield R()..len = item.text.length;
       } else if (item is h.Element) {
         if ("a" == item.localName) {
-          yield RA()..node = toR(list);
+          yield RA()
+            ..node = toR(list).toList()
+            ..href = item.attributes["href"];
         } else if ("img" == item.localName) {
           yield img(item);
         }
       }
     }
   }
-  
+
   TextStyle a_style = const TextStyle(color: Colors.indigoAccent);
 
   // @override
