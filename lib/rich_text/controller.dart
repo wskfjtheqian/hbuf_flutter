@@ -1,43 +1,83 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as h;
 import 'package:html/parser.dart' as h;
 
+class RLenReadOnly {}
+
 class RNode {
   RNode? parent;
+
   int len = 0;
+
   int select = 0;
+
+  String get tag => "";
 }
 
-class RElement extends RNode {
-  List<RNode> node = [];
+mixin RColor implements RNode {
+  Color? color;
+}
+
+class RElement extends RNode implements RLenReadOnly {
+  List<RNode> nodes = [];
 
   @override
   int get len {
     int len = 0;
-    for (var item in node) {
+    for (var item in nodes) {
       len += item.len;
     }
     return len;
   }
 }
 
-class RBody extends RElement {}
+class RBody extends RElement with RColor {
+  @override
+  String toString() {
+    return "body[len=$len;select=$select]";
+  }
 
-class RP extends RElement {}
+  String get tag => "body";
+}
 
-class RText extends RNode {}
+class RP extends RElement with RColor {
+  String get tag => "p";
+}
 
-class RImg extends RNode {
+class RText extends RNode {
+  @override
+  String toString() {
+    return "t[len=$len;select=$select]";
+  }
+}
+
+class RImg extends RNode implements RLenReadOnly {
   String? src;
 
   double? width;
 
   double? height;
+
+  @override
+  String toString() {
+    return "img[len=$len;select=$select]";
+  }
+
+  String get tag => "img";
 }
 
 class RA extends RElement {
   String? href;
+
+  @override
+  String toString() {
+    return "a[len=$len;select=$select]";
+  }
+
+  String get tag => "a";
 }
 
 class T {
@@ -48,12 +88,16 @@ class T {
 class RichTextEditingController extends TextEditingController {
   RBody body = RBody();
 
+  List<RNode> _select = [];
+
+  List<RNode> get select => _select;
+
   RichTextEditingController({super.text});
 
   RichTextEditingController.html({required String html}) {
     var document = h.parse(html);
     var t = T();
-    body.node = toR(body, document.body?.nodes ?? [], t).toList();
+    body.nodes = toR(body, document.body?.nodes ?? [], t).toList();
     body.len = t.len;
     text = t.text;
   }
@@ -70,7 +114,7 @@ class RichTextEditingController extends TextEditingController {
         if ("a" == item.localName) {
           var r = RA();
           r.parent = parent;
-          r.node = toR(r, item.nodes, text).toList();
+          r.nodes = toR(r, item.nodes, text).toList();
           r.href = item.attributes["href"];
           yield r;
         } else if ("img" == item.localName) {
@@ -93,9 +137,12 @@ class RichTextEditingController extends TextEditingController {
   TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
     assert(!value.composing.isValid || !withComposing || value.isComposingRangeValid);
     T t = T()..text = value.text;
+    if (null != body.color) {
+      style?.copyWith(color: body.color);
+    }
     return TextSpan(
       style: style,
-      children: _toTextSpan(body.node, t).toList(),
+      children: _toTextSpan(body.nodes, t).toList(),
     );
   }
 
@@ -106,12 +153,11 @@ class RichTextEditingController extends TextEditingController {
       } else if (item is RA) {
         yield TextSpan(
           style: a_style,
-          children: _toTextSpan(item.node, t).toList(),
+          children: _toTextSpan(item.nodes, t).toList(),
         );
       } else if (item is RImg) {
         t.len += 1;
         yield WidgetSpan(
-          alignment: PlaceholderAlignment.middle,
           child: Image.network(
             item.src ?? "",
             width: item.width,
@@ -136,60 +182,90 @@ class RichTextEditingController extends TextEditingController {
   set value(TextEditingValue newValue) {
     print(value);
     print(newValue);
-    if (value.text != newValue.text) {
-      int length = newValue.text.length - value.text.length;
+    if (value.text != newValue.text || selection.baseOffset != newValue.selection.baseOffset || selection.extentOffset != newValue.selection.extentOffset) {
       T t = T();
       List<RNode> out = [];
-      selectNode(body.node, selection.baseOffset, selection.extentOffset, t, out);
-      if (0 < length) {
-        if (out.isNotEmpty && out[0] is! RImg) {
-          out[0].len += length;
-        } else {
-          body.node.add(RText()..len = length);
-        }
-      } else if (0 > length) {
+      var base = min(selection.baseOffset, selection.extentOffset);
+      var extent = max(selection.baseOffset, selection.extentOffset);
+      selectNode(body, base, extent, t, out);
+      _select = out;
+
+      if (value.text != newValue.text) {
+        var rm = <RNode>[];
         for (var item in out) {
           item.len -= item.select;
-          deleteNode(item);
+          deleteNode(item, rm);
+        }
+        for (var item in rm) {
+          out.remove(item);
+        }
+        var length = newValue.selection.baseOffset - base;
+        var node = out.isEmpty ? body : out[0];
+        if (length > 0) {
+          if (node is! RLenReadOnly) {
+            node.len += length;
+          } else {
+            addNode(node, RText()..len = length);
+          }
+        } else {
+          node.len += length;
+          deleteNode(node, rm);
         }
       }
     }
     super.value = newValue;
   }
 
-  bool selectNode(List<RNode> list, int base, int extent, T t, List<RNode> out) {
-    for (var item in list) {
-      if (item is RElement) {
-        if (selectNode(item.node, base, extent, t, out)) {
+  void addNode(RNode node, RNode sub) {
+    if (node is RElement) {
+      node.nodes.add(sub);
+    } else if (null != node.parent) {
+      addNode(node.parent!, sub);
+    }
+  }
+
+  bool selectNode(RNode node, int base, int extent, T t, List<RNode> out) {
+    if (node is RElement) {
+      for (var item in node.nodes) {
+        if (selectNode(item, base, extent, t, out)) {
           return true;
         }
-      } else {
-        if (base >= t.len && base <= t.len + item.len) {
-          out.add(item);
-          t.len += item.len;
-          item.select = t.len - base;
-          return t.len > extent;
-        } else if (base <= t.len && extent >= t.len + item.len) {
-          out.add(item);
-          t.len += item.len;
-          item.select = item.len;
-          return t.len > extent;
-        } else if (extent >= t.len && extent <= t.len + item.len) {
-          out.add(item);
-          item.select = t.len - extent;
-          t.len += item.len;
-          return t.len > extent;
-        }
-        t.len += item.len;
       }
+    } else {
+      if (base > t.len && base <= t.len + node.len) {
+        out.add(node);
+        t.len += node.len;
+        node.select = t.len - base;
+        return t.len > extent;
+      } else if (base <= t.len && extent >= t.len + node.len) {
+        out.add(node);
+        t.len += node.len;
+        node.select = node.len;
+        return t.len > extent;
+      } else if (extent > t.len && extent <= t.len + node.len) {
+        out.add(node);
+        node.select = extent - t.len;
+        t.len += node.len;
+        return t.len > extent;
+      }
+      t.len += node.len;
     }
     return false;
   }
 
-  void deleteNode(RNode out) {
+  void deleteNode(RNode out, List<RNode> rm) {
     if (0 >= out.len && null != out.parent && out.parent is RElement) {
-      (out.parent as RElement).node.remove(out);
-      deleteNode(out.parent!);
+      (out.parent as RElement).nodes.remove(out);
+      rm.add(out);
+      deleteNode(out.parent!, rm);
+    }
+  }
+
+  void setColor({required Color color}) {
+    for (var item in _select) {
+      if (item is RColor) {
+        item.color = color;
+      }
     }
   }
 }
