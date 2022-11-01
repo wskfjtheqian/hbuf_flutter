@@ -44,9 +44,14 @@ class _RichTextFieldState extends State<RichTextField> {
             ),
           ),
           child: Wrap(
-            children: [OutlinedButton(onPressed: () {
-              _controller.setColor(color:Colors.indigoAccent);
-            }, child: Icon(Icons.add))],
+            children: [
+              OutlinedButton(
+                onPressed: () {
+                  _controller.setColor(color: Colors.indigoAccent);
+                },
+                child: const Icon(Icons.add),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -55,7 +60,7 @@ class _RichTextFieldState extends State<RichTextField> {
             maxLines: 100,
           ),
         ),
-        Text("data")
+        const Text("data")
       ],
     );
   }
