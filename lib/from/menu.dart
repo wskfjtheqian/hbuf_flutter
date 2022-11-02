@@ -3,7 +3,7 @@ import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 typedef OnMenuFormBuild<T> = Widget Function(BuildContext context, MenuFormBuild<T> field);
 
-OnMenuFormBuild onMenuFormBuild = <T>(BuildContext context, MenuFormBuild<T> field) {
+Widget onMenuFormBuild<T>(BuildContext context, MenuFormBuild<T> field) {
   return AutoLayout(
     minHeight: field.minHeight,
     sizes: field.widthSizes,
@@ -46,7 +46,7 @@ OnMenuFormBuild onMenuFormBuild = <T>(BuildContext context, MenuFormBuild<T> fie
       ),
     ),
   );
-};
+}
 
 class MenuFormBuild<T> {
   Key? key;
@@ -83,7 +83,7 @@ class MenuFormBuild<T> {
   int widthCount = 24;
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
-  OnMenuFormBuild<T> onBuild = onMenuFormBuild;
+  OnMenuFormBuild<T> onBuild = onMenuFormBuild<T>;
 
   Widget build(BuildContext context) {
     return onBuild(context, this);

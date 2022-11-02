@@ -4,9 +4,9 @@ import 'package:hbuf_flutter/widget/auto_layout.dart';
 typedef OnImageFormFieldAdd = void Function(BuildContext context, _OnImageFormField field, double outWidth, double outHeight);
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<NetworkImage>? list, NetworkImage item);
 
-typedef OnImageFormBuild<T> = Widget Function(BuildContext context, ImageFormBuild field);
+typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild field);
 
-OnImageFormBuild onImageFormBuild = (BuildContext context, ImageFormBuild field) {
+Widget onImageFormBuild(BuildContext context, ImageFormBuild field) {
   return AutoLayout(
     minHeight: field.minHeight,
     sizes: field.widthSizes,
@@ -37,7 +37,7 @@ OnImageFormBuild onImageFormBuild = (BuildContext context, ImageFormBuild field)
       ),
     ),
   );
-};
+}
 
 OnImageFormFieldAdd? onImageFormFieldAdd;
 OnImageFormFieldTap? onImageFormFieldTap;
