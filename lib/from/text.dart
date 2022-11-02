@@ -2,6 +2,76 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 
+typedef OnTextFormBuild = Widget Function(BuildContext context, TextFormBuild field);
+
+OnTextFormBuild onTextFormBuild = (BuildContext context, TextFormBuild field) {
+  return AutoLayout(
+    minHeight: field.minHeight,
+    sizes: field.widthSizes,
+    count: field.widthCount,
+    child: Padding(
+      padding: field.padding,
+      child: Theme(
+        data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+        child: TextFormField(
+          key: field.key,
+          controller: field.controller,
+          initialValue: field.initialValue,
+          focusNode: field.focusNode,
+          decoration: field.decoration,
+          keyboardType: field.keyboardType,
+          textCapitalization: field.textCapitalization,
+          textInputAction: field.textInputAction,
+          style: field.style,
+          strutStyle: field.strutStyle,
+          textDirection: field.textDirection,
+          textAlign: field.textAlign,
+          textAlignVertical: field.textAlignVertical,
+          autofocus: field.autofocus,
+          readOnly: field.readOnly,
+          toolbarOptions: field.toolbarOptions,
+          showCursor: field.showCursor,
+          obscuringCharacter: field.obscuringCharacter,
+          obscureText: field.obscureText,
+          autocorrect: field.autocorrect,
+          smartDashesType: field.smartDashesType,
+          smartQuotesType: field.smartQuotesType,
+          enableSuggestions: field.enableSuggestions,
+          maxLengthEnforcement: field.maxLengthEnforcement,
+          maxLines: field.maxLines,
+          minLines: field.minLines,
+          expands: field.expands,
+          maxLength: field.maxLength,
+          onChanged: field.onChanged,
+          onTap: field.onTap,
+          onEditingComplete: field.onEditingComplete,
+          onFieldSubmitted: field.onFieldSubmitted,
+          onSaved: field.onSaved,
+          validator: field.validator,
+          inputFormatters: field.inputFormatters,
+          enabled: field.enabled,
+          cursorWidth: field.cursorWidth,
+          cursorHeight: field.cursorHeight,
+          cursorRadius: field.cursorRadius,
+          cursorColor: field.cursorColor,
+          keyboardAppearance: field.keyboardAppearance,
+          scrollPadding: field.scrollPadding,
+          enableInteractiveSelection: field.enableInteractiveSelection,
+          selectionControls: field.selectionControls,
+          buildCounter: field.buildCounter,
+          scrollPhysics: field.scrollPhysics,
+          autofillHints: field.autofillHints,
+          autovalidateMode: field.autovalidateMode,
+          scrollController: field.scrollController,
+          restorationId: field.restorationId,
+          enableIMEPersonalizedLearning: field.enableIMEPersonalizedLearning,
+          mouseCursor: field.mouseCursor,
+        ),
+      ),
+    ),
+  );
+};
+
 class TextFormBuild {
   Key? key;
   TextEditingController? controller;
@@ -59,72 +129,9 @@ class TextFormBuild {
   int widthCount = 24;
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
+  OnTextFormBuild onBuild = onTextFormBuild;
 
   Widget build(BuildContext context) {
-    return AutoLayout(
-      minHeight: minHeight,
-      sizes: widthSizes,
-      count: widthCount,
-      child: Padding(
-        padding: padding,
-        child: Theme(
-          data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
-          child: TextFormField(
-            key: key,
-            controller: controller,
-            initialValue: initialValue,
-            focusNode: focusNode,
-            decoration: decoration,
-            keyboardType: keyboardType,
-            textCapitalization: textCapitalization,
-            textInputAction: textInputAction,
-            style: style,
-            strutStyle: strutStyle,
-            textDirection: textDirection,
-            textAlign: textAlign,
-            textAlignVertical: textAlignVertical,
-            autofocus: autofocus,
-            readOnly: readOnly,
-            toolbarOptions: toolbarOptions,
-            showCursor: showCursor,
-            obscuringCharacter: obscuringCharacter,
-            obscureText: obscureText,
-            autocorrect: autocorrect,
-            smartDashesType: smartDashesType,
-            smartQuotesType: smartQuotesType,
-            enableSuggestions: enableSuggestions,
-            maxLengthEnforcement: maxLengthEnforcement,
-            maxLines: maxLines,
-            minLines: minLines,
-            expands: expands,
-            maxLength: maxLength,
-            onChanged: onChanged,
-            onTap: onTap,
-            onEditingComplete: onEditingComplete,
-            onFieldSubmitted: onFieldSubmitted,
-            onSaved: onSaved,
-            validator: validator,
-            inputFormatters: inputFormatters,
-            enabled: enabled,
-            cursorWidth: cursorWidth,
-            cursorHeight: cursorHeight,
-            cursorRadius: cursorRadius,
-            cursorColor: cursorColor,
-            keyboardAppearance: keyboardAppearance,
-            scrollPadding: scrollPadding,
-            enableInteractiveSelection: enableInteractiveSelection,
-            selectionControls: selectionControls,
-            buildCounter: buildCounter,
-            scrollPhysics: scrollPhysics,
-            autofillHints: autofillHints,
-            autovalidateMode: autovalidateMode,
-            scrollController: scrollController,
-            restorationId: restorationId,
-            enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
-            mouseCursor: mouseCursor,
-          ),
-        ),
-      ),
-    );
+    return onBuild(context, this);
   }
 }

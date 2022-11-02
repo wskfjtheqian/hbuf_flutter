@@ -4,6 +4,41 @@ import 'package:hbuf_flutter/widget/auto_layout.dart';
 typedef OnImageFormFieldAdd = void Function(BuildContext context, _OnImageFormField field, double outWidth, double outHeight);
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<NetworkImage>? list, NetworkImage item);
 
+typedef OnImageFormBuild<T> = Widget Function(BuildContext context, ImageFormBuild field);
+
+OnImageFormBuild onImageFormBuild = (BuildContext context, ImageFormBuild field) {
+  return AutoLayout(
+    minHeight: field.minHeight,
+    sizes: field.widthSizes,
+    count: field.widthCount,
+    child: Padding(
+      padding: field.padding,
+      child: Theme(
+        data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+        child: ImageFormField(
+          key: field.key,
+          onChanged: field.onChanged ?? (val) {},
+          focusNode: field.focusNode,
+          decoration: field.decoration,
+          onSaved: field.onSaved,
+          validator: field.validator,
+          autovalidateMode: field.autovalidateMode,
+          maxCount: field.maxCount,
+          onAdd: field.onAdd,
+          onTap: field.onTap,
+          initialValue: field.initialValue,
+          width: field.width,
+          height: field.height,
+          outWidth: field.outWidth,
+          outHeight: field.outHeight,
+          enabled: field.enabled,
+          readOnly: field.readOnly,
+        ),
+      ),
+    ),
+  );
+};
+
 OnImageFormFieldAdd? onImageFormFieldAdd;
 OnImageFormFieldTap? onImageFormFieldTap;
 
@@ -293,37 +328,9 @@ class ImageFormBuild {
   int widthCount = 24;
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
+  OnImageFormBuild onBuild = onImageFormBuild;
 
   Widget build(BuildContext context) {
-    return AutoLayout(
-      minHeight: minHeight,
-      sizes: widthSizes,
-      count: widthCount,
-      child: Padding(
-        padding: padding,
-        child: Theme(
-          data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
-          child: ImageFormField(
-            key: key,
-            onChanged: onChanged ?? (val) {},
-            focusNode: focusNode,
-            decoration: decoration,
-            onSaved: onSaved,
-            validator: validator,
-            autovalidateMode: autovalidateMode,
-            maxCount: maxCount,
-            onAdd: onAdd,
-            onTap: onTap,
-            initialValue: initialValue,
-            width: width,
-            height: height,
-            outWidth: outWidth,
-            outHeight: outHeight,
-            enabled: enabled,
-            readOnly: readOnly,
-          ),
-        ),
-      ),
-    );
+    return onBuild(context, this);
   }
 }
