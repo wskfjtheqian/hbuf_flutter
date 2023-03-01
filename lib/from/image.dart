@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/auto_layout.dart';
 
-typedef OnImageFormFieldAdd = void Function(BuildContext context, _OnImageFormField field, double outWidth, double outHeight);
+typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, double outWidth, double outHeight);
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<NetworkImage>? list, NetworkImage item);
 
 typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild field);
@@ -42,12 +42,12 @@ Widget onImageFormBuild(BuildContext context, ImageFormBuild field) {
 OnImageFormFieldAdd? onImageFormFieldAdd;
 OnImageFormFieldTap? onImageFormFieldTap;
 
-class _OnImageFormField {
+class OnImageFormField {
   final void Function(List<NetworkImage>? value)? onChangedHandler;
 
   _ImageFormFieldState state;
 
-  _OnImageFormField(this.state, this.onChangedHandler);
+  OnImageFormField(this.state, this.onChangedHandler);
 
   List<NetworkImage>? get value => state.value;
 
@@ -122,7 +122,7 @@ class ImageFormField extends FormField<List<NetworkImage>> {
                 fit: fit,
                 readOnly: readOnly,
                 onAdd: (context) {
-                  (onAdd ?? onImageFormFieldAdd)?.call(context, _OnImageFormField(field, onChanged), outWidth, outHeight);
+                  (onAdd ?? onImageFormFieldAdd)?.call(context, OnImageFormField(field, onChanged), outWidth, outHeight);
                 },
                 onTap: (context, list, item) {
                   (onTap ?? onImageFormFieldTap)?.call(context, list, item);

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/from/image.dart';
+import 'package:hbuf_flutter/from/file.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 
 class PageFrom extends StatefulWidget {
@@ -25,6 +26,10 @@ class _PageFromState extends State<PageFrom> {
               outWidth: 300,
               outHeight: 300,
             ),
+            FileFormField(
+              onAdd: (context, field) async {},
+            ),
+
             DateTimeFormField(),
           ],
         ),
