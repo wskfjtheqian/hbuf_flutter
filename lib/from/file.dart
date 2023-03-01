@@ -202,7 +202,7 @@ class _FileFormFieldState extends State<FileFormField> {
 
   @override
   void initState() {
-    _controller ??= (_back = TextEditingController());
+    _controller ??= (_back = TextEditingController(text: widget.initialValue));
     super.initState();
   }
 
@@ -213,7 +213,7 @@ class _FileFormFieldState extends State<FileFormField> {
         _controller = widget.controller;
       } else {
         _back?.dispose();
-        _controller = (_back = TextEditingController());
+        _controller = (_back = TextEditingController(text: _controller?.text));
       }
     }
     super.didUpdateWidget(oldWidget);
@@ -230,17 +230,8 @@ class _FileFormFieldState extends State<FileFormField> {
     return TextFormField(
       key: widget.key,
       controller: _controller,
-      initialValue: widget.initialValue,
       focusNode: widget.focusNode,
-      decoration: widget.decoration ??
-          InputDecoration(
-            suffix: TextButton(
-              onPressed: () {
-                (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!);
-              },
-              child: Text(widget.buttonText ?? onFileFormFieldButtonText(context)),
-            ),
-          ),
+      decoration: widget.decoration?.copyWith(suffix: getSuffix(context)) ?? InputDecoration(suffix: getSuffix(context)),
       keyboardType: widget.keyboardType,
       textCapitalization: widget.textCapitalization,
       textInputAction: widget.textInputAction,
@@ -288,6 +279,15 @@ class _FileFormFieldState extends State<FileFormField> {
       enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
       mouseCursor: widget.mouseCursor,
       contextMenuBuilder: widget.contextMenuBuilder,
+    );
+  }
+
+  TextButton getSuffix(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!);
+      },
+      child: Text(widget.buttonText ?? onFileFormFieldButtonText(context)),
     );
   }
 }
