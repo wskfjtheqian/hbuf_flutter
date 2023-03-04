@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/auto_layout.dart';
 
-typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, double outWidth, double outHeight);
+typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, double outWidth, double outHeight, {List<String>? extensions});
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<NetworkImage>? list, NetworkImage item);
 
 typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild field);
@@ -80,6 +80,8 @@ class ImageFormField extends FormField<List<NetworkImage>> {
 
   final bool readOnly;
 
+  final List<String>? extensions;
+
   ImageFormField({
     Key? key,
     FormFieldSetter<List<NetworkImage>>? onSaved,
@@ -100,6 +102,7 @@ class ImageFormField extends FormField<List<NetworkImage>> {
     required this.outWidth,
     required this.outHeight,
     this.readOnly = false,
+    this.extensions,
   }) : super(
           key: key,
           restorationId: restorationId,
@@ -122,7 +125,7 @@ class ImageFormField extends FormField<List<NetworkImage>> {
                 fit: fit,
                 readOnly: readOnly,
                 onAdd: (context) {
-                  (onAdd ?? onImageFormFieldAdd)?.call(context, OnImageFormField(field, onChanged), outWidth, outHeight);
+                  (onAdd ?? onImageFormFieldAdd)?.call(context, OnImageFormField(field, onChanged), outWidth, outHeight, extensions: extensions);
                 },
                 onTap: (context, list, item) {
                   (onTap ?? onImageFormFieldTap)?.call(context, list, item);
@@ -329,6 +332,7 @@ class ImageFormBuild {
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
   OnImageFormBuild onBuild = onImageFormBuild;
+  List<String>? extensions;
 
   Widget build(BuildContext context) {
     return onBuild(context, this);

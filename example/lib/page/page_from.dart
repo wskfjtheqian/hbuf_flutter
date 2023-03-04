@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/from/image.dart';
-import 'package:hbuf_flutter/from/file.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 
 class PageFrom extends StatefulWidget {
@@ -16,20 +13,21 @@ class _PageFromState extends State<PageFrom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("From"),),
+      appBar: AppBar(
+        title: const Text("From"),
+      ),
       body: Form(
         child: Column(
           children: [
             ImageFormField(
               maxCount: 4,
-              onAdd: (context, field, width, height) async {},
+              onAdd: (context, field, width, height, {extensions}) async {},
               outWidth: 300,
               outHeight: 300,
             ),
             FileFormField(
-              onAdd: (context, field) async {},
+              onAdd: (context, field, {extensions}) async {},
             ),
-
             DateTimeFormField(),
           ],
         ),

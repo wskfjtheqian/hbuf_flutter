@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hbuf_flutter/widget/auto_layout.dart';
 
-typedef OnFileFormFieldAdd = void Function(BuildContext context, TextEditingController controller);
+typedef OnFileFormFieldAdd = void Function(BuildContext context, TextEditingController controller, {List<String>? extensions});
 typedef OnFileFormBuild = Widget Function(BuildContext context, FileFormBuild field);
 
 Widget onFileFormBuild(BuildContext context, FileFormBuild field) {
@@ -66,6 +66,7 @@ Widget onFileFormBuild(BuildContext context, FileFormBuild field) {
           restorationId: field.restorationId,
           enableIMEPersonalizedLearning: field.enableIMEPersonalizedLearning,
           mouseCursor: field.mouseCursor,
+          extensions: field.extensions,
         ),
       ),
     ),
@@ -73,66 +74,68 @@ Widget onFileFormBuild(BuildContext context, FileFormBuild field) {
 }
 
 class FileFormField extends StatefulWidget {
-  TextEditingController? controller;
-  String? initialValue;
-  FocusNode? focusNode;
-  InputDecoration? decoration;
-  OnFileFormFieldAdd? onAdd;
-  TextInputType? keyboardType;
-  TextCapitalization textCapitalization;
-  TextInputAction? textInputAction;
-  TextStyle? style;
-  StrutStyle? strutStyle;
-  TextDirection? textDirection;
-  TextAlign textAlign;
-  TextAlignVertical? textAlignVertical;
-  bool autofocus;
-  bool readOnly;
-  bool? showCursor;
-  String obscuringCharacter;
-  bool obscureText;
-  bool autocorrect;
-  SmartDashesType? smartDashesType;
-  SmartQuotesType? smartQuotesType;
-  bool enableSuggestions;
-  MaxLengthEnforcement? maxLengthEnforcement;
-  int? maxLines = 1;
-  int? minLines;
-  bool expands;
-  int? maxLength;
-  ValueChanged<String>? onChanged;
-  GestureTapCallback? onTap;
-  VoidCallback? onEditingComplete;
-  ValueChanged<String>? onFieldSubmitted;
-  FormFieldSetter<String>? onSaved;
-  FormFieldValidator<String>? validator;
-  List<TextInputFormatter>? inputFormatters;
-  bool? enabled;
-  double cursorWidth;
-  double? cursorHeight;
-  Radius? cursorRadius;
-  Color? cursorColor;
-  Brightness? keyboardAppearance;
-  EdgeInsets scrollPadding;
-  bool? enableInteractiveSelection;
-  TextSelectionControls? selectionControls;
-  InputCounterWidgetBuilder? buildCounter;
-  ScrollPhysics? scrollPhysics;
-  Iterable<String>? autofillHints;
-  AutovalidateMode? autovalidateMode;
-  ScrollController? scrollController;
-  String? restorationId;
-  bool enableIMEPersonalizedLearning;
-  MouseCursor? mouseCursor;
-  double minHeight = 76;
-  int widthCount = 24;
-  Map<double, int> widthSizes = {};
-  EditableTextContextMenuBuilder? contextMenuBuilder = _defaultContextMenuBuilder;
-  String? buttonText;
+  final TextEditingController? controller;
+  final String? initialValue;
+  final FocusNode? focusNode;
+  final InputDecoration? decoration;
+  final OnFileFormFieldAdd? onAdd;
+  final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
+  final TextInputAction? textInputAction;
+  final TextStyle? style;
+  final StrutStyle? strutStyle;
+  final TextDirection? textDirection;
+  final TextAlign textAlign;
+  final TextAlignVertical? textAlignVertical;
+  final bool autofocus;
+  final bool readOnly;
+  final bool? showCursor;
+  final String obscuringCharacter;
+  final bool obscureText;
+  final bool autocorrect;
+  final SmartDashesType? smartDashesType;
+  final SmartQuotesType? smartQuotesType;
+  final bool enableSuggestions;
+  final MaxLengthEnforcement? maxLengthEnforcement;
+  final int? maxLines;
+  final int? minLines;
+  final bool expands;
+  final int? maxLength;
+  final ValueChanged<String>? onChanged;
+  final GestureTapCallback? onTap;
+  final VoidCallback? onEditingComplete;
+  final ValueChanged<String>? onFieldSubmitted;
+  final FormFieldSetter<String>? onSaved;
+  final FormFieldValidator<String>? validator;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool? enabled;
+  final double cursorWidth;
+  final double? cursorHeight;
+  final Radius? cursorRadius;
+  final Color? cursorColor;
+  final Brightness? keyboardAppearance;
+  final EdgeInsets scrollPadding;
+  final bool? enableInteractiveSelection;
+  final TextSelectionControls? selectionControls;
+  final InputCounterWidgetBuilder? buildCounter;
+  final ScrollPhysics? scrollPhysics;
+  final Iterable<String>? autofillHints;
+  final AutovalidateMode? autovalidateMode;
+  final ScrollController? scrollController;
+  final String? restorationId;
+  final bool enableIMEPersonalizedLearning;
+  final MouseCursor? mouseCursor;
+  final double minHeight = 76;
+  final int widthCount = 24;
+  final Map<double, int> widthSizes = {};
+  final EditableTextContextMenuBuilder? contextMenuBuilder;
+
+  final String? buttonText;
+  final List<String>? extensions;
 
   FileFormField({
     super.key,
-    controller,
+    this.controller,
     this.initialValue,
     this.onAdd,
     this.focusNode,
@@ -155,7 +158,7 @@ class FileFormField extends StatefulWidget {
     this.smartQuotesType,
     this.enableSuggestions = true,
     this.maxLengthEnforcement,
-    this.maxLines,
+    this.maxLines = 1,
     this.minLines,
     this.expands = false,
     this.maxLength,
@@ -183,7 +186,9 @@ class FileFormField extends StatefulWidget {
     this.restorationId,
     this.enableIMEPersonalizedLearning = true,
     this.mouseCursor,
-    this.contextMenuBuilder,
+    this.contextMenuBuilder = _defaultContextMenuBuilder,
+    this.extensions,
+    this.buttonText,
   });
 
   @override
@@ -285,7 +290,7 @@ class _FileFormFieldState extends State<FileFormField> {
   TextButton getSuffix(BuildContext context) {
     return TextButton(
       onPressed: () {
-        (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!);
+        (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!, extensions: widget.extensions);
       },
       child: Text(widget.buttonText ?? onFileFormFieldButtonText(context)),
     );
@@ -357,6 +362,7 @@ class FileFormBuild {
   EdgeInsetsGeometry padding = const EdgeInsets.only();
   OnFileFormBuild onBuild = onFileFormBuild;
   EditableTextContextMenuBuilder? contextMenuBuilder = _defaultContextMenuBuilder;
+  List<String>? extensions;
 
   Widget build(BuildContext context) {
     return onBuild(context, this);
