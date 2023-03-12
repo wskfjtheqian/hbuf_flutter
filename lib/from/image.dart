@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, double outWidth, double outHeight, {List<String>? extensions});
-typedef OnImageFormFieldTap = void Function(BuildContext context, List<NetworkImage>? list, NetworkImage item);
+typedef OnImageFormFieldTap = void Function(BuildContext context, List<ImageFormImage>? list, ImageFormImage item);
 
 typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild field);
 
@@ -43,15 +43,15 @@ OnImageFormFieldAdd? onImageFormFieldAdd;
 OnImageFormFieldTap? onImageFormFieldTap;
 
 class OnImageFormField {
-  final void Function(List<NetworkImage>? value)? onChangedHandler;
+  final void Function(List<ImageFormImage>? value)? onChangedHandler;
 
   _ImageFormFieldState state;
 
   OnImageFormField(this.state, this.onChangedHandler);
 
-  List<NetworkImage>? get value => state.value;
+  List<ImageFormImage>? get value => state.value;
 
-  void didChange(List<NetworkImage>? val) {
+  void didChange(List<ImageFormImage>? val) {
     if (null != onChangedHandler) {
       onChangedHandler?.call(val);
     }
@@ -59,7 +59,21 @@ class OnImageFormField {
   }
 }
 
-class ImageFormField extends FormField<List<NetworkImage>> {
+class ImageFormImage {
+  ImageProvider? _provider;
+
+  final String url;
+
+  ImageFormImage(this.url, {ImageProvider? provider}) {
+    _provider = provider;
+  }
+
+  ImageProvider get provider {
+    return _provider ?? NetworkImage(url);
+  }
+}
+
+class ImageFormField extends FormField<List<ImageFormImage>> {
   final FocusNode? focusNode;
 
   final double width;
@@ -84,10 +98,10 @@ class ImageFormField extends FormField<List<NetworkImage>> {
 
   ImageFormField({
     Key? key,
-    FormFieldSetter<List<NetworkImage>>? onSaved,
-    FormFieldSetter<List<NetworkImage>>? onChanged,
-    FormFieldValidator<List<NetworkImage>>? validator,
-    List<NetworkImage>? initialValue,
+    FormFieldSetter<List<ImageFormImage>>? onSaved,
+    FormFieldSetter<List<ImageFormImage>>? onChanged,
+    FormFieldValidator<List<ImageFormImage>>? validator,
+    List<ImageFormImage>? initialValue,
     bool? enabled = true,
     AutovalidateMode? autovalidateMode,
     String? restorationId,
@@ -111,7 +125,7 @@ class ImageFormField extends FormField<List<NetworkImage>> {
           validator: validator,
           enabled: enabled ?? decoration?.enabled ?? true,
           autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
-          builder: (FormFieldState<List<NetworkImage>> field) {
+          builder: (FormFieldState<List<ImageFormImage>> field) {
             final _ImageFormFieldState state = field as _ImageFormFieldState;
             final InputDecoration effectiveDecoration = (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
 
@@ -141,10 +155,10 @@ class ImageFormField extends FormField<List<NetworkImage>> {
         );
 
   @override
-  FormFieldState<List<NetworkImage>> createState() => _ImageFormFieldState();
+  FormFieldState<List<ImageFormImage>> createState() => _ImageFormFieldState();
 }
 
-class _ImageFormFieldState extends FormFieldState<List<NetworkImage>> {
+class _ImageFormFieldState extends FormFieldState<List<ImageFormImage>> {
   ImageFormField get _formField => super.widget as ImageFormField;
 
   FocusNode get focusNode => _formField.focusNode ?? FocusNode();
@@ -153,7 +167,7 @@ class _ImageFormFieldState extends FormFieldState<List<NetworkImage>> {
 class _ImageField extends StatefulWidget {
   final InputDecoration decoration;
 
-  final List<NetworkImage> value;
+  final List<ImageFormImage> value;
 
   final FocusNode? focusNode;
 
@@ -250,7 +264,7 @@ class _ImageFieldState extends State<_ImageField> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(3),
                           child: Image(
-                            image: item,
+                            image: item.provider,
                             fit: widget.fit,
                             width: widget.width,
                             height: widget.height,
@@ -294,10 +308,10 @@ class _ImageFieldState extends State<_ImageField> {
 
 class ImageFormBuild {
   Key? key;
-  List<NetworkImage>? initialValue;
+  List<ImageFormImage>? initialValue;
   Widget? hint;
   Widget? disabledHint;
-  ValueChanged<List<NetworkImage>?>? onChanged;
+  ValueChanged<List<ImageFormImage>?>? onChanged;
   int elevation = 8;
   TextStyle? style;
   Widget? icon;
@@ -312,8 +326,8 @@ class ImageFormBuild {
   bool autofocus = false;
   Color? dropdownColor;
   InputDecoration? decoration;
-  FormFieldSetter<List<NetworkImage>>? onSaved;
-  FormFieldValidator<List<NetworkImage>>? validator;
+  FormFieldSetter<List<ImageFormImage>>? onSaved;
+  FormFieldValidator<List<ImageFormImage>>? validator;
   AutovalidateMode? autovalidateMode;
   double width = 80;
   double height = 80;

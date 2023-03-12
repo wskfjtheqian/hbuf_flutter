@@ -62,7 +62,10 @@ class _PaginationState extends State<Pagination> {
       ),
       child: Row(
         children: <Widget>[
-          Text("共 ${widget.total} 条  "),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("共 ${widget.total} 条  "),
+          ),
           _buildPopupMenu(context),
           ..._buildButton(context),
         ],
