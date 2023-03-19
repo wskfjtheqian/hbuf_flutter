@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -15,9 +14,7 @@ class MenuBarItem<T> extends PopupMenuEntry<T> {
     this.textStyle,
     this.mouseCursor,
     required this.child,
-  })
-      : assert(enabled != null),
-        assert(height != null);
+  });
 
   final T? value;
 
@@ -57,7 +54,7 @@ class MenuBarItemState<T, W extends MenuBarItem<T>> extends State<W> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(context);
-    TextStyle style = widget.textStyle ?? popupMenuTheme.textStyle ?? theme.textTheme.subtitle1!;
+    TextStyle style = widget.textStyle ?? popupMenuTheme.textStyle ?? theme.textTheme.titleMedium!;
 
     if (!widget.enabled) {
       style = style.copyWith(color: theme.disabledColor);
@@ -154,22 +151,14 @@ class MenuBar<T> extends StatefulWidget {
 }
 
 class _MenuBarState<T> extends State<MenuBar<T>> {
-  GlobalKey _moreKey = GlobalKey();
+  final GlobalKey _moreKey = GlobalKey();
 
-  GlobalKey _menuKey = GlobalKey();
+  final GlobalKey _menuKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return _MenuBarRenderWidget(
       key: _menuKey,
-      children: [
-        ...widget.children,
-        MenuBarItem(
-          key: _moreKey,
-          child: Icon(Icons.more_horiz),
-          onTap: () => _onMore(context),
-        )
-      ],
       alignment: widget.alignment,
       more: widget.more,
       menuPosition: widget.menuPosition,
@@ -179,6 +168,14 @@ class _MenuBarState<T> extends State<MenuBar<T>> {
       menuConstraints: widget.menuConstraints,
       menuShape: widget.menuShape,
       menuColor: widget.menuColor,
+      children: [
+        ...widget.children,
+        MenuBarItem(
+          key: _moreKey,
+          child: const Icon(Icons.more_horiz),
+          onTap: () => _onMore(context),
+        )
+      ],
     );
   }
 
@@ -201,7 +198,7 @@ class _MenuBarState<T> extends State<MenuBar<T>> {
     }
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
-        button.localToGlobal(offset! + button.size.bottomRight(Offset.zero) , ancestor: overlay),
+        button.localToGlobal(offset+ button.size.bottomRight(Offset.zero) , ancestor: overlay),
         button.localToGlobal(button.size.bottomRight(Offset.zero) +button.size.bottomRight(Offset.zero) + offset, ancestor: overlay),
       ),
       Offset.zero & overlay.size,

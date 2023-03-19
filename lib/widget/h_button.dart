@@ -56,7 +56,7 @@ class _HButtonState extends State<HButton> {
         child: child,
       );
     }
-TextButton()
+
     return HSize(
       style: style,
       child: child,
