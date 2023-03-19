@@ -5,7 +5,7 @@ import 'package:hbuf_flutter/hbuf_flutter.dart';
 typedef OnTextFormBuild = Widget Function(BuildContext context, TextFormBuild field);
 
 Widget onTextFormBuild(BuildContext context, TextFormBuild field) {
-  return AutoLayout(
+  return HSize(
     minHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/widget/auto_layout.dart';
+import 'package:hbuf_flutter/widget/h_size.dart';
 
 typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, double outWidth, double outHeight, {List<String>? extensions});
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<ImageFormImage>? list, ImageFormImage item);
@@ -7,7 +7,7 @@ typedef OnImageFormFieldTap = void Function(BuildContext context, List<ImageForm
 typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild field);
 
 Widget onImageFormBuild(BuildContext context, ImageFormBuild field) {
-  return AutoLayout(
+  return HSize(
     minHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,

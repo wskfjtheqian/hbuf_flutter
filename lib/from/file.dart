@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hbuf_flutter/widget/auto_layout.dart';
+import 'package:hbuf_flutter/widget/h_size.dart';
 
 typedef OnFileFormFieldAdd = void Function(BuildContext context, TextEditingController controller, {List<String>? extensions});
 typedef OnFileFormBuild = Widget Function(BuildContext context, FileFormBuild field);
 
 Widget onFileFormBuild(BuildContext context, FileFormBuild field) {
-  return AutoLayout(
+  return HSize(
     minHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,

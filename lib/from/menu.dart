@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/widget/auto_layout.dart';
+import 'package:hbuf_flutter/widget/h_size.dart';
 
 typedef OnMenuFormBuild<T> = Widget Function(BuildContext context, MenuFormBuild<T> field);
 
 Widget onMenuFormBuild<T>(BuildContext context, MenuFormBuild<T> field) {
-  return AutoLayout(
+  return HSize(
     minHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,

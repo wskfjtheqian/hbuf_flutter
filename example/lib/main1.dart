@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hbuf_flutter/hbuf_flutter.dart';
 import 'package:hbuf_flutter/tables/tables.dart';
 
 void main() {
@@ -10,10 +11,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Syncfusion DataGrid Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+    return HTheme(
+      child: MaterialApp(
+        title: 'Syncfusion DataGrid Demo',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: MyHomePage(),
+      ),
     );
   }
 }

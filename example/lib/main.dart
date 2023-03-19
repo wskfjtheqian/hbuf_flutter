@@ -1,11 +1,9 @@
-import 'package:example/page/page_chinese_calendar.dart';
-import 'package:example/page/page_color_select.dart';
-import 'package:example/page/page_from.dart';
-import 'package:example/page/page_menu_bar.dart';
-import 'package:example/page/page_particle_1.dart';
-import 'package:example/page/page_rich_text.dart';
+import 'package:example/page/page_h_button.dart';
+import 'package:example/page/page_h_layout.dart';
+import 'package:example/page/page_h_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/hbuf_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,10 +13,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Syncfusion DataGrid Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+    return HTheme(
+      child: MaterialApp(
+        title: 'Syncfusion DataGrid Demo',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: MyHomePage(),
+      ),
     );
   }
 }
@@ -40,50 +40,26 @@ class _MyHomePageState extends State<MyHomePage> {
           TextButton(
             onPressed: () {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageChineseCalendar();
+                return const PageHSize();
               }));
             },
-            child: const Text("chinese calendar"),
+            child: const Text("HSize"),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageFrom();
+                return const PageHLayout();
               }));
             },
-            child: const Text("from"),
+            child: const Text("PageHLayout"),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageMenuBar();
+                return const PageHButton();
               }));
             },
-            child: const Text("MenuBar"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageParticle1();
-              }));
-            },
-            child: const Text("Particle1"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageColorSelect();
-              }));
-            },
-            child: const Text("Color Select"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageRichText();
-              }));
-            },
-            child: const Text("Rich Text"),
+            child: const Text("PageHButton"),
           ),
         ],
       ),
