@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 typedef OnMenuFormBuild<T> = Widget Function(BuildContext context, MenuFormBuild<T> field);
+typedef OnMenuNoneText = String Function(BuildContext context);
+
+OnMenuNoneText onMenuNoneText = (context) => "None";
 
 Widget onMenuFormBuild<T>(BuildContext context, MenuFormBuild<T> field) {
   return AutoLayout(
@@ -14,12 +17,19 @@ Widget onMenuFormBuild<T>(BuildContext context, MenuFormBuild<T> field) {
         data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
         child: DropdownButtonFormField<T>(
           key: field.key,
-          items: field.items,
+          items: [
+            if (null is T)
+              DropdownMenuItem(
+                value: null,
+                child: Text((field.noneText ?? onMenuNoneText).call(context)),
+              ),
+            ...(field.items ?? []),
+          ],
           selectedItemBuilder: field.selectedItemBuilder,
           value: field.value,
           hint: SizedBox.shrink(),
           disabledHint: field.disabledHint,
-          onChanged: field.readOnly ? null : (field.onChanged ?? (val) {}),
+          onChanged: field.readOnly ? null : (val) => field.onChanged?.call(val as T),
           onTap: field.onTap,
           elevation: field.elevation,
           style: field.style,
@@ -52,10 +62,10 @@ class MenuFormBuild<T> {
   Key? key;
   List<DropdownMenuItem<T>>? items;
   DropdownButtonBuilder? selectedItemBuilder;
-  T? value;
+  late T value;
   Widget? hint;
   Widget? disabledHint;
-  ValueChanged<T?>? onChanged;
+  ValueChanged<T>? onChanged;
   VoidCallback? onTap;
   int elevation = 8;
   TextStyle? style;
@@ -84,6 +94,7 @@ class MenuFormBuild<T> {
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
   OnMenuFormBuild<T> onBuild = onMenuFormBuild<T>;
+  OnMenuNoneText? noneText;
 
   Widget build(BuildContext context) {
     return onBuild(context, this);
