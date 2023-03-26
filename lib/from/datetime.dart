@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/calendar/calendar_select.dart';
-import 'package:hbuf_flutter/hbuf_flutter.dart';
+import 'package:hbuf_flutter/widget/auto_layout.dart';
 
-class DateTimeFormField extends FormField<List<DateTime>> {
+class DateTimeFormField extends FormField<List<DateTime?>?> {
   final FocusNode? focusNode;
 
   DateTimeFormField({
     Key? key,
-    FormFieldSetter<List<DateTime>>? onSaved,
-    FormFieldSetter<List<DateTime>>? onChanged,
-    FormFieldValidator<List<DateTime>>? validator,
-    List<DateTime>? initialValue,
+    FormFieldSetter<List<DateTime?>?>? onSaved,
+    FormFieldSetter<List<DateTime?>?>? onChanged,
+    FormFieldValidator<List<DateTime?>?>? validator,
+    List<DateTime?>? initialValue,
     bool? enabled = true,
     AutovalidateMode? autovalidateMode,
     String? restorationId,
@@ -24,9 +24,9 @@ class DateTimeFormField extends FormField<List<DateTime>> {
           validator: validator,
           enabled: enabled ?? decoration?.enabled ?? true,
           autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
-          builder: (FormFieldState<List<DateTime>> field) {
+          builder: (FormFieldState<List<DateTime?>?> field) {
             final _DateTimeFormFieldState state = field as _DateTimeFormFieldState;
-            final InputDecoration effectiveDecoration = (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
+            InputDecoration effectiveDecoration = (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
             void onChangedHandler(List<DateTime> value) {
               field.didChange(value);
               if (onChanged != null) {
@@ -46,10 +46,10 @@ class DateTimeFormField extends FormField<List<DateTime>> {
         );
 
   @override
-  FormFieldState<List<DateTime>> createState() => _DateTimeFormFieldState();
+  FormFieldState<List<DateTime?>?> createState() => _DateTimeFormFieldState();
 }
 
-class _DateTimeFormFieldState extends FormFieldState<List<DateTime>> {
+class _DateTimeFormFieldState extends FormFieldState<List<DateTime?>?> {
   DateTimeFormField get _formField => super.widget as DateTimeFormField;
 
   FocusNode get focusNode => _formField.focusNode ?? FocusNode();
@@ -60,7 +60,7 @@ class _DateTimeField extends StatefulWidget {
 
   final ValueChanged<List<DateTime>>? onChanged;
 
-  final List<DateTime> value;
+  final List<DateTime?>? value;
 
   final FocusNode? focusNode;
 
@@ -140,8 +140,14 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
     final TextSelectionThemeData selectionTheme = TextSelectionTheme.of(context);
     final TextStyle style = theme.textTheme.subtitle1!.merge(widget.style);
 
+    var decoration = widget.decoration.copyWith(
+      suffixIcon: InkWell(
+        child: const Icon(Icons.calendar_month_outlined),
+        onTap: () => _onSelect(context),
+      ),
+    );
     return InputDecorator(
-      decoration: widget.decoration,
+      decoration: decoration,
       isFocused: _focusNode1.hasFocus || _focusNode2.hasFocus,
       textAlign: TextAlign.left,
       child: Row(
@@ -162,7 +168,15 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
               ),
             ),
           ),
-          Text("To"),
+          const SizedBox(
+            width: 30,
+            child: Divider(
+              height: 1,
+              indent: 8,
+              endIndent: 8,
+              color: Colors.black,
+            ),
+          ),
           Expanded(
             child: RepaintBoundary(
               child: UnmanagedRestorationScope(
@@ -248,84 +262,70 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
   String? get restorationId => widget.restorationId;
 
   @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    // TODO: implement restoreState
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {}
+
+  _onSelect(BuildContext context) async {
+    var ret = await showSelectDateRangePicker(context, initDateTime: DateTime.now());
+    if (null != ret) {
+      if (ret.isNotEmpty) {
+        _controller1.text = ret[0].toString().substring(0, 10);
+      }
+      if (1 < ret.length) {
+        var end = ret[1].add(const Duration(days: 1)).subtract(const Duration(microseconds: 1));
+        _controller2.text = end.toString().substring(0, 10);
+      }
+      widget.onChanged?.call(ret);
+    }
   }
 }
 
-// class _TextFieldSelectionGestureDetectorBuilder extends TextSelectionGestureDetectorBuilder {
-//   _TextFieldSelectionGestureDetectorBuilder({
-//     required _DateTimeFieldState state,
-//   }) : _state = state,
-//         super(delegate: state);
-//
-//   final _DateTimeFieldState _state;
-//
-//   @override
-//   void onForcePressStart(ForcePressDetails details) {
-//     super.onForcePressStart(details);
-//     if (delegate.selectionEnabled && shouldShowSelectionToolbar) {
-//       editableText.showToolbar();
-//     }
-//   }
-//
-//   @override
-//   void onForcePressEnd(ForcePressDetails details) {
-//     // Not required.
-//   }
-//
-//   @override
-//   void onSingleLongTapMoveUpdate(LongPressMoveUpdateDetails details) {
-//     if (delegate.selectionEnabled) {
-//       switch (Theme.of(_state.context).platform) {
-//         case TargetPlatform.iOS:
-//         case TargetPlatform.macOS:
-//           renderEditable.selectPositionAt(
-//             from: details.globalPosition,
-//             cause: SelectionChangedCause.longPress,
-//           );
-//           break;
-//         case TargetPlatform.android:
-//         case TargetPlatform.fuchsia:
-//         case TargetPlatform.linux:
-//         case TargetPlatform.windows:
-//           renderEditable.selectWordsInRange(
-//             from: details.globalPosition - details.offsetFromOrigin,
-//             to: details.globalPosition,
-//             cause: SelectionChangedCause.longPress,
-//           );
-//           break;
-//       }
-//     }
-//   }
-//
-//   @override
-//   void onSingleTapUp(TapUpDetails details) {
-//     editableText.hideToolbar();
-//     super.onSingleTapUp(details);
-//     _state._requestKeyboard();
-//     _state.widget.onTap?.call();
-//   }
-//
-//   @override
-//   void onSingleLongTapStart(LongPressStartDetails details) {
-//     if (delegate.selectionEnabled) {
-//       switch (Theme.of(_state.context).platform) {
-//         case TargetPlatform.iOS:
-//         case TargetPlatform.macOS:
-//           renderEditable.selectPositionAt(
-//             from: details.globalPosition,
-//             cause: SelectionChangedCause.longPress,
-//           );
-//           break;
-//         case TargetPlatform.android:
-//         case TargetPlatform.fuchsia:
-//         case TargetPlatform.linux:
-//         case TargetPlatform.windows:
-//           renderEditable.selectWord(cause: SelectionChangedCause.longPress);
-//           Feedback.forLongPress(_state.context);
-//           break;
-//       }
-//     }
-//   }
-// }
+typedef OnDatetimeFormBuild = Widget Function(BuildContext context, DatetimeFormBuild field);
+
+Widget onDatetimeFormBuild(BuildContext context, DatetimeFormBuild field) {
+  return AutoLayout(
+    minHeight: field.minHeight,
+    sizes: field.widthSizes,
+    count: field.widthCount,
+    child: Padding(
+      padding: field.padding,
+      child: Theme(
+        data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+        child: DateTimeFormField(
+          key: field.key,
+          initialValue: field.initialValue,
+          focusNode: field.focusNode,
+          decoration: field.decoration,
+          onChanged: field.onChanged,
+          onSaved: field.onSaved,
+          validator: field.validator,
+          enabled: field.enabled,
+          autovalidateMode: field.autovalidateMode,
+          restorationId: field.restorationId,
+        ),
+      ),
+    ),
+  );
+}
+
+class DatetimeFormBuild {
+  Key? key;
+  FocusNode? focusNode;
+  FormFieldSetter<List<DateTime?>?>? onSaved;
+  FormFieldSetter<List<DateTime?>?>? onChanged;
+  FormFieldValidator<List<DateTime?>?>? validator;
+  List<DateTime?>? initialValue;
+  bool? enabled = true;
+  AutovalidateMode? autovalidateMode;
+  String? restorationId;
+  InputDecoration? decoration = const InputDecoration();
+  OnDatetimeFormBuild onBuild = onDatetimeFormBuild;
+  double minHeight = 76;
+  int widthCount = 24;
+  Map<double, int> widthSizes = {};
+  bool readOnly = false;
+  EdgeInsetsGeometry padding = const EdgeInsets.only();
+
+  Widget build(BuildContext context) {
+    return onBuild(context, this);
+  }
+}

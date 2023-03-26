@@ -236,7 +236,7 @@ class _FileFormFieldState extends State<FileFormField> {
       key: widget.key,
       controller: _controller,
       focusNode: widget.focusNode,
-      decoration: widget.decoration?.copyWith(suffix: getSuffix(context)) ?? InputDecoration(suffix: getSuffix(context)),
+      decoration: widget.decoration?.copyWith(suffix: getSuffix(context)) ?? InputDecoration(suffixIcon: getSuffix(context)),
       keyboardType: widget.keyboardType,
       textCapitalization: widget.textCapitalization,
       textInputAction: widget.textInputAction,
@@ -287,19 +287,16 @@ class _FileFormFieldState extends State<FileFormField> {
     );
   }
 
-  TextButton getSuffix(BuildContext context) {
-    return TextButton(
-      onPressed: () {
+  InkWell getSuffix(BuildContext context) {
+    return InkWell(
+      onTap: () {
         (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!, extensions: widget.extensions);
       },
-      child: Text(widget.buttonText ?? onFileFormFieldButtonText(context)),
+      child: const Icon(Icons.file_open_outlined),
     );
   }
 }
 
-String Function(BuildContext) onFileFormFieldButtonText = (BuildContext context) {
-  return "Select file";
-};
 
 OnFileFormFieldAdd? onFileFormFieldAdd;
 
