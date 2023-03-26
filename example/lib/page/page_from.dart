@@ -19,16 +19,16 @@ class _PageFromState extends State<PageFrom> {
       body: Form(
         child: Column(
           children: [
-            ImageFormField(
-              maxCount: 4,
-              onAdd: (context, field, width, height, {extensions}) async {},
-              outWidth: 300,
-              outHeight: 300,
-            ),
-            FileFormField(
-              onAdd: (context, field, {extensions}) async {},
-            ),
-            DateTimeFormField(),
+            // ImageFormField(
+            //   maxCount: 4,
+            //   onAdd: (context, field, width, height, {extensions}) async {},
+            //   outWidth: 300,
+            //   outHeight: 300,
+            // ),
+            // FileFormField(
+            //   onAdd: (context, field, {extensions}) async {},
+            // ),
+            // DateTimeFormField(),
           ],
         ),
       ),

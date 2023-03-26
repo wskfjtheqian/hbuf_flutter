@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/widget/h_color.dart';
 
-import 'h_border.dart';
 import 'h_size.dart';
 import 'h_theme.dart';
 
@@ -19,46 +19,101 @@ class HButton extends StatefulWidget {
 }
 
 class _HButtonState extends State<HButton> {
+  final MaterialStatesController _controller = MaterialStatesController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget child = widget.child;
     var style = widget.style ?? HButtonTheme.of(context);
+
+    var textStyle = style.textStyle.resolve(_controller.value);
+    if (style.plain && null != style.color) {
+      textStyle = textStyle.copyWith(color: style.color?.resolve(_controller.value));
+    }
+    child = DefaultTextStyle(
+      style: textStyle,
+      child: IconTheme(
+        data: IconThemeData(
+          color: textStyle.color,
+          size: textStyle.fontSize,
+        ),
+        child: child,
+      ),
+    );
+
     if (null != style.padding) {
       child = Padding(
-        padding: style.padding!,
+        padding: style.padding!.resolve(_controller.value),
         child: child,
       );
     }
-    child = Align(
+    child = Center(
+      widthFactor: 1,
+      heightFactor: 1,
       child: child,
     );
+
+    OutlinedBorder shape = style.shape.resolve(_controller.value);
+    if (style.plain && (shape.side.width == 0 || shape.side.style == BorderStyle.none)) {
+      shape = shape.copyWith(
+        side: shape.side.copyWith(
+          color: style.color?.resolve(_controller.value),
+          width: 0.5,
+          style: BorderStyle.solid,
+        ),
+      );
+    }
     child = InkWell(
-      child: child,
       onTap: () {},
-    );
-
-    child = Material(
-      borderRadius: style.borderRadius,
-      color: style.color,
+      customBorder: shape,
+      statesController: _controller,
       child: child,
     );
 
-    if (null != style.borderRadius) {
-      child = ClipRRect(
-        borderRadius: style.borderRadius,
-        child: child,
-      );
+    Color? color;
+    if (style.plain) {
+      color = style.color?.resolve(_controller.value)[100];
+    } else {
+      color = style.color?.resolve(_controller.value);
     }
+    child = Material(
+      color: color,
+      shadowColor: style.shadowColor?.resolve(_controller.value),
+      shape: shape,
+      elevation: style.elevation.resolve(_controller.value),
+      child: child,
+    );
 
     if (null != style.margin) {
       child = Padding(
-        padding: style.margin!,
+        padding: style.margin!.resolve(_controller.value),
         child: child,
       );
     }
 
     return HSize(
-      style: style,
+      style: HSizeStyle(
+        minWidth: style.minWidth.resolve(_controller.value),
+        minHeight: style.minHeight.resolve(_controller.value),
+        maxWidth: style.maxWidth.resolve(_controller.value),
+        maxHeight: style.maxHeight.resolve(_controller.value),
+        sizes: style.sizes?.resolve(_controller.value),
+        count: style.count.resolve(_controller.value),
+      ),
       child: child,
     );
   }
@@ -75,7 +130,7 @@ class HButtonTheme extends InheritedTheme {
 
   static HButtonStyle of(BuildContext context) {
     final theme = context.dependOnInheritedWidgetOfExactType<HButtonTheme>();
-    return theme?.data ?? HTheme.of(context).buttonStyle;
+    return theme?.data ?? HTheme.of(context).defaultButtonStyle;
   }
 
   @override
@@ -88,63 +143,97 @@ class HButtonTheme extends InheritedTheme {
 }
 
 extension HButtonContext on BuildContext {
-  HButtonStyle get buttonStyle {
-    return HButtonTheme.of(this);
+  HButtonStyle get defaultButton {
+    return HButtonTheme.of(this).copyWith(
+      textStyle: MaterialStatePropertyAll(TextStyle(color: textColor)),
+    );
+  }
+
+  HButtonStyle get brandButton {
+    return HButtonTheme.of(this).copyWith(
+      textStyle: MaterialStatePropertyAll(TextStyle(color: whiteColor)),
+      color: MaterialStatePropertyAll(brandColor),
+    );
+  }
+
+  HButtonStyle get successButton {
+    return HButtonTheme.of(this).copyWith(
+      textStyle: MaterialStatePropertyAll(TextStyle(color: whiteColor)),
+      color: MaterialStatePropertyAll(successColor),
+    );
+  }
+
+  HButtonStyle get warningButton {
+    return HButtonTheme.of(this).copyWith(
+      textStyle: MaterialStatePropertyAll(TextStyle(color: whiteColor)),
+      color: MaterialStatePropertyAll(warningColor),
+    );
+  }
+
+  HButtonStyle get dangerButton {
+    return HButtonTheme.of(this).copyWith(
+      textStyle: MaterialStatePropertyAll(TextStyle(color: whiteColor)),
+      color: MaterialStatePropertyAll(dangerColor),
+    );
+  }
+
+  HButtonStyle get infoButton {
+    return HButtonTheme.of(this).copyWith(
+      textStyle: MaterialStatePropertyAll(TextStyle(color: whiteColor)),
+      color: MaterialStatePropertyAll(infoColor),
+    );
   }
 }
 
-class HButtonStyle extends HSizeStyle {
-  final EdgeInsets? margin;
-  final EdgeInsets? padding;
-  final Color? color;
-  final DecorationImage? image;
-  final BoxBorder? border;
-  final BorderRadiusGeometry? borderRadius;
-  final List<BoxShadow>? boxShadow;
-  final Gradient? gradient;
-  final BlendMode? backgroundBlendMode;
-  final BoxShape shape;
-  final DecorationPosition position;
+class HButtonStyle {
+  final MaterialStateProperty<double> minWidth;
+  final MaterialStateProperty<double> minHeight;
+  final MaterialStateProperty<double> maxWidth;
+  final MaterialStateProperty<double> maxHeight;
+  final MaterialStateProperty<Map<double, int>>? sizes;
+  final MaterialStateProperty<int> count;
+  final MaterialStateProperty<EdgeInsets>? margin;
+  final MaterialStateProperty<EdgeInsets>? padding;
+  final MaterialStateProperty<Color>? color;
+  final MaterialStateProperty<Color>? shadowColor;
+  final MaterialStateProperty<double> elevation;
+  final MaterialStateProperty<OutlinedBorder> shape;
+  final MaterialStateProperty<TextStyle> textStyle;
+  final bool plain;
 
   const HButtonStyle({
-    super.minWidth = 0,
-    super.minHeight = 0,
-    super.maxWidth = double.infinity,
-    super.maxHeight = double.infinity,
-    super.sizes,
-    super.count = kHSizeCount,
+    this.minWidth = const MaterialStatePropertyAll(40),
+    this.minHeight = const MaterialStatePropertyAll(40),
+    this.maxWidth = const MaterialStatePropertyAll(double.infinity),
+    this.maxHeight = const MaterialStatePropertyAll(double.infinity),
+    this.sizes,
+    this.count = const MaterialStatePropertyAll(kHSizeCount),
     this.margin,
-    this.padding = const EdgeInsets.all(8),
+    this.padding = const MaterialStatePropertyAll(EdgeInsets.all(8)),
     this.color,
-    this.image,
-    this.border,
-    this.borderRadius,
-    this.boxShadow,
-    this.gradient,
-    this.backgroundBlendMode,
-    this.shape = BoxShape.rectangle,
-    this.position = DecorationPosition.background,
+    this.shadowColor,
+    this.elevation = const MaterialStatePropertyAll(5),
+    this.shape = const MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4)))),
+    this.plain = false,
+    this.textStyle = const MaterialStatePropertyAll(TextStyle(fontSize: 14, color: Colors.black87)),
   });
 
-  @override
   HButtonStyle copyWith({
-    double? minWidth,
-    double? minHeight,
-    double? maxWidth,
-    double? maxHeight,
-    Map<double, int>? sizes,
-    int? count,
-    EdgeInsets? margin,
-    EdgeInsets? padding,
-    Color? color,
-    DecorationImage? image,
-    HBorder? border,
-    BorderRadiusGeometry? borderRadius,
-    List<BoxShadow>? boxShadow,
-    Gradient? gradient,
-    BlendMode? backgroundBlendMode,
-    BoxShape? shape,
-    DecorationPosition? position,
+    MaterialStateProperty<double>? minWidth,
+    MaterialStateProperty<double>? minHeight,
+    MaterialStateProperty<double>? maxWidth,
+    MaterialStateProperty<double>? maxHeight,
+    MaterialStateProperty<Map<double, int>>? sizes,
+    MaterialStateProperty<int>? count,
+    MaterialStateProperty<EdgeInsets>? margin,
+    MaterialStateProperty<EdgeInsets>? padding,
+    MaterialStateProperty<BorderRadius>? borderRadius,
+    MaterialStateProperty<Color>? color,
+    MaterialStateProperty<Color>? shadowColor,
+    MaterialStateProperty<double>? elevation,
+    MaterialStateProperty<OutlinedBorder>? shape,
+    MaterialStateProperty<TextStyle>? textStyle,
+    bool? plain,
   }) {
     return HButtonStyle(
       minWidth: minWidth ?? this.minWidth,
@@ -156,52 +245,11 @@ class HButtonStyle extends HSizeStyle {
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
       color: color ?? this.color,
-      image: image ?? this.image,
-      border: border ?? this.border,
-      borderRadius: borderRadius ?? this.borderRadius,
-      boxShadow: boxShadow ?? this.boxShadow,
-      gradient: gradient ?? this.gradient,
-      backgroundBlendMode: backgroundBlendMode ?? this.backgroundBlendMode,
+      shadowColor: shadowColor ?? this.shadowColor,
+      elevation: elevation ?? this.elevation,
       shape: shape ?? this.shape,
-      position: position ?? this.position,
+      textStyle: textStyle ?? this.textStyle,
+      plain: plain ?? this.plain,
     );
   }
-
-  @override
-  String toString() {
-    return 'HButtonStyle{margin: $margin, padding: $padding, color: $color, image: $image, border: $border, borderRadius: $borderRadius, boxShadow: $boxShadow, gradient: $gradient, backgroundBlendMode: $backgroundBlendMode, shape: $shape, position: $position}';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      super == other &&
-          other is HButtonStyle &&
-          runtimeType == other.runtimeType &&
-          margin == other.margin &&
-          padding == other.padding &&
-          color == other.color &&
-          image == other.image &&
-          border == other.border &&
-          borderRadius == other.borderRadius &&
-          boxShadow == other.boxShadow &&
-          gradient == other.gradient &&
-          backgroundBlendMode == other.backgroundBlendMode &&
-          shape == other.shape &&
-          position == other.position;
-
-  @override
-  int get hashCode =>
-      super.hashCode ^
-      margin.hashCode ^
-      padding.hashCode ^
-      color.hashCode ^
-      image.hashCode ^
-      border.hashCode ^
-      borderRadius.hashCode ^
-      boxShadow.hashCode ^
-      gradient.hashCode ^
-      backgroundBlendMode.hashCode ^
-      shape.hashCode ^
-      position.hashCode;
 }

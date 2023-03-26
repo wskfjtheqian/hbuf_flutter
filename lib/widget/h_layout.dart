@@ -136,6 +136,7 @@ class HLayoutStyle extends HSizeStyle {
     double? maxWidth,
     double? maxHeight,
     Map<double, int>? sizes,
+    AlignmentGeometry? alignment,
     int? count,
     EdgeInsets? margin,
     EdgeInsets? padding,
