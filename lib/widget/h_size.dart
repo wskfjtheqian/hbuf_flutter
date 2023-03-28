@@ -27,7 +27,7 @@ class HSize extends SingleChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    var style = this.style ?? HSizeTheme.of(context);
+    var style = this.style ?? HSizeTheme.of(context).defaultSize;
     return HSizeRender(
       style,
     );
@@ -35,7 +35,7 @@ class HSize extends SingleChildRenderObjectWidget {
 
   @override
   void updateRenderObject(BuildContext context, covariant HSizeRender renderObject) {
-    var style = this.style ?? HSizeTheme.of(context);
+    var style = this.style ?? HSizeTheme.of(context).defaultSize;
     renderObject.style = style;
     super.updateRenderObject(context, renderObject);
   }
@@ -170,35 +170,6 @@ class HSizeRender extends RenderProxyBox {
   }
 }
 
-class HSizeTheme extends InheritedTheme {
-  const HSizeTheme({
-    super.key,
-    required this.data,
-    required super.child,
-  }) ;
-
-  final HSizeStyle data;
-
-  static HSizeStyle of(BuildContext context) {
-    final theme = context.dependOnInheritedWidgetOfExactType<HSizeTheme>();
-    return theme?.data ?? HTheme.of(context).sizeStyle;
-  }
-
-  @override
-  Widget wrap(BuildContext context, Widget child) {
-    return HSizeTheme(data: data, child: child);
-  }
-
-  @override
-  bool updateShouldNotify(HSizeTheme oldWidget) => data != oldWidget.data;
-}
-
-extension HSizeContext on BuildContext {
-  HSizeStyle get sizeBoxStyle {
-    return HSizeTheme.of(this);
-  }
-}
-
 class HSizeStyle {
   final double minWidth;
   final double minHeight;
@@ -254,4 +225,39 @@ class HSizeStyle {
 
   @override
   int get hashCode => minWidth.hashCode ^ minHeight.hashCode ^ maxWidth.hashCode ^ maxHeight.hashCode ^ sizes.hashCode ^ count.hashCode;
+}
+
+class HSizeTheme extends InheritedTheme {
+  const HSizeTheme({
+    super.key,
+    required this.data,
+    required super.child,
+  });
+
+  final HSizeThemeData data;
+
+  static HSizeThemeData of(BuildContext context) {
+    final theme = context.dependOnInheritedWidgetOfExactType<HSizeTheme>();
+    return theme?.data ?? HTheme.of(context).sizeTheme;
+  }
+
+  @override
+  Widget wrap(BuildContext context, Widget child) {
+    return HSizeTheme(data: data, child: child);
+  }
+
+  @override
+  bool updateShouldNotify(HSizeTheme oldWidget) => data != oldWidget.data;
+}
+
+extension HSizeContext on BuildContext {
+  HSizeStyle get defaultSize => HSizeTheme.of(this).defaultSize;
+}
+
+class HSizeThemeData {
+  final HSizeStyle defaultSize;
+
+  const HSizeThemeData({
+    this.defaultSize = const HSizeStyle(),
+  });
 }

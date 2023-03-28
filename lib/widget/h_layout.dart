@@ -12,7 +12,7 @@ class HLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var style = this.style ?? HLayoutTheme.of(context);
+    var style = this.style ?? HLayoutTheme.of(context).defaultLayout;
     Widget? child = this.child;
 
     if (null != style.padding) {
@@ -64,35 +64,6 @@ class HLayout extends StatelessWidget {
       backgroundBlendMode: style.backgroundBlendMode,
       shape: style.shape,
     );
-  }
-}
-
-class HLayoutTheme extends InheritedTheme {
-  const HLayoutTheme({
-    super.key,
-    required this.data,
-    required super.child,
-  });
-
-  final HLayoutStyle data;
-
-  static HLayoutStyle of(BuildContext context) {
-    final theme = context.dependOnInheritedWidgetOfExactType<HLayoutTheme>();
-    return theme?.data ?? HTheme.of(context).layoutStyle;
-  }
-
-  @override
-  Widget wrap(BuildContext context, Widget child) {
-    return HLayoutTheme(data: data, child: child);
-  }
-
-  @override
-  bool updateShouldNotify(HLayoutTheme oldWidget) => data != oldWidget.data;
-}
-
-extension HLayoutContext on BuildContext {
-  HLayoutStyle get layoutStyle {
-    return HLayoutTheme.of(this);
   }
 }
 
@@ -208,4 +179,39 @@ class HLayoutStyle extends HSizeStyle {
       backgroundBlendMode.hashCode ^
       shape.hashCode ^
       position.hashCode;
+}
+
+class HLayoutTheme extends InheritedTheme {
+  const HLayoutTheme({
+    super.key,
+    required this.data,
+    required super.child,
+  });
+
+  final HLayoutThemeData data;
+
+  static HLayoutThemeData of(BuildContext context) {
+    final theme = context.dependOnInheritedWidgetOfExactType<HLayoutTheme>();
+    return theme?.data ?? HTheme.of(context).layoutTheme;
+  }
+
+  @override
+  Widget wrap(BuildContext context, Widget child) {
+    return HLayoutTheme(data: data, child: child);
+  }
+
+  @override
+  bool updateShouldNotify(HLayoutTheme oldWidget) => data != oldWidget.data;
+}
+
+extension HLayoutContext on BuildContext {
+  HLayoutStyle get defaultLayout => HLayoutTheme.of(this).defaultLayout;
+}
+
+class HLayoutThemeData {
+  final HLayoutStyle defaultLayout;
+
+  const HLayoutThemeData({
+    this.defaultLayout = const HLayoutStyle(),
+  });
 }

@@ -16,16 +16,15 @@ class PageHLayout extends StatelessWidget {
         child: Wrap(
           children: [
             HLayout(
-              style: context.layoutStyle.copyWith(
-                maxHeight: 100,
-                minHeight: 100,
-                sizes: {lg: 12},
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(16),
-                color: Colors.red,
-                border: HBorder.all(dash: [8, 8],width: 4),
-                borderRadius: BorderRadius.circular(16)
-              ),
+              style: context.defaultLayout.copyWith(
+                  maxHeight: 100,
+                  minHeight: 100,
+                  sizes: {lg: 12},
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.red,
+                  border: HBorder.all(dash: [8, 8], width: 4),
+                  borderRadius: BorderRadius.circular(16)),
               child: const Text("HLayout"),
             ),
           ],

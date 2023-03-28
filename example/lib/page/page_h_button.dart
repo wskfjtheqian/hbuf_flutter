@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/h_button.dart';
+import 'package:hbuf_flutter/widget/h_color.dart';
 
 class PageHButton extends StatelessWidget {
   const PageHButton({Key? key}) : super(key: key);
@@ -21,27 +22,38 @@ class PageHButton extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   HButton(
-                    style: context.defaultButton.copyWith(),
+                    style: context.defaultButton.copyWith(
+                    ),
                     child: Text("默认按钮"),
                   ),
                   HButton(
-                    style: context.brandButton.copyWith(),
+                    style: context.defaultButton.copyWith(
+                      color: MaterialStatePropertyAll(context.brandColor),
+                    ),
                     child: const Text("主要按钮"),
                   ),
                   HButton(
-                    style: context.successButton.copyWith(),
+                    style: context.defaultButton.copyWith(
+                      color: MaterialStatePropertyAll(context.successColor),
+                    ),
                     child: const Text("成功按钮"),
                   ),
                   HButton(
-                    style: context.infoButton.copyWith(),
+                    style: context.mediumButton.copyWith(
+                      color: MaterialStatePropertyAll(context.infoColor),
+                    ),
                     child: const Text("信息按键"),
                   ),
                   HButton(
-                    style: context.warningButton.copyWith(),
+                    style: context.smallButton.copyWith(
+                      color: MaterialStatePropertyAll(context.warningColor),
+                    ),
                     child: const Text("警告按钮"),
                   ),
                   HButton(
-                    style: context.dangerButton.copyWith(),
+                    style: context.miniButton.copyWith(
+                      color: MaterialStatePropertyAll(context.dangerColor),
+                    ),
                     child: const Text("危险按钮"),
                   ),
                 ],
@@ -60,31 +72,36 @@ class PageHButton extends StatelessWidget {
                     child: Text("默认按钮"),
                   ),
                   HButton(
-                    style: context.brandButton.copyWith(
+                    style: context.defaultButton.copyWith(
+                      color: MaterialStatePropertyAll(context.brandColor),
                       plain: true,
                     ),
                     child: const Text("主要按钮"),
                   ),
                   HButton(
-                    style: context.successButton.copyWith(
+                    style: context.defaultButton.copyWith(
+                      color: MaterialStatePropertyAll(context.successColor),
                       plain: true,
                     ),
                     child: const Text("成功按钮"),
                   ),
                   HButton(
-                    style: context.infoButton.copyWith(
+                    style: context.mediumButton.copyWith(
+                      color: MaterialStatePropertyAll(context.infoColor),
                       plain: true,
                     ),
                     child: const Text("信息按键"),
                   ),
                   HButton(
-                    style: context.warningButton.copyWith(
+                    style: context.smallButton.copyWith(
+                      color: MaterialStatePropertyAll(context.warningColor),
                       plain: true,
                     ),
                     child: const Text("警告按钮"),
                   ),
                   HButton(
-                    style: context.dangerButton.copyWith(
+                    style: context.miniButton.copyWith(
+                      color: MaterialStatePropertyAll(context.dangerColor),
                       plain: true,
                     ),
                     child: const Text("危险按钮"),
@@ -105,31 +122,36 @@ class PageHButton extends StatelessWidget {
                     child: Text("默认按钮"),
                   ),
                   HButton(
-                    style: context.brandButton.copyWith(
+                    style: context.defaultButton.copyWith(
+                      color: MaterialStatePropertyAll(context.brandColor),
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: const Text("主要按钮"),
                   ),
                   HButton(
-                    style: context.successButton.copyWith(
+                    style: context.defaultButton.copyWith(
+                      color: MaterialStatePropertyAll(context.successColor),
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: const Text("成功按钮"),
                   ),
                   HButton(
-                    style: context.infoButton.copyWith(
+                    style: context.mediumButton.copyWith(
+                      color: MaterialStatePropertyAll(context.infoColor),
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: const Text("信息按键"),
                   ),
                   HButton(
-                    style: context.warningButton.copyWith(
+                    style: context.smallButton.copyWith(
+                      color: MaterialStatePropertyAll(context.warningColor),
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: const Text("警告按钮"),
                   ),
                   HButton(
-                    style: context.dangerButton.copyWith(
+                    style: context.miniButton.copyWith(
+                      color: MaterialStatePropertyAll(context.dangerColor),
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: const Text("危险按钮"),
@@ -150,32 +172,37 @@ class PageHButton extends StatelessWidget {
                     child: Icon(Icons.search),
                   ),
                   HButton(
-                    style: context.brandButton.copyWith(
+                    style: context.defaultButton.copyWith(
                       shape: MaterialStatePropertyAll(CircleBorder()),
+                      color: MaterialStatePropertyAll(context.brandColor),
                     ),
                     child: Icon(Icons.edit_note),
                   ),
                   HButton(
-                    style: context.successButton.copyWith(
+                    style: context.defaultButton.copyWith(
                       shape: MaterialStatePropertyAll(CircleBorder()),
+                      color: MaterialStatePropertyAll(context.successColor),
                     ),
                     child: Icon(Icons.check),
                   ),
                   HButton(
-                    style: context.infoButton.copyWith(
+                    style: context.mediumButton.copyWith(
                       shape: MaterialStatePropertyAll(CircleBorder()),
+                      color: MaterialStatePropertyAll(context.infoColor),
                     ),
                     child: Icon(Icons.mail_outline),
                   ),
                   HButton(
-                    style: context.warningButton.copyWith(
+                    style: context.smallButton.copyWith(
                       shape: MaterialStatePropertyAll(CircleBorder()),
+                      color: MaterialStatePropertyAll(context.warningColor),
                     ),
                     child: Icon(Icons.star_border),
                   ),
                   HButton(
-                    style: context.dangerButton.copyWith(
+                    style: context.miniButton.copyWith(
                       shape: MaterialStatePropertyAll(CircleBorder()),
+                      color: MaterialStatePropertyAll(context.dangerColor),
                     ),
                     child: Icon(Icons.delete_forever_outlined),
                   ),

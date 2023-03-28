@@ -14,11 +14,11 @@ class PageHSize extends StatelessWidget {
         child: Wrap(
           children: [
             HSize(
-              style: context.sizeBoxStyle.copyWith(maxHeight: 100, minHeight: 50, sizes: {lg:12}),
+              style: context.defaultSize.copyWith(maxHeight: 100, minHeight: 50, sizes: {lg: 12}),
               child: ColoredBox(color: Colors.red),
             ),
             HSize(
-              style: context.sizeBoxStyle.copyWith(maxHeight: 100, minHeight: 50, sizes: {lg:12}),
+              style: context.defaultSize.copyWith(maxHeight: 100, minHeight: 50, sizes: {lg: 12}),
               child: ColoredBox(color: Colors.green),
             ),
           ],

@@ -33,11 +33,11 @@ class HColorTheme extends InheritedTheme {
     required super.child,
   });
 
-  final HColorStyle data;
+  final HColorThemeData data;
 
-  static HColorStyle of(BuildContext context) {
+  static HColorThemeData of(BuildContext context) {
     final theme = context.dependOnInheritedWidgetOfExactType<HColorTheme>();
-    return theme?.data ?? HTheme.of(context).colorStyle;
+    return theme?.data ?? HTheme.of(context).colorTheme;
   }
 
   @override
@@ -50,7 +50,7 @@ class HColorTheme extends InheritedTheme {
 }
 
 extension HColorContext on BuildContext {
-  HColorStyle get colorStyle {
+  HColorThemeData get colorStyle {
     return HColorTheme.of(this);
   }
 
@@ -103,7 +103,7 @@ extension HColorContext on BuildContext {
   }
 }
 
-class HColorStyle {
+class HColorThemeData {
   final Color whiteColor;
 
   final Color blackColor;
@@ -132,7 +132,7 @@ class HColorStyle {
   //占位文字
   final Color textPlaceColor;
 
-  const HColorStyle({
+  const HColorThemeData({
     this.brandColor = const Color(0xff409EFF),
     this.successColor = const Color(0xFF67C23A),
     this.warningColor = const Color(0xFFE6A23C),
@@ -147,33 +147,66 @@ class HColorStyle {
     this.transparentColor = const Color(0x00000000),
   });
 
-  HColorStyle copyWith({
+  HColorThemeData copyWith({
+    Color? whiteColor,
+    Color? blackColor,
+    Color? transparentColor,
     Color? brandColor,
     Color? successColor,
     Color? warningColor,
     Color? dangerColor,
     Color? infoColor,
+    Color? textColor,
+    Color? textGeneralColor,
+    Color? textOrderColor,
+    Color? textPlaceColor,
   }) {
-    return HColorStyle(
+    return HColorThemeData(
+      whiteColor: whiteColor ?? this.whiteColor,
+      blackColor: blackColor ?? this.blackColor,
+      transparentColor: transparentColor ?? this.transparentColor,
       brandColor: brandColor ?? this.brandColor,
       successColor: successColor ?? this.successColor,
       warningColor: warningColor ?? this.warningColor,
       dangerColor: dangerColor ?? this.dangerColor,
       infoColor: infoColor ?? this.infoColor,
+      textColor: textColor ?? this.textColor,
+      textGeneralColor: textGeneralColor ?? this.textGeneralColor,
+      textOrderColor: textOrderColor ?? this.textOrderColor,
+      textPlaceColor: textPlaceColor ?? this.textPlaceColor,
     );
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is HColorStyle &&
+      other is HColorThemeData &&
           runtimeType == other.runtimeType &&
+          whiteColor == other.whiteColor &&
+          blackColor == other.blackColor &&
+          transparentColor == other.transparentColor &&
           brandColor == other.brandColor &&
           successColor == other.successColor &&
           warningColor == other.warningColor &&
           dangerColor == other.dangerColor &&
-          infoColor == other.infoColor;
+          infoColor == other.infoColor &&
+          textColor == other.textColor &&
+          textGeneralColor == other.textGeneralColor &&
+          textOrderColor == other.textOrderColor &&
+          textPlaceColor == other.textPlaceColor;
 
   @override
-  int get hashCode => brandColor.hashCode ^ successColor.hashCode ^ warningColor.hashCode ^ dangerColor.hashCode ^ infoColor.hashCode;
+  int get hashCode =>
+      whiteColor.hashCode ^
+      blackColor.hashCode ^
+      transparentColor.hashCode ^
+      brandColor.hashCode ^
+      successColor.hashCode ^
+      warningColor.hashCode ^
+      dangerColor.hashCode ^
+      infoColor.hashCode ^
+      textColor.hashCode ^
+      textGeneralColor.hashCode ^
+      textOrderColor.hashCode ^
+      textPlaceColor.hashCode;
 }
