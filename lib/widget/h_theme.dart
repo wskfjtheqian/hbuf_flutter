@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 import 'package:hbuf_flutter/widget/h_color.dart';
+import 'package:hbuf_flutter/widget/h_link.dart';
+import 'package:hbuf_flutter/widget/h_text.dart';
 
 import 'h_button.dart';
 import 'h_layout.dart';
@@ -37,11 +39,16 @@ class HThemeData {
 
   final HLayoutThemeData layoutTheme;
 
+  final HLinkThemeData linkTheme;
+
+  final HTextThemeData textTheme;
 
   const HThemeData({
+    this.textTheme = const HTextThemeData(),
     this.sizeTheme = const HSizeThemeData(),
     this.colorTheme = const HColorThemeData(),
     this.buttonTheme = const HButtonThemeData(),
     this.layoutTheme = const HLayoutThemeData(),
+    this.linkTheme = const HLinkThemeData(),
   });
 }

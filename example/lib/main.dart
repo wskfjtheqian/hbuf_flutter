@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 
+import 'page/page_h_link.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -60,6 +62,14 @@ class _MyHomePageState extends State<MyHomePage> {
               }));
             },
             child: const Text("PageHButton"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageHLink();
+              }));
+            },
+            child: const Text("PageHLink"),
           ),
         ],
       ),

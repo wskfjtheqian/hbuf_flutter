@@ -35,7 +35,7 @@ class HColorTheme extends InheritedTheme {
 
   final HColorThemeData data;
 
-  static HColorThemeData of(BuildContext context) {
+  static HColorThemeData _of(BuildContext context) {
     final theme = context.dependOnInheritedWidgetOfExactType<HColorTheme>();
     return theme?.data ?? HTheme.of(context).colorTheme;
   }
@@ -50,56 +50,53 @@ class HColorTheme extends InheritedTheme {
 }
 
 extension HColorContext on BuildContext {
-  HColorThemeData get colorStyle {
-    return HColorTheme.of(this);
-  }
 
   Color get brandColor {
-    return HColorTheme.of(this).brandColor;
+    return HColorTheme._of(this).brandColor;
   }
 
   Color get successColor {
-    return HColorTheme.of(this).successColor;
+    return HColorTheme._of(this).successColor;
   }
 
   Color get warningColor {
-    return HColorTheme.of(this).warningColor;
+    return HColorTheme._of(this).warningColor;
   }
 
   Color get dangerColor {
-    return HColorTheme.of(this).dangerColor;
+    return HColorTheme._of(this).dangerColor;
   }
 
   Color get infoColor {
-    return HColorTheme.of(this).infoColor;
+    return HColorTheme._of(this).infoColor;
   }
 
   Color get textColor {
-    return HColorTheme.of(this).textColor;
+    return HColorTheme._of(this).textColor;
   }
 
   Color get textGeneralColor {
-    return HColorTheme.of(this).textGeneralColor;
+    return HColorTheme._of(this).textGeneralColor;
   }
 
   Color get textOrderColor {
-    return HColorTheme.of(this).textOrderColor;
+    return HColorTheme._of(this).textOrderColor;
   }
 
   Color get textPlaceColor {
-    return HColorTheme.of(this).textPlaceColor;
+    return HColorTheme._of(this).textPlaceColor;
   }
 
   Color get whiteColor {
-    return HColorTheme.of(this).whiteColor;
+    return HColorTheme._of(this).whiteColor;
   }
 
   Color get blackColor {
-    return HColorTheme.of(this).blackColor;
+    return HColorTheme._of(this).blackColor;
   }
 
   Color get transparentColor {
-    return HColorTheme.of(this).transparentColor;
+    return HColorTheme._of(this).transparentColor;
   }
 }
 

@@ -4,14 +4,18 @@ import 'h_color.dart';
 import 'h_size.dart';
 import 'h_theme.dart';
 
+typedef HButtonTapCallback = Future<void> Function();
+
 class HButton extends StatefulWidget {
   final Widget child;
   final HButtonStyle? style;
+  final HButtonTapCallback? onTap;
 
   const HButton({
     Key? key,
     required this.child,
     this.style,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -25,7 +29,9 @@ class _HButtonState extends State<HButton> {
   void initState() {
     super.initState();
     _controller.addListener(() {
-      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {});
+      });
     });
   }
 
@@ -81,7 +87,11 @@ class _HButtonState extends State<HButton> {
       );
     }
     child = InkWell(
-      onTap: () {},
+      onTap: null != widget.onTap
+          ? () {
+              widget.onTap?.call();
+            }
+          : null,
       customBorder: shape,
       statesController: _controller,
       child: child,
@@ -93,6 +103,7 @@ class _HButtonState extends State<HButton> {
     } else {
       color = style.color?.resolve(_controller.value);
     }
+
     child = Material(
       color: color,
       shadowColor: style.shadowColor?.resolve(_controller.value),

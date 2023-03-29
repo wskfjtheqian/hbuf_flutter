@@ -336,3 +336,5 @@ class HBorder extends Border with HShapeBorder {
   @override
   int get hashCode => super.hashCode;
 }
+
+

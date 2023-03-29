@@ -206,6 +206,7 @@ class HSizeStyle {
     );
   }
 
+
   @override
   String toString() {
     return 'HSizeStyle{minWidth: $minWidth, minHeight: $minHeight, maxWidth: $maxWidth, maxHeight: $maxHeight, sizes: $sizes, count: $count}';
