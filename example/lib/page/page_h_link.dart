@@ -23,10 +23,14 @@ class PageHLink extends StatelessWidget {
                   HLink(
                     style: context.defaultLink.copyWith(),
                     child: Text("默认按钮"),
+                    onTap: () async {},
                   ),
                   HLink(
                     style: context.brandLink.copyWith(),
                     child: const Text("主要按钮"),
+                    onTap: () async {
+                      await Future.delayed(const Duration(seconds: 5));
+                    },
                   ),
                   HLink(
                     style: context.successLink.copyWith(),
@@ -38,66 +42,27 @@ class PageHLink extends StatelessWidget {
                   ),
                   HLink(
                     style: context.warningLink.copyWith(),
-                    child: const Text("警告按钮"),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.warning_amber),
+                        const Text("警告按钮"),
+                      ],
+                    ),
                   ),
                   HLink(
                     style: context.dangerLink.copyWith(),
-                    child: const Text("危险按钮"),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.dangerous_outlined),
+                        const Text("危险按钮"),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            //
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Wrap(
-            //     spacing: 8,
-            //     runSpacing: 8,
-            //     children: [
-            //       HLink(
-            //         style: context.defaultLink.copyWith(
-            //           shape: MaterialStatePropertyAll(CircleBorder()),
-            //         ),
-            //         child: Icon(Icons.search),
-            //       ),
-            //       HLink(
-            //         style: context.defaultLink.copyWith(
-            //           shape: MaterialStatePropertyAll(CircleBorder()),
-            //           color: MaterialStatePropertyAll(context.brandColor),
-            //         ),
-            //         child: Icon(Icons.edit_note),
-            //       ),
-            //       HLink(
-            //         style: context.defaultLink.copyWith(
-            //           shape: MaterialStatePropertyAll(CircleBorder()),
-            //           color: MaterialStatePropertyAll(context.successColor),
-            //         ),
-            //         child: Icon(Icons.check),
-            //       ),
-            //       HLink(
-            //         style: context.mediumLink.copyWith(
-            //           shape: MaterialStatePropertyAll(CircleBorder()),
-            //           color: MaterialStatePropertyAll(context.infoColor),
-            //         ),
-            //         child: Icon(Icons.mail_outline),
-            //       ),
-            //       HLink(
-            //         style: context.smallLink.copyWith(
-            //           shape: MaterialStatePropertyAll(CircleBorder()),
-            //           color: MaterialStatePropertyAll(context.warningColor),
-            //         ),
-            //         child: Icon(Icons.star_border),
-            //       ),
-            //       HLink(
-            //         style: context.miniLink.copyWith(
-            //           shape: MaterialStatePropertyAll(CircleBorder()),
-            //           color: MaterialStatePropertyAll(context.dangerColor),
-            //         ),
-            //         child: Icon(Icons.delete_forever_outlined),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),

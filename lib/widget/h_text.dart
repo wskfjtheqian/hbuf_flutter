@@ -81,6 +81,7 @@ class HTextThemeData {
     TextStyle? titleText,
     TextStyle? mainText,
   }) {
+
     return HTextThemeData(
       auxText: auxText ?? this.auxText,
       bodyMinText: bodyMinText ?? this.bodyMinText,
