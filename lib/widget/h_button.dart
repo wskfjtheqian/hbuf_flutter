@@ -5,17 +5,32 @@ import 'h_size.dart';
 import 'h_theme.dart';
 
 typedef HButtonTapCallback = Future<void> Function();
+typedef HButtonLongPressCallback = Future<void> Function();
 
 class HButton extends StatefulWidget {
   final Widget child;
   final HButtonStyle? style;
   final HButtonTapCallback? onTap;
+  final HButtonTapCallback? onDoubleTap;
+  final HButtonLongPressCallback? onLongPress;
+  final GestureTapDownCallback? onTapDown;
+  final GestureTapUpCallback? onTapUp;
+  final GestureTapCancelCallback? onTapCancel;
+  final ValueChanged<bool>? onHighlightChanged;
+  final ValueChanged<bool>? onHover;
 
   const HButton({
     Key? key,
     required this.child,
     this.style,
     this.onTap,
+    this.onDoubleTap,
+    this.onLongPress,
+    this.onTapDown,
+    this.onTapUp,
+    this.onTapCancel,
+    this.onHighlightChanged,
+    this.onHover,
   }) : super(key: key);
 
   @override
@@ -24,6 +39,8 @@ class HButton extends StatefulWidget {
 
 class _HButtonState extends State<HButton> {
   final MaterialStatesController _controller = MaterialStatesController();
+
+  bool _isWaiting = false;
 
   @override
   void initState() {
@@ -52,7 +69,9 @@ class _HButtonState extends State<HButton> {
     } else if (null == textStyle.color) {
       textStyle = textStyle.copyWith(color: null != style.color ? context.whiteColor : context.textGeneralColor);
     }
-
+    if (_controller.value.contains(MaterialState.disabled) && style.textStyle is MaterialStatePropertyAll) {
+      textStyle = textStyle.copyWith(color: textStyle.color?[400]);
+    }
     child = DefaultTextStyle(
       style: textStyle,
       child: IconTheme(
@@ -86,12 +105,37 @@ class _HButtonState extends State<HButton> {
         ),
       );
     }
+    if (_controller.value.contains(MaterialState.disabled) && style.textStyle is MaterialStatePropertyAll) {
+      shape = shape.copyWith(
+        side: shape.side.copyWith(
+          color: shape.side.color[50],
+          width: 0.5,
+          style: BorderStyle.solid,
+        ),
+      );
+    }
+    var mouseCursor = (style.mouseCursor ??
+            MaterialStateProperty.resolveWith((states) {
+              if (states.contains(MaterialState.disabled)) {
+                return SystemMouseCursors.forbidden;
+              }
+              return SystemMouseCursors.click;
+            }))
+        .resolve(_controller.value);
+    if (_isWaiting) {
+      mouseCursor = SystemMouseCursors.wait;
+    }
+
     child = InkWell(
-      onTap: null != widget.onTap
-          ? () {
-              widget.onTap?.call();
-            }
-          : null,
+      mouseCursor: mouseCursor,
+      onTap: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onTap!),
+      onDoubleTap: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onDoubleTap!),
+      onLongPress: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onLongPress!),
+      onTapDown: widget.onTapDown,
+      onTapUp: widget.onTapUp,
+      onTapCancel: widget.onTapCancel,
+      onHighlightChanged: widget.onHighlightChanged,
+      onHover: widget.onHover,
       customBorder: shape,
       statesController: _controller,
       child: child,
@@ -103,7 +147,9 @@ class _HButtonState extends State<HButton> {
     } else {
       color = style.color?.resolve(_controller.value);
     }
-
+    if (_controller.value.contains(MaterialState.disabled) && style.textStyle is MaterialStatePropertyAll) {
+      color = color?[50];
+    }
     child = Material(
       color: color,
       shadowColor: style.shadowColor?.resolve(_controller.value),
@@ -131,6 +177,15 @@ class _HButtonState extends State<HButton> {
       child: child,
     );
   }
+
+  Future<void> onWaitingEvent(HButtonTapCallback callback) async {
+    try {
+      setState(() => _isWaiting = true);
+      await callback();
+    } finally {
+      setState(() => _isWaiting = false);
+    }
+  }
 }
 
 class HButtonStyle {
@@ -147,6 +202,7 @@ class HButtonStyle {
   final MaterialStateProperty<double> elevation;
   final MaterialStateProperty<OutlinedBorder> shape;
   final MaterialStateProperty<TextStyle> textStyle;
+  final MaterialStateProperty<MouseCursor>? mouseCursor;
   final bool plain;
 
   const HButtonStyle({
@@ -164,6 +220,7 @@ class HButtonStyle {
     this.shape = const MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4)))),
     this.plain = false,
     this.textStyle = const MaterialStatePropertyAll(TextStyle(fontSize: 14)),
+    this.mouseCursor,
   });
 
   HButtonStyle copyWith({
@@ -175,12 +232,12 @@ class HButtonStyle {
     MaterialStateProperty<int>? count,
     MaterialStateProperty<EdgeInsets>? margin,
     MaterialStateProperty<EdgeInsets>? padding,
-    MaterialStateProperty<BorderRadius>? borderRadius,
     MaterialStateProperty<Color>? color,
     MaterialStateProperty<Color>? shadowColor,
     MaterialStateProperty<double>? elevation,
     MaterialStateProperty<OutlinedBorder>? shape,
     MaterialStateProperty<TextStyle>? textStyle,
+    MaterialStateProperty<MouseCursor>? mouseCursor,
     bool? plain,
   }) {
     return HButtonStyle(
@@ -197,7 +254,58 @@ class HButtonStyle {
       elevation: elevation ?? this.elevation,
       shape: shape ?? this.shape,
       textStyle: textStyle ?? this.textStyle,
+      mouseCursor: mouseCursor ?? this.mouseCursor,
       plain: plain ?? this.plain,
+    );
+  }
+
+  HButtonStyle copyFill({
+    MaterialStateProperty<Map<double, int>>? sizes,
+    MaterialStateProperty<EdgeInsets>? margin,
+    MaterialStateProperty<EdgeInsets>? padding,
+    MaterialStateProperty<Color>? color,
+    MaterialStateProperty<Color>? shadowColor,
+    MaterialStateProperty<MouseCursor>? mouseCursor,
+  }) {
+    return HButtonStyle(
+      minWidth: minWidth,
+      minHeight: minHeight,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      sizes: this.sizes ?? sizes,
+      count: count,
+      margin: this.margin ?? margin,
+      padding: this.padding ?? padding,
+      color: this.color ?? color,
+      shadowColor: this.shadowColor ?? shadowColor,
+      elevation: elevation,
+      shape: shape,
+      textStyle: textStyle,
+      mouseCursor: this.mouseCursor ?? mouseCursor,
+      plain: plain,
+    );
+  }
+
+  HButtonStyle merge(HButtonStyle? other) {
+    if (other == null) {
+      return this;
+    }
+    return copyWith(
+      minWidth: other.minWidth,
+      minHeight: other.minHeight,
+      maxWidth: other.maxWidth,
+      maxHeight: other.maxHeight,
+      sizes: other.sizes,
+      count: other.count,
+      margin: other.margin,
+      padding: other.padding,
+      color: other.color,
+      shadowColor: other.shadowColor,
+      elevation: other.elevation,
+      shape: other.shape,
+      textStyle: other.textStyle,
+      mouseCursor: other.mouseCursor,
+      plain: other.plain,
     );
   }
 }

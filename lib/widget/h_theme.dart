@@ -4,6 +4,7 @@ import 'package:hbuf_flutter/widget/h_color.dart';
 import 'package:hbuf_flutter/widget/h_link.dart';
 import 'package:hbuf_flutter/widget/h_text.dart';
 
+import 'h_border.dart';
 import 'h_button.dart';
 import 'h_layout.dart';
 
@@ -43,6 +44,10 @@ class HThemeData {
 
   final HTextThemeData textTheme;
 
+  final HBorderSideThemeData borderSideTheme;
+
+  final HRadiusThemeData radiusTheme;
+
   const HThemeData({
     this.textTheme = const HTextThemeData(),
     this.sizeTheme = const HSizeThemeData(),
@@ -50,5 +55,7 @@ class HThemeData {
     this.buttonTheme = const HButtonThemeData(),
     this.layoutTheme = const HLayoutThemeData(),
     this.linkTheme = const HLinkThemeData(),
+    this.borderSideTheme = const HBorderSideThemeData(),
+    this.radiusTheme = const HRadiusThemeData(),
   });
 }

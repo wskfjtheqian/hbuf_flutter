@@ -1,3 +1,4 @@
+import 'package:example/page/page_h_border.dart';
 import 'package:example/page/page_h_button.dart';
 import 'package:example/page/page_h_layout.dart';
 import 'package:example/page/page_h_size.dart';
@@ -70,6 +71,13 @@ class _MyHomePageState extends State<MyHomePage> {
               }));
             },
             child: const Text("PageHLink"),
+          ), TextButton(
+            onPressed: () {
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageHBorder();
+              }));
+            },
+            child: const Text("PageHBorder"),
           ),
         ],
       ),

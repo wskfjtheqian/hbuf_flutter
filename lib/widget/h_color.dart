@@ -50,7 +50,6 @@ class HColorTheme extends InheritedTheme {
 }
 
 extension HColorContext on BuildContext {
-
   Color get brandColor {
     return HColorTheme._of(this).brandColor;
   }
@@ -129,6 +128,18 @@ class HColorThemeData {
   //占位文字
   final Color textPlaceColor;
 
+  //一级边框
+  final Color border1Color;
+
+  //二级边框
+  final Color border2Color;
+
+  //三级边框
+  final Color border3Color;
+
+  //四级边框
+  final Color border4Color;
+
   const HColorThemeData({
     this.brandColor = const Color(0xff409EFF),
     this.successColor = const Color(0xFF67C23A),
@@ -142,6 +153,10 @@ class HColorThemeData {
     this.whiteColor = const Color(0xFFFFFFFF),
     this.blackColor = const Color(0xFF000000),
     this.transparentColor = const Color(0x00000000),
+    this.border1Color = const Color(0xFFDCDFE6),
+    this.border2Color = const Color(0xFFE4E7ED),
+    this.border3Color = const Color(0xFFEBEEF5),
+    this.border4Color = const Color(0xFFF2F6FC),
   });
 
   HColorThemeData copyWith({
@@ -157,6 +172,10 @@ class HColorThemeData {
     Color? textGeneralColor,
     Color? textOrderColor,
     Color? textPlaceColor,
+    Color? border1Color,
+    Color? border2Color,
+    Color? border3Color,
+    Color? border4Color,
   }) {
     return HColorThemeData(
       whiteColor: whiteColor ?? this.whiteColor,
@@ -171,6 +190,10 @@ class HColorThemeData {
       textGeneralColor: textGeneralColor ?? this.textGeneralColor,
       textOrderColor: textOrderColor ?? this.textOrderColor,
       textPlaceColor: textPlaceColor ?? this.textPlaceColor,
+      border1Color: border1Color ?? this.border1Color,
+      border2Color: border2Color ?? this.border2Color,
+      border3Color: border3Color ?? this.border3Color,
+      border4Color: border4Color ?? this.border4Color,
     );
   }
 
@@ -190,7 +213,11 @@ class HColorThemeData {
           textColor == other.textColor &&
           textGeneralColor == other.textGeneralColor &&
           textOrderColor == other.textOrderColor &&
-          textPlaceColor == other.textPlaceColor;
+          textPlaceColor == other.textPlaceColor &&
+          border1Color == other.border1Color &&
+          border2Color == other.border2Color &&
+          border3Color == other.border3Color &&
+          border4Color == other.border4Color;
 
   @override
   int get hashCode =>
@@ -205,5 +232,9 @@ class HColorThemeData {
       textColor.hashCode ^
       textGeneralColor.hashCode ^
       textOrderColor.hashCode ^
-      textPlaceColor.hashCode;
+      textPlaceColor.hashCode ^
+      border1Color.hashCode ^
+      border2Color.hashCode ^
+      border3Color.hashCode ^
+      border4Color.hashCode;
 }
