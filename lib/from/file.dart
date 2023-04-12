@@ -360,9 +360,10 @@ class FileFormBuild {
   OnFileFormBuild onBuild = onFileFormBuild;
   EditableTextContextMenuBuilder? contextMenuBuilder = _defaultContextMenuBuilder;
   List<String>? extensions;
+  bool visible = true;
 
   Widget build(BuildContext context) {
-    return onBuild(context, this);
+    return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
   }
 
   static Widget _defaultContextMenuBuilder(BuildContext context, EditableTextState editableTextState) {

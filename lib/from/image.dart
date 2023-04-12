@@ -347,8 +347,9 @@ class ImageFormBuild {
   EdgeInsetsGeometry padding = const EdgeInsets.only();
   OnImageFormBuild onBuild = onImageFormBuild;
   List<String>? extensions;
+  bool visible = true;
 
   Widget build(BuildContext context) {
-    return onBuild(context, this);
+    return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
   }
 }

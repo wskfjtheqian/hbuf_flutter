@@ -324,8 +324,9 @@ class DatetimeFormBuild {
   Map<double, int> widthSizes = {};
   bool readOnly = false;
   EdgeInsetsGeometry padding = const EdgeInsets.only();
+  bool visible = true;
 
   Widget build(BuildContext context) {
-    return onBuild(context, this);
+    return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
   }
 }

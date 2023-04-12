@@ -95,8 +95,9 @@ class MenuFormBuild<T> {
   EdgeInsetsGeometry padding = const EdgeInsets.only();
   OnMenuFormBuild<T> onBuild = onMenuFormBuild<T>;
   OnMenuNoneText? noneText;
+  bool visible = true;
 
   Widget build(BuildContext context) {
-    return onBuild(context, this);
+    return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
   }
 }

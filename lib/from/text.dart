@@ -130,8 +130,9 @@ class TextFormBuild {
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
   OnTextFormBuild onBuild = onTextFormBuild;
+  bool visible = true;
 
   Widget build(BuildContext context) {
-    return onBuild(context, this);
+    return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
   }
 }

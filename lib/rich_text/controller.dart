@@ -158,6 +158,7 @@ class RichTextEditingController extends TextEditingController {
       } else if (item is RImg) {
         t.len += 1;
         yield WidgetSpan(
+          style: TextStyle(height:item.height ),
           child: Image.network(
             item.src ?? "",
             width: item.width,
