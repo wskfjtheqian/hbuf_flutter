@@ -118,7 +118,7 @@ class _SwitchFieldState extends State<_SwitchField> {
           height: 40,
           child: Switch(
             onChanged: (val) {
-              if (widget.readOnly) {
+              if (!widget.readOnly) {
                 _focusNode?.requestFocus();
                 widget.onChanged?.call(val);
               }
