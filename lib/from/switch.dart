@@ -15,6 +15,7 @@ class SwitchFormField extends FormField<bool> {
     String? restorationId,
     InputDecoration? decoration = const InputDecoration(),
     this.focusNode,
+    bool readOnly = false,
   }) : super(
           key: key,
           restorationId: restorationId,
@@ -39,6 +40,7 @@ class SwitchFormField extends FormField<bool> {
                 decoration: effectiveDecoration,
                 value: state.value ?? false,
                 onChanged: onChangedHandler,
+                readOnly: readOnly,
               ),
             );
           },
@@ -63,12 +65,15 @@ class _SwitchField extends StatefulWidget {
 
   final FocusNode? focusNode;
 
+  final bool readOnly;
+
   const _SwitchField({
     Key? key,
     required this.decoration,
     this.onChanged,
     required this.value,
     this.focusNode,
+    required this.readOnly,
   }) : super(key: key);
 
   @override
@@ -113,8 +118,10 @@ class _SwitchFieldState extends State<_SwitchField> {
           height: 40,
           child: Switch(
             onChanged: (val) {
-              _focusNode?.requestFocus();
-              widget.onChanged?.call(val);
+              if (widget.readOnly) {
+                _focusNode?.requestFocus();
+                widget.onChanged?.call(val);
+              }
             },
             value: widget.value,
             focusNode: _focusNode,
@@ -150,6 +157,7 @@ Widget onSwitchFormBuild(BuildContext context, SwitchFormBuild field) {
           autovalidateMode: field.autovalidateMode,
           initialValue: field.initialValue,
           enabled: field.enabled,
+          readOnly: field.readOnly,
         ),
       ),
     ),
@@ -173,6 +181,7 @@ class SwitchFormBuild {
   int widthCount = 24;
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
+  bool readOnly = true;
 
   Widget build(BuildContext context) {
     return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
