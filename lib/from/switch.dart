@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 class SwitchFormField extends FormField<bool> {
   final FocusNode? focusNode;
@@ -125,5 +126,55 @@ class _SwitchFieldState extends State<_SwitchField> {
 
   void _onFocusNode() {
     setState(() {});
+  }
+}
+
+typedef OnSwitchFormBuild = Widget Function(BuildContext context, SwitchFormBuild field);
+
+Widget onSwitchFormBuild(BuildContext context, SwitchFormBuild field) {
+  return AutoLayout(
+    minHeight: field.minHeight,
+    sizes: field.widthSizes,
+    count: field.widthCount,
+    child: Padding(
+      padding: field.padding,
+      child: Theme(
+        data: Theme.of(context).copyWith(visualDensity: const VisualDensity(horizontal: -4, vertical: -4)),
+        child: SwitchFormField(
+          key: field.key,
+          onChanged: field.onChanged ?? (val) {},
+          focusNode: field.focusNode,
+          decoration: field.decoration,
+          onSaved: field.onSaved,
+          validator: field.validator,
+          autovalidateMode: field.autovalidateMode,
+          initialValue: field.initialValue,
+          enabled: field.enabled,
+        ),
+      ),
+    ),
+  );
+}
+
+class SwitchFormBuild {
+  Key? key;
+  FormFieldSetter<bool>? onSaved;
+  FormFieldSetter<bool>? onChanged;
+  FormFieldValidator<bool>? validator;
+  bool? initialValue;
+  bool? enabled = true;
+  AutovalidateMode? autovalidateMode;
+  String? restorationId;
+  InputDecoration? decoration = const InputDecoration();
+  FocusNode? focusNode;
+  bool visible = true;
+  OnSwitchFormBuild onBuild = onSwitchFormBuild;
+  double minHeight = 76;
+  int widthCount = 24;
+  Map<double, int> widthSizes = {};
+  EdgeInsetsGeometry padding = const EdgeInsets.only();
+
+  Widget build(BuildContext context) {
+    return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);
   }
 }

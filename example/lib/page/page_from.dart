@@ -29,6 +29,7 @@ class _PageFromState extends State<PageFrom> {
               onAdd: (context, field, {extensions}) async {},
             ),
             DateTimeFormField(),
+            SwitchFormField(),
           ],
         ),
       ),
