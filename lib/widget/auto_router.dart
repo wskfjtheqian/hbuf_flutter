@@ -171,13 +171,12 @@ class AppRouterData {
 class _HistoryRouter {
   RouterDataNotifier? _data;
   bool _isInit = false;
-  AutoPath _path;
-  AppRouterData _routerData;
-  RouterWidgetBuilder _builder;
-  Completer result = new Completer.sync();
+  final AutoPath _path;
+  final AppRouterData _routerData;
+  Completer result = Completer.sync();
   final List<WillPopCallback> _willPopCallbacks = <WillPopCallback>[];
 
-  _HistoryRouter(this._routerData, this._path, this._builder);
+  _HistoryRouter(this._routerData, this._path);
 
   @override
   String toString() {
@@ -210,7 +209,7 @@ class BaseRouterDelegate extends RouterDelegate<List<AppRouterData>> with Change
   _HistoryRouter? _emptyRouter;
 
   BaseRouterDelegate() {
-    _emptyRouter = _HistoryRouter(AppRouterData(path: "/"), AutoPath("/"), (context, params) => _backgroundBuilder?.call(context) ?? _DefaultWidget());
+    _emptyRouter = _HistoryRouter(AppRouterData(path: "/"), AutoPath("/", (context, params) => _backgroundBuilder?.call(context) ?? _DefaultWidget()));
   }
 
   Page<dynamic> pageBuilder(BuildContext context, RouterDataWidget dataWidget, _HistoryRouter router) {
@@ -225,18 +224,18 @@ class BaseRouterDelegate extends RouterDelegate<List<AppRouterData>> with Change
         child: Padding(
           padding: const EdgeInsets.all(36),
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(8)),
               boxShadow: [
                 BoxShadow(color: Color(0x40888888), blurRadius: 8, spreadRadius: 4, offset: Offset(0, 3)),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
               child: SizedBox(
-                child: child,
                 width: size.width,
                 height: size.height,
+                child: child,
               ),
             ),
           ),
@@ -282,7 +281,7 @@ class BaseRouterDelegate extends RouterDelegate<List<AppRouterData>> with Change
     for (var router in builders) {
       pages.add(pageBuilder(
         context,
-        router._builder(context, router._routerData.params),
+        router._path.builder!(context, router._routerData.params),
         router,
       ));
     }
@@ -370,7 +369,7 @@ class AppRouterDelegate extends BaseRouterDelegate
 
   AppRouterDelegate._();
 
-  Map<AutoPath, RouterWidgetBuilder> _routers = {};
+  List<AutoPath> _routers = [];
 
   List<_HistoryRouter> _historyList = [];
 
@@ -388,7 +387,7 @@ class AppRouterDelegate extends BaseRouterDelegate
     for (var router in builders) {
       pages.add(pageBuilder(
         context,
-        router._builder(context, router._routerData.params),
+        router._path.builder!(context, router._routerData.params),
         router,
       ));
     }
@@ -445,7 +444,7 @@ class AppRouterDelegate extends BaseRouterDelegate
       builders.add(item);
     }
     if (builders.isEmpty) {
-      builders.add(_HistoryRouter(AppRouterData(path: "/"), AutoPath("/"), (context, params) => _backgroundBuilder?.call(context) ?? _DefaultWidget()));
+      builders.add(_HistoryRouter(AppRouterData(path: "/"), AutoPath("/", (context, params) => _backgroundBuilder?.call(context) ?? _DefaultWidget())));
     }
     return builders;
   }
@@ -464,14 +463,14 @@ class AppRouterDelegate extends BaseRouterDelegate
   }
 
   @override
-  List<AppRouterData>? get currentConfiguration => [this._historyList.isEmpty ? AppRouterData(path: "") : this._historyList.last._routerData];
+  List<AppRouterData>? get currentConfiguration => [_historyList.isEmpty ? AppRouterData(path: "") : _historyList.last._routerData];
 
   @override
   Future<void> setNewRoutePath(List<AppRouterData> configuration) async {
     if (configuration.isNotEmpty) {
-      if (this._historyList.isNotEmpty) {
+      if (_historyList.isNotEmpty) {
         if (Uri(path: configuration.last.path, queryParameters: configuration.last.params) ==
-            Uri(path: this._historyList.last._routerData.path, queryParameters: this._historyList.last._routerData.params)) {
+            Uri(path: _historyList.last._routerData.path, queryParameters: _historyList.last._routerData.params)) {
           return;
         }
       }
@@ -479,10 +478,10 @@ class AppRouterDelegate extends BaseRouterDelegate
     }
   }
 
-  AutoPath? _findKey(String path) {
-    for (var item in _routers.entries) {
-      if (item.key.path == path) {
-        return item.key;
+  AutoPath? _findPath(String path) {
+    for (var item in _routers) {
+      if (item._pathReg.hasMatch(path)) {
+        return item;
       }
     }
     return null;
@@ -491,24 +490,33 @@ class AppRouterDelegate extends BaseRouterDelegate
   Future<_HistoryRouter?> _addHistoryList(List<AppRouterData> configuration) async {
     if (configuration.isNotEmpty) {
       for (var item in configuration) {
-        var key = _findKey(item.path);
+        var key = _findPath(item.path);
         if (null != key) {
-          this._historyList.add(_HistoryRouter(item, key, _routers[key]!));
+          _historyList.add(_HistoryRouter(item, key));
         }
       }
       notifyListeners();
-      return this._historyList.last;
+      return _historyList.last;
     }
     return null;
   }
 
   Future<T?> pushNamed<T>(String name, Map<String, dynamic>? params) async {
-    if (!_routers.containsKey(AutoPath(name))) {
+    var router = _findPath(name);
+    if (null == router) {
       throw "Not fond Router by $name";
     }
 
-    var router = await _addHistoryList(_paresPath(name, params ?? {}));
-    return await router!.result.future;
+    params ??= {};
+    var list = name.split("/");
+    for (var item in router._keys.entries) {
+      if (params.containsKey(item.key)) {
+        throw "Router $name and params repetitive key : ${item.key}";
+      }
+      params[item.key] = list[item.value];
+    }
+    var history = await _addHistoryList(_paresPath(name, params));
+    return await history!.result.future;
   }
 
   Future<T?> pushNamedAndRemoveUntil<T>(String name, AutoRoutePredicate? predicate, Map<String, dynamic>? params) async {
@@ -522,13 +530,7 @@ class AppRouterDelegate extends BaseRouterDelegate
       }
       return false;
     });
-
-    if (!_routers.containsKey(AutoPath(name))) {
-      throw "Not fond Router by $name";
-    }
-
-    var router = await _addHistoryList(_paresPath(name, params ?? {}));
-    return await router!.result.future;
+    return await pushNamed(name, params);
   }
 
   void popUntil(AutoRoutePredicate predicate) {
@@ -577,13 +579,12 @@ class AppRouterDelegate extends BaseRouterDelegate
 
   @override
   AutoPath getAutoPath(String path) {
-    var temp = AutoPath(path);
-    for (var item in _routers.entries) {
-      if (item.key == temp) {
-        return item.key;
+    for (var item in _routers) {
+      if (item._pathReg.hasMatch(path)) {
+        return item;
       }
     }
-    return null!;
+    throw "Not found router :$path";
   }
 
   bool hashRouter(HashRoute hashRoute) {
@@ -723,11 +724,48 @@ class _SubRouterState<E extends BaseRouterDelegate, T extends SubRouter> extends
   }
 }
 
+class _paramKey {
+  final int start;
+  final int end;
+  final String key;
+
+  _paramKey({
+    required this.key,
+    required this.start,
+    required this.end,
+  });
+}
+
+RegExp _paramRegExp = RegExp(r':\w+');
+
 class AutoPath {
   final String path;
   final IsDialog? isDialog;
+  final RouterWidgetBuilder? builder;
+  late RegExp _pathReg;
+  final Map<String, int> _keys = {};
 
-  AutoPath(this.path, [this.isDialog]);
+  AutoPath(this.path, this.builder, [this.isDialog]) {
+    String regStr = "";
+    var list = path.split("/");
+    for (var i = 0; i < list.length; i++) {
+      var item = list[i];
+      if (item.isEmpty) {
+        continue;
+      }
+      if (_paramRegExp.hasMatch(item)) {
+        var key = item.substring(1);
+        if (_keys.containsKey(key)) {
+          throw "Router $path repetitive key : $key";
+        }
+        _keys[key] = i;
+        regStr += "/(\\w+)";
+      } else {
+        regStr += "/${list[i]}";
+      }
+    }
+    _pathReg = RegExp(regStr);
+  }
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is AutoPath && runtimeType == other.runtimeType && path == other.path;
@@ -743,7 +781,7 @@ class AutoPath {
 
 class AutoRouter extends SubRouter {
   final Widget Function(BuildContext context, AppRouterDelegate appRouter) builder;
-  final Map<AutoPath, RouterWidgetBuilder> routers;
+  final List<AutoPath> routers;
   final String? home;
 
   const AutoRouter({
@@ -800,6 +838,8 @@ class AutoRouterState extends _SubRouterState<AppRouterDelegate, AutoRouter> wit
     _delegate._provider = PlatformRouteInformationProvider(initialRouteInformation: RouteInformation(location: _home));
     _delegate._routers = widget.routers;
     _delegate._backgroundBuilder = widget.backgroundBuilder;
+    _delegate._routers.sort((a, b) => b.path.compareTo(a.path));
+
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -812,8 +852,8 @@ class AutoRouterState extends _SubRouterState<AppRouterDelegate, AutoRouter> wit
 
   @override
   void didUpdateWidget(covariant AutoRouter oldWidget) {
-    _delegate._routers = oldWidget.routers;
-    _delegate._backgroundBuilder = oldWidget.backgroundBuilder;
+    _delegate._routers = widget.routers;
+    _delegate._backgroundBuilder = widget.backgroundBuilder;
     super.didUpdateWidget(oldWidget);
   }
 
@@ -893,7 +933,7 @@ class AutoRoutePopScope extends StatefulWidget {
 
   final WillPopCallback? onWillPop;
 
-  AutoRoutePopScope({Key? key, required this.child, this.onWillPop}) : super(key: key);
+  const AutoRoutePopScope({Key? key, required this.child, this.onWillPop}) : super(key: key);
 
   @override
   _AutoRoutePopScopeState createState() => _AutoRoutePopScopeState();
@@ -1083,8 +1123,7 @@ class _CupertinoBackGestureController<T> {
   _CupertinoBackGestureController({
     required this.navigator,
     required this.controller,
-  })  : assert(navigator != null),
-        assert(controller != null) {
+  }) {
     navigator.didStartUserGesture();
   }
 
@@ -1112,10 +1151,11 @@ class _CupertinoBackGestureController<T> {
     // If the user releases the page before mid screen with sufficient velocity,
     // or after mid screen, we should animate the page out. Otherwise, the page
     // should be animated back in.
-    if (velocity.abs() >= _kMinFlingVelocity)
+    if (velocity.abs() >= _kMinFlingVelocity) {
       animateForward = velocity <= 0;
-    else
+    } else {
       animateForward = controller.value > 0.5;
+    }
 
     if (animateForward) {
       // The closer the panel is to dismissing, the shorter the animation is.
@@ -1160,10 +1200,7 @@ class _CupertinoBackGestureDetector<T> extends StatefulWidget {
     required this.enabledCallback,
     required this.onStartPopGesture,
     required this.child,
-  })  : assert(enabledCallback != null),
-        assert(onStartPopGesture != null),
-        assert(child != null),
-        super(key: key);
+  }) : super(key: key);
 
   final Widget child;
 
