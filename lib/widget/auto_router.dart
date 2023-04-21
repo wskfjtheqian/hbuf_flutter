@@ -306,7 +306,6 @@ class BaseRouterDelegate extends RouterDelegate<List<AppRouterData>> with Change
     if (builders.isEmpty) {
       builders.add(_emptyRouter!);
     }
-
     return builders;
   }
 
