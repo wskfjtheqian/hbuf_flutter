@@ -12,6 +12,7 @@ class PageRouter extends StatefulWidget {
 class _PageRouterState extends State<PageRouter> {
   @override
   Widget build(BuildContext context) {
+    var id = HRouteModel.of(context).getParams("id");
     return Scaffold(
       appBar: AppBar(
         title: const Text("Multi-level routing"),
@@ -23,7 +24,7 @@ class _PageRouterState extends State<PageRouter> {
               TextButton(
                 onPressed: () {
                   HRouter.of(context).pushNamedAndRemoveUntil(
-                    "/home/router/1",
+                    "/home/router/$id/1",
                     (path) => path.isSub("/home/router"),
                     params: {"name": "name"},
                   );
@@ -33,7 +34,7 @@ class _PageRouterState extends State<PageRouter> {
               TextButton(
                 onPressed: () {
                   HRouter.of(context).pushNamedAndRemoveUntil(
-                    "/home/router/2",
+                    "/home/router/$id/2",
                     (path) => path.isSub("/home/router"),
                     params: {"name": "name"},
                   );
@@ -42,9 +43,9 @@ class _PageRouterState extends State<PageRouter> {
               ),
             ],
           ),
-          const Expanded(
+          Expanded(
             child: HSubRouter(
-              prefix: '/home/router',
+              prefix: '/home/router/$id',
             ),
           ),
         ],

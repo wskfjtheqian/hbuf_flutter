@@ -29,9 +29,9 @@ class MyApp extends StatelessWidget {
         HPath("/home/menu", (context) => const PageMenuBar()),
         HPath("/home/particle1", (context) => const PageParticle1()),
         HPath("/home/rich_text", (context) => const PageRichText()),
-        HPath("/home/router", (context) => const PageRouter()),
-        HPath("/home/router/1", (context) => const PageRouter1()),
-        HPath("/home/router/2", (context) => const PageRouter2()),
+        HPath("/home/router/:id", (context) => const PageRouter()),
+        HPath("/home/router/:id/1", (context) => const PageRouter1()),
+        HPath("/home/router/:id/2", (context) => const PageRouter2()),
       },
       builder: (context, HRouterDelegate delegate) {
         return MaterialApp.router(
@@ -148,7 +148,7 @@ class _PageHomeState extends State<PageHome> {
                 ),
                 TextButton(
                   onPressed: () {
-                    HRouter.of(context).pushName("/home/router");
+                    HRouter.of(context).pushName("/home/router/12");
                   },
                   child: const Text("Multi-level routing"),
                 ),
