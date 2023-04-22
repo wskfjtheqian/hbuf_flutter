@@ -1,36 +1,16 @@
 import 'package:flutter/widgets.dart';
 
-import 'delegate.dart';
+typedef HRouterWidgetBuilder = Widget Function(BuildContext context);
 
-typedef CheckDialog = bool Function(BuildContext context, HBaseRouterDelegate delegate);
-typedef RouterWidgetBuilder = Widget Function(BuildContext context, Map<String, dynamic>? params);
+RegExp _paramRegExp = RegExp(r':\w+');
 
-class ParamKey {
-  final int start;
-  final int end;
-  final String key;
-
-  ParamKey._({
-    required this.key,
-    required this.start,
-    required this.end,
-  });
-}
-
-final _paramExp = RegExp(r':\w+');
-
-class HRouterPath {
+class HPath {
   final String path;
-
-  final CheckDialog? checkDialog;
-
-  final RouterWidgetBuilder? builder;
-
+  final HRouterWidgetBuilder builder;
   late RegExp _pathReg;
-
   final Map<String, int> _keys = {};
 
-  HRouterPath(this.path, this.builder, [this.checkDialog]) {
+  HPath(this.path, this.builder) {
     String regStr = "";
     var list = path.split("/");
     for (var i = 0; i < list.length; i++) {
@@ -38,7 +18,7 @@ class HRouterPath {
       if (item.isEmpty) {
         continue;
       }
-      if (_paramExp.hasMatch(item)) {
+      if (_paramRegExp.hasMatch(item)) {
         var key = item.substring(1);
         if (_keys.containsKey(key)) {
           throw "Router $path repetitive key : $key";
@@ -52,9 +32,46 @@ class HRouterPath {
     _pathReg = RegExp(regStr);
   }
 
-  Map<String, int> get keys => _keys;
+  RegExp get pathReg => _pathReg;
 
-  bool hasPath(String path) {
+  @override
+  String toString() {
+    return path;
+  }
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is HPath && runtimeType == other.runtimeType && path == other.path;
+
+  @override
+  int get hashCode => path.hashCode;
+
+  bool hasMatch(String path) {
     return _pathReg.hasMatch(path);
+  }
+
+  void getPathParams(String name, Map<String, String> params) {
+    var list = name.split("/");
+    for (var item in _keys.entries) {
+      if (params.containsKey(item.key)) {
+        throw "Router $name and params repetitive key : ${item.key}";
+      }
+      params[item.key] = list[item.value];
+    }
+  }
+
+  bool isSub(String prefix) {
+    var parent = prefix.split("/");
+    var subs = path.split("/");
+    if (subs.length <= parent.length) {
+      return false;
+    }
+    for (var i = 0; i < parent.length; i++) {
+      if (parent[i] != subs[i]) {
+        if (!(_paramRegExp.hasMatch(subs[i]) && !_paramRegExp.hasMatch(parent[i]))) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

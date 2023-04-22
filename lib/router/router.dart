@@ -1,147 +1,91 @@
 import 'package:flutter/widgets.dart';
+import 'package:hbuf_flutter/router/path.dart';
 
 import 'delegate.dart';
 
-typedef HCheckRouter = bool Function();
-typedef HRouterBuilder = Function(BuildContext context);
+typedef HRouterBuilder = Widget Function(BuildContext context, HRouterDelegate delegate);
 
 class HSubRouter extends StatefulWidget {
-  final HCheckRouter? checkRouter;
-  final HRouterBuilder? backgroundBuilder;
+  final String prefix;
 
-  const HSubRouter({
-    Key? key,
-    this.checkRouter,
-    this.backgroundBuilder,
-  }) : super(key: key);
-
-  static _HSubRouterState? of(BuildContext context) {
-    return context.findAncestorStateOfType<_HSubRouterState>();
-  }
+  const HSubRouter({Key? key, required this.prefix}) : super(key: key);
 
   @override
-  _HSubRouterState createState() => _HSubRouterState<HBaseRouterDelegate, HSubRouter>(HBaseRouterDelegate());
+  State<HSubRouter> createState() => _HSubRouterState<HSubRouter>();
 }
 
-class _HSubRouterState<E extends HBaseRouterDelegate, T extends HSubRouter> extends State<T> {
-  final E _delegate;
-  _HSubRouterState? _routerState;
+class _HSubRouterState<T extends HSubRouter> extends State<T> {
+  final HBaseDelegate _baseDelegate = HBaseDelegate();
 
-  _HSubRouterState(this._delegate);
+  HBaseDelegate? _parent;
+
+  HBaseDelegate get delegate => _baseDelegate;
 
   @override
   void initState() {
-    _routerState = context.findAncestorStateOfType<_HSubRouterState>();
-    if (null != _routerState) {
-      _delegate.parent = _routerState!._delegate;
-      _routerState!._addSubRouterDelegate(_delegate);
-    }
-    _delegate.checkRouter = widget.checkRouter ?? _checkRouter;
-    _delegate.backgroundBuilder = widget.backgroundBuilder;
+    _parent = context.findAncestorStateOfType<_HSubRouterState>()?.delegate;
+    delegate.parent = _parent;
+    delegate.prefix = widget.prefix;
+    _parent?.addSubRouterDelegate(delegate);
+    delegate.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
   @override
   void dispose() {
-    _routerState?._removeSubRouterDelegate(_delegate);
+    _parent?.removeSubRouterDelegate(delegate);
+    delegate.dispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant T oldWidget) {
-    _delegate._checkRouter = oldWidget.checkRouter ?? _checkRouter;
-    _delegate._backgroundBuilder = oldWidget.backgroundBuilder;
+    var parent = context.findAncestorStateOfType<_HSubRouterState>()?.delegate;
+    if (_parent != parent) {
+      _parent?.removeSubRouterDelegate(delegate);
+    }
+    _parent = parent;
+    delegate.parent = _parent;
+    _parent?.addSubRouterDelegate(delegate);
+    delegate.prefix = widget.prefix;
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Router(routerDelegate: _delegate);
-  }
-
-  void _addSubRouterDelegate(HBaseRouterDelegate delegate) {
-    _delegate.addSubRouterDelegate(delegate);
-  }
-
-  void _removeSubRouterDelegate(HBaseRouterDelegate delegate) {
-    _delegate.removeSubRouterDelegate(delegate);
-  }
-
-  Future<F?> pushNamed<F>(
-    String name, {
-    Map<String, dynamic>? params,
-  }) {
-    return _routerState!.pushNamed(name, params: params);
-  }
-
-  Future<F?> pushNamedAndRemoveUntil<F>(
-    String path, {
-    HRouteWhere? where,
-    Map<String, dynamic>? params,
-  }) {
-    return _routerState!.pushNamedAndRemoveUntil(path, where: where, params: params);
-  }
-
-  void pop<F>([F? result]) {
-    return _routerState!.popUntil((routerData) {
-      return _delegate._checkRouter(routerData.path, routerData.params);
-    });
-  }
-
-  void popUntil(HCheckRouter predicate) {
-    return _routerState!.popUntil(predicate);
-  }
-
-  Size? get size {
-    return context.findRenderObject()?.paintBounds.size;
+    return Router(routerDelegate: delegate);
   }
 }
 
 class HRouter extends HSubRouter {
-  final Widget Function(BuildContext context, AppRouterDelegate appRouter) builder;
-  final List<AutoPath> routers;
-  final String? home;
+  final String home;
+
+  final Set<HPath> routers;
+
+  final HRouterBuilder builder;
 
   const HRouter({
     Key? key,
     required this.builder,
+    required this.home,
     required this.routers,
-    this.home,
-    RouterBuilder? backgroundBuilder,
-  }) : super(
-          key: key,
-          prefixPath: home,
-          backgroundBuilder: backgroundBuilder,
-        );
-
-  static AutoRouterState of(BuildContext context) {
-    if (context is StatefulElement && context.state is _HSubRouterState) {
-      return context.state as AutoRouterState;
-    }
-
-    return context.findAncestorStateOfType<AutoRouterState>()!;
-  }
+  }) : super(key: key, prefix: home);
 
   @override
-  AutoRouterState createState() => AutoRouterState(AppRouterDelegate._());
+  State<HRouter> createState() => HRouterState();
+
+  static HRouterState of(BuildContext context) {
+    return context.findAncestorStateOfType<HRouterState>()!;
+  }
 }
 
-class AutoRouterState extends _HSubRouterState<AppRouterDelegate, HRouter> with WidgetsBindingObserver {
-  AutoRouterState(AppRouterDelegate delegate) : super(delegate);
+class HRouterState extends _HSubRouterState<HRouter> with WidgetsBindingObserver {
+  final HRouterDelegate _delegate = HRouterDelegate();
 
-  String _home = WidgetsBinding.instance.window.defaultRouteName;
-
-  bool hashRouter(HashRoute hashRoute) {
-    return _delegate.hashRouter(hashRoute);
-  }
-
-  void addListener(VoidCallback listener) {
-    return _delegate.addListener(listener);
-  }
-
-  void removeListener(VoidCallback listener) {
-    return _delegate.removeListener(listener);
-  }
+  @override
+  HRouterDelegate get delegate => _delegate;
 
   @override
   Future<bool> didPopRoute() {
@@ -150,53 +94,34 @@ class AutoRouterState extends _HSubRouterState<AppRouterDelegate, HRouter> with 
 
   @override
   void initState() {
-    if (null != widget.home) {
-      _home = widget.home!;
-    }
-    _delegate._provider = PlatformRouteInformationProvider(initialRouteInformation: RouteInformation(location: _home));
-    _delegate._routers = widget.routers;
-    _delegate._backgroundBuilder = widget.backgroundBuilder;
-    _delegate._routers.sort((a, b) => b.path.compareTo(a.path));
-
+    _delegate.routers = widget.routers.toList();
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant HRouter oldWidget) {
-    _delegate._routers = widget.routers;
-    _delegate._backgroundBuilder = widget.backgroundBuilder;
+    _delegate.routers = widget.routers.toList();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder.call(context, _delegate);
+    return widget.builder(context, _delegate);
   }
 
-  @override
-  Future<T?> pushNamed<T extends Object>(String name, {Map<String, dynamic>? params}) {
-    return _delegate.pushNamed(name, params);
+  Future<F?> pushName<F>(String name, {Map<String, String>? params}) {
+    return _delegate.pushName<F>(name, params: params);
   }
 
-  @override
-  Future<T?> pushNamedAndRemoveUntil<T extends Object>(String path, {AutoRoutePredicate? predicate, Map<String, dynamic>? params}) {
-    return _delegate.pushNamedAndRemoveUntil<T>(path, predicate, params);
+  Future<F?> pushNamedAndRemoveUntil<F>(String name, HRouteWhere where, {Map<String, String>? params}) {
+    return _delegate.pushNamedAndRemoveUntil<F>(name, where, params: params);
   }
 
-  @override
-  void pop<T extends Object>([T? result]) {
-    _delegate.pop(result);
+  void popUntil(HRouteWhere where) {
+    return _delegate.popUntil(where);
   }
 
-  @override
-  void popUntil(AutoRoutePredicate predicate) {
-    return _delegate.popUntil(predicate);
+  void pop<T extends Object>(T? result) {
+    return _delegate.pop(result);
   }
 }
