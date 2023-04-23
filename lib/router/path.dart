@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
+
+import 'router.dart';
 
 typedef HRouterWidgetBuilder = Widget Function(BuildContext context);
 
@@ -72,4 +76,65 @@ class HPath {
     }
     return true;
   }
+  bool isEqualSub(String prefix) {
+    var parent = prefix.split("/");
+    var subs = path.split("/");
+    if (subs.length < parent.length) {
+      return false;
+    }
+    for (var i = 0; i < parent.length; i++) {
+      if (parent[i] != subs[i]) {
+        if (!(_paramRegExp.hasMatch(subs[i]) && !_paramRegExp.hasMatch(parent[i]))) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+}
+
+class HRouterConfig {
+  final String name;
+
+  final HPath path;
+
+  final Map<String, String> params;
+
+  final bool candidate;
+
+  HRouterConfig({
+    required this.name,
+    required this.params,
+    required this.path,
+    required this.candidate,
+  });
+}
+
+class HRouterHistory {
+  final HPath path;
+  final Completer result = Completer.sync();
+  late Map<String, String> _params;
+  final bool candidate;
+  late Uri uri;
+  late ValueKey _pageKey;
+
+  HRouterData? data;
+
+  bool isInitData = false;
+
+  HRouterHistory({
+    required this.path,
+    required this.candidate,
+    required Map<String, String>? params,
+    required String name,
+  }) {
+    _params = params ?? {};
+    uri = Uri(path: name, queryParameters: _params);
+    path.getPathParams(name, _params);
+    _pageKey = ValueKey(hashCode.toString() + uri.toString());
+  }
+
+  Map<String, String> get params => _params;
+
+  ValueKey get pageKey => _pageKey;
 }

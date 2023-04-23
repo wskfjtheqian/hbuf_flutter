@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/calendar/calendar_select.dart';
 import 'package:hbuf_flutter/calendar/calendar_utils.dart';
 import 'package:hbuf_flutter/calendar/calendar_view.dart';
-import 'package:hbuf_flutter/router/widget.dart';
+import 'package:hbuf_flutter/hbuf_flutter.dart';
+import 'package:hbuf_flutter/router/page.dart';
 
 class PageChineseCalendar extends StatefulWidget {
   const PageChineseCalendar({Key? key}) : super(key: key);

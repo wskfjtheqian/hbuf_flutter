@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/router/router.dart';
-import 'package:hbuf_flutter/router/widget.dart';
+import 'package:hbuf_flutter/router/page.dart';
 
 class PageRouter extends StatefulWidget {
   const PageRouter({Key? key}) : super(key: key);

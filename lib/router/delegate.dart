@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/hbuf_flutter.dart';
 import 'package:hbuf_flutter/router/path.dart';
 
-import 'data.dart';
-import 'history.dart';
-import 'widget.dart';
+import 'router.dart';
 
 typedef HRouteWhere = Function(HPath path);
 
@@ -39,7 +38,7 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
       pages.add(buildPage(context, item));
     }
     if (pages.isEmpty) {
-      return SizedBox();
+      return const SizedBox();
     }
     return Navigator(
       pages: pages,
@@ -78,7 +77,7 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
   }
 
   Page buildPage(BuildContext context, HRouterHistory history) {
-    return MaterialPage(
+    return HPage(
       key: history.pageKey,
       name: history.path.path,
       arguments: history,
@@ -172,6 +171,18 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
     }
     ret.add(HRouterConfig(name: uri.path, params: uri.queryParameters, path: path!, candidate: false));
     return ret;
+  }
+
+  Page buildPage(BuildContext context, HRouterHistory history) {
+    return MaterialPage(
+      key: history.pageKey,
+      name: history.path.path,
+      arguments: history,
+      child: HRouteModel(
+        history: history,
+        child: history.path.builder(context),
+      ),
+    );
   }
 
   @override

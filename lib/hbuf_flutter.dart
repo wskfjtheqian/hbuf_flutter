@@ -16,9 +16,7 @@ export 'widget/toast.dart';
 export 'widget/loading_call.dart';
 export 'widget/loading.dart';
 
-export 'router/data.dart';
 export 'router/delegate.dart';
-export 'router/history.dart';
 export 'router/path.dart';
 export 'router/router.dart';
-export 'router/widget.dart';
+export 'router/page.dart';
