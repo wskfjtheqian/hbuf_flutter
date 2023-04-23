@@ -162,7 +162,7 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
     return ret;
   }
 
-  Page buildPage(BuildContext context, HRouterHistory history) {
+  Page buildPage(BuildContext context, HRouterHistory history, bool isFast) {
     return MaterialPage(
       key: history.pageKey,
       name: history.path.path,
@@ -218,7 +218,7 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
   Widget build(BuildContext context) {
     List<Page<dynamic>> pages = [];
     for (var item in buildHistory) {
-      pages.add(buildPage(context, item));
+      pages.add(buildPage(context, item, false));
     }
     if (pages.isEmpty) {
       return SizedBox();
