@@ -102,20 +102,22 @@ abstract class RouterDataWidgetState<T extends StatefulWidget, E extends HRouter
   E? initData(BuildContext context);
 
   E? get data {
-    return HRouteModel.of(context).history.data as E?;
+    return context.findAncestorStateOfType<_HRouteModelState>()?.history?.data as E?;
   }
 
   @override
   void initState() {
-    _history = HRouteModel.of(context).history;
-    if (!_history!.isInitData) {
-      _history!.isInitData = true;
-      _history!.data = initData(context);
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _history!.data?.init(context);
-      });
+    _history = context.findAncestorStateOfType<_HRouteModelState>()?.history;
+    if (null != _history) {
+      if (!_history!.isInitData) {
+        _history!.isInitData = true;
+        _history!.data = initData(context);
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          _history!.data?.init(context);
+        });
+      }
+      _history!.data?.addListener(_onListener);
     }
-    _history!.data?.addListener(_onListener);
     super.initState();
   }
 
