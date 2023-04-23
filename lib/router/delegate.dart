@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
-import 'package:hbuf_flutter/router/path.dart';
-
-import 'router.dart';
 
 typedef HRouteWhere = Function(HPath path);
 
@@ -34,8 +31,8 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
   @override
   Widget build(BuildContext context) {
     List<Page<dynamic>> pages = [];
-    for (var item in buildHistory) {
-      pages.add(buildPage(context, item));
+    for (var i = 0; i < buildHistory.length; i++) {
+      pages.add(buildPage(context, buildHistory[i], 0 == i));
     }
     if (pages.isEmpty) {
       return const SizedBox();
@@ -68,22 +65,14 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
     _parent?.removeSubRouterDelegate(delegate);
   }
 
-  List<Page<dynamic>> getPages(BuildContext context) {
-    List<Page<dynamic>> pages = [];
-    for (var item in historyList) {
-      pages.add(buildPage(context, item));
-    }
-    return pages;
-  }
-
-  Page buildPage(BuildContext context, HRouterHistory history) {
+  Page buildPage(BuildContext context, HRouterHistory history, bool isFast) {
     return HPage(
       key: history.pageKey,
       name: history.path.path,
       arguments: history,
       child: HRouteModel(
         history: history,
-        child: history.path.builder(context),
+        child: isFast ? history.path.builder(context) : const SizedBox(),
       ),
     );
   }
