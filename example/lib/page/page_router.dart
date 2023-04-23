@@ -12,7 +12,7 @@ class PageRouter extends StatefulWidget {
 class _PageRouterState extends State<PageRouter> {
   @override
   Widget build(BuildContext context) {
-    var id = HRouteModel.of(context).getParams("id");
+    var id = HRouteModel.of(context).getString("id");
     return Scaffold(
       appBar: AppBar(
         title: const Text("Multi-level routing"),

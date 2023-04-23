@@ -62,17 +62,11 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
   void addSubRouterDelegate(HBaseDelegate delegate) {
     _subDelegate.add(delegate);
     _parent?.addSubRouterDelegate(delegate);
-    if (null == _parent) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => notifyListeners());
-    }
   }
 
   void removeSubRouterDelegate(HBaseDelegate delegate) {
     _subDelegate.remove(delegate);
     _parent?.removeSubRouterDelegate(delegate);
-    if (null == _parent) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => notifyListeners());
-    }
   }
 
   List<Page<dynamic>> getPages(BuildContext context) {
@@ -115,11 +109,8 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
 
   @override
   void notifyListeners() {
-    super.notifyListeners();
     createBuildHistory();
-    for (var item in _subDelegate) {
-      item.notifyListeners();
-    }
+    super.notifyListeners();
   }
 
   void createBuildHistory() {
@@ -181,6 +172,26 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
     }
     ret.add(HRouterConfig(name: uri.path, params: uri.queryParameters, path: path!, candidate: false));
     return ret;
+  }
+
+  @override
+  void addSubRouterDelegate(HBaseDelegate delegate) {
+    super.addSubRouterDelegate(delegate);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => notifyListeners());
+  }
+
+  @override
+  void removeSubRouterDelegate(HBaseDelegate delegate) {
+    super.removeSubRouterDelegate(delegate);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => notifyListeners());
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    for (var item in _subDelegate) {
+      item.notifyListeners();
+    }
   }
 
   @override
@@ -275,6 +286,11 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
   }
 
   Future<F?> pushNamedAndRemoveUntil<F>(String name, HRouteWhere where, {Map<String, String>? params}) async {
+    var path = _findPath(name);
+    if (null == path) {
+      throw "Not fond Router by $name";
+    }
+
     historyList.removeWhere((element) {
       if (where.call(element.path)) {
         if (!element.result.isCompleted) {
@@ -285,7 +301,21 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
       }
       return false;
     });
-    return await pushName<F>(name, params: params);
+
+    for (var item in _paresPath(Uri(path: name, queryParameters: params))) {
+      if (!checkHistory(item)) {
+        _history.add(HRouterHistory(
+          candidate: item.candidate,
+          name: item.name,
+          path: item.path,
+          params: {...item.params},
+        ));
+      }
+    }
+
+    var history = _history.last;
+    notifyListeners();
+    return await history.result.future;
   }
 
   void popUntil(HRouteWhere where) {

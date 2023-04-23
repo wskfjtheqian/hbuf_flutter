@@ -14,7 +14,7 @@ class PageChineseCalendar extends StatefulWidget {
 class _PageChineseCalendarState extends State<PageChineseCalendar> {
   @override
   Widget build(BuildContext context) {
-    var id = HRouteModel.of(context).getParams("id");
+    var id = HRouteModel.of(context).getString("id");
     return Scaffold(
       appBar: AppBar(),
       body: ListView(

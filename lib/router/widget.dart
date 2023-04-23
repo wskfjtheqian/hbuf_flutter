@@ -1,3 +1,4 @@
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hbuf_flutter/router/history.dart';
 
@@ -24,12 +25,28 @@ class _HRouteModelState extends State<HRouteModel> {
     return widget.child;
   }
 
-  String? getParams(String key) {
+  bool isSub(String prefix) {
+    return history.path.isSub(prefix);
+  }
+
+  String? getString(String key) {
     return history.params[key];
   }
 
-  bool isSub(String prefix) {
-    return history.path.isSub(prefix);
+  int? getInt(key) {
+    return null == history.params[key] ? null : num.tryParse(history.params[key]!)?.toInt();
+  }
+
+  Int64? getInt64(key) {
+    return null == history.params[key] ? null : Int64.tryParseInt(history.params[key]!);
+  }
+
+  bool? getBool(key) {
+    return null == history.params[key] ? null : history.params[key] == "true";
+  }
+
+  DateTime? getDateTime(key) {
+    return null == history.params[key] ? null : DateTime.tryParse(history.params[key]!);
   }
 }
 

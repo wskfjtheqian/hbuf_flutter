@@ -15,9 +15,6 @@ class HPath {
     var list = path.split("/");
     for (var i = 0; i < list.length; i++) {
       var item = list[i];
-      if (item.isEmpty) {
-        continue;
-      }
       if (_paramRegExp.hasMatch(item)) {
         var key = item.substring(1);
         if (_keys.containsKey(key)) {
@@ -29,6 +26,7 @@ class HPath {
         regStr += "/${list[i]}";
       }
     }
+    regStr += "\$";
     _pathReg = RegExp(regStr);
   }
 
@@ -46,7 +44,7 @@ class HPath {
   int get hashCode => path.hashCode;
 
   bool hasMatch(String path) {
-    return _pathReg.hasMatch(path);
+    return _pathReg.hasMatch("/" + path);
   }
 
   void getPathParams(String name, Map<String, String> params) {

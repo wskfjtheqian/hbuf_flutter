@@ -45,10 +45,10 @@ class _HSubRouterState<T extends HSubRouter> extends State<T> {
     var parent = context.findAncestorStateOfType<_HSubRouterState>()?.delegate;
     if (_parent != parent) {
       _parent?.removeSubRouterDelegate(delegate);
+      _parent = parent;
+      delegate.parent = _parent;
+      _parent?.addSubRouterDelegate(delegate);
     }
-    _parent = parent;
-    delegate.parent = _parent;
-    _parent?.addSubRouterDelegate(delegate);
     delegate.prefix = widget.prefix;
     super.didUpdateWidget(oldWidget);
   }
@@ -71,7 +71,7 @@ class HRouter extends HSubRouter {
     required this.builder,
     required this.home,
     required this.routers,
-  }) : super(key: key, prefix: home);
+  }) : super(key: key, prefix: "");
 
   @override
   State<HRouter> createState() => HRouterState();
@@ -109,12 +109,12 @@ class HRouterState extends _HSubRouterState<HRouter> with WidgetsBindingObserver
     return widget.builder(context, _delegate);
   }
 
-  Future<F?> pushName<F>(String name, {Map<String, String>? params}) {
-    return _delegate.pushName<F>(name, params: params);
+  Future<F?> pushName<F>(String name, {Map<String, dynamic>? params}) {
+    return _delegate.pushName<F>(name, params: params?.map((key, value) => MapEntry(key, value?.toString() ?? "")));
   }
 
-  Future<F?> pushNamedAndRemoveUntil<F>(String name, HRouteWhere where, {Map<String, String>? params}) {
-    return _delegate.pushNamedAndRemoveUntil<F>(name, where, params: params);
+  Future<F?> pushNamedAndRemoveUntil<F>(String name, HRouteWhere where, {Map<String, dynamic>? params}) {
+    return _delegate.pushNamedAndRemoveUntil<F>(name, where, params: params?.map((key, value) => MapEntry(key, value?.toString() ?? "")));
   }
 
   void popUntil(HRouteWhere where) {
