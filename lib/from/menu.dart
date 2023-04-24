@@ -18,7 +18,7 @@ Widget onMenuFormBuild<T>(BuildContext context, MenuFormBuild<T> field) {
         child: DropdownButtonFormField<T>(
           key: field.key,
           items: [
-            if (null is T)
+            if (field.toNull)
               DropdownMenuItem(
                 value: null,
                 child: Text((field.noneText ?? onMenuNoneText).call(context)),
@@ -96,6 +96,7 @@ class MenuFormBuild<T> {
   OnMenuFormBuild<T> onBuild = onMenuFormBuild<T>;
   OnMenuNoneText? noneText;
   bool visible = true;
+  bool toNull = false;
 
   Widget build(BuildContext context) {
     return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);

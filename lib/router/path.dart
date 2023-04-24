@@ -13,8 +13,9 @@ class HPath {
   final HRouterWidgetBuilder builder;
   late RegExp _pathReg;
   final Map<String, int> _keys = {};
+  final bool autoCreate;
 
-  HPath(this.path, this.builder) {
+  HPath(this.path, this.builder, {this.autoCreate = false}) {
     String regStr = "";
     var list = path.split("/");
     for (var i = 0; i < list.length; i++) {
@@ -76,20 +77,9 @@ class HPath {
     }
     return true;
   }
+
   bool isEqualSub(String prefix) {
-    var parent = prefix.split("/");
-    var subs = path.split("/");
-    if (subs.length < parent.length) {
-      return false;
-    }
-    for (var i = 0; i < parent.length; i++) {
-      if (parent[i] != subs[i]) {
-        if (!(_paramRegExp.hasMatch(subs[i]) && !_paramRegExp.hasMatch(parent[i]))) {
-          return false;
-        }
-      }
-    }
-    return true;
+    return path.startsWith(prefix);
   }
 }
 
@@ -108,6 +98,8 @@ class HRouterConfig {
     required this.path,
     required this.candidate,
   });
+
+  Uri get uri => Uri(path: name, queryParameters: params);
 }
 
 class HRouterHistory {

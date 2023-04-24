@@ -32,7 +32,7 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
   Widget build(BuildContext context) {
     List<Page<dynamic>> pages = [];
     for (var i = 0; i < buildHistory.length; i++) {
-      pages.add(buildPage(context, buildHistory[i], 0 == i));
+      pages.add(buildPage(context, buildHistory[i], i == buildHistory.length - 1));
     }
     if (pages.isEmpty) {
       return const SizedBox();
@@ -70,9 +70,12 @@ class HBaseDelegate extends RouterDelegate<List<HRouterConfig>> with ChangeNotif
       key: history.pageKey,
       name: history.path.path,
       arguments: history,
-      child: HRouteModel(
-        history: history,
-        child: isFast ? history.path.builder(context) : const SizedBox(),
+      child: Offstage(
+        offstage: !isFast,
+        child: HRouteModel(
+          history: history,
+          child: history.path.builder(context),
+        ),
       ),
     );
   }
@@ -146,7 +149,7 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
     var paths = uri.path.split("/");
     for (var i = _routers.length - 1; i >= 0; i--) {
       var router = _routers[i];
-      if (path!.path != router.path && 0 == path.path.indexOf(router.path)) {
+      if (router.autoCreate && path!.path != router.path && 0 == path.path.indexOf(router.path)) {
         var items = router.path.split("/");
         var newPath = StringBuffer();
         for (var j = 0; j < items.length; j++) {
@@ -218,7 +221,7 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
   Widget build(BuildContext context) {
     List<Page<dynamic>> pages = [];
     for (var item in buildHistory) {
-      pages.add(buildPage(context, item, false));
+      pages.add(buildPage(context, item, true));
     }
     if (pages.isEmpty) {
       return SizedBox();
@@ -269,7 +272,41 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
       throw "Not fond Router by $name";
     }
 
-    for (var item in _paresPath(Uri(path: name, queryParameters: params))) {
+    return await _push<F>(name, params);
+  }
+
+  bool hashRouter<F>(String name, {Map<String, String>? params}) {
+    if (_history.isNotEmpty) {
+      var uri = Uri(path: name, queryParameters: params ?? {});
+      var ret = _history.last.uri.toString() == uri.toString();
+      return ret;
+    }
+    return false;
+  }
+
+  Future<F?> pushOrActivationNamed<F>(String name, {Map<String, String>? params}) async {
+    var path = _findPath(name);
+    if (null == path) {
+      throw "Not fond Router by $name";
+    }
+
+    var uri = Uri(path: name, queryParameters: params ?? {});
+    var index = _history.indexWhere((element) {
+      return element.uri.toString() == uri.toString();
+    });
+    if (-1 != index) {
+      var temp = _history[index];
+      _history.removeAt(index);
+      _history.add(temp);
+      notifyListeners();
+      return null;
+    }
+    return await _push<F>(name, params);
+  }
+
+  Future<F?> _push<F>(String name, Map<String, String>? params) async {
+    var list = _paresPath(Uri(path: name, queryParameters: params));
+    for (var item in list) {
       if (!checkHistory(item)) {
         _history.add(HRouterHistory(
           candidate: item.candidate,
@@ -302,20 +339,7 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
       return false;
     });
 
-    for (var item in _paresPath(Uri(path: name, queryParameters: params))) {
-      if (!checkHistory(item)) {
-        _history.add(HRouterHistory(
-          candidate: item.candidate,
-          name: item.name,
-          path: item.path,
-          params: {...item.params},
-        ));
-      }
-    }
-
-    var history = _history.last;
-    notifyListeners();
-    return await history.result.future;
+    return await _push<F>(name, params);
   }
 
   void popUntil(HRouteWhere where) {
@@ -346,7 +370,7 @@ class HRouterDelegate extends HBaseDelegate with PopNavigatorRouterDelegateMixin
 
   bool checkHistory(HRouterConfig config) {
     for (var item in _history) {
-      if (config.candidate && item.path == config.path) {
+      if (item.uri.toString() == config.uri.toString()) {
         return true;
       }
     }

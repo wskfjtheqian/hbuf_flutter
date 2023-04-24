@@ -24,7 +24,9 @@ class _HSubRouterState<T extends HSubRouter> extends State<T> {
 
   @override
   void initState() {
-    _parent = context.findAncestorStateOfType<_HSubRouterState>()?.delegate;
+    _parent = context
+        .findAncestorStateOfType<_HSubRouterState>()
+        ?.delegate;
     delegate.parent = _parent;
     delegate.prefix = widget.prefix;
     _parent?.addSubRouterDelegate(delegate);
@@ -43,7 +45,9 @@ class _HSubRouterState<T extends HSubRouter> extends State<T> {
 
   @override
   void didUpdateWidget(covariant T oldWidget) {
-    var parent = context.findAncestorStateOfType<_HSubRouterState>()?.delegate;
+    var parent = context
+        .findAncestorStateOfType<_HSubRouterState>()
+        ?.delegate;
     if (_parent != parent) {
       _parent?.removeSubRouterDelegate(delegate);
       _parent = parent;
@@ -125,6 +129,14 @@ class HRouterState extends _HSubRouterState<HRouter> with WidgetsBindingObserver
   void pop<T extends Object>(T? result) {
     return _delegate.pop(result);
   }
+
+  Future<F?> pushOrActivationNamed<F>(String name, {Map<String, dynamic>? params}) {
+    return _delegate.pushOrActivationNamed<F>(name, params: params?.map((key, value) => MapEntry(key, value?.toString() ?? "")));
+  }
+
+  bool hashRouter<F>(String name, {Map<String, dynamic>? params}) {
+    return _delegate.hashRouter(name, params: params?.map((key, value) => MapEntry(key, value?.toString() ?? "")));
+  }
 }
 
 class HRouteModel extends StatefulWidget {
@@ -152,6 +164,10 @@ class _HRouteModelState extends State<HRouteModel> {
 
   bool isSub(String prefix) {
     return history.path.isSub(prefix);
+  }
+
+  bool isEqualSub(String prefix) {
+    return history.path.isEqualSub(prefix);
   }
 
   String? getString(String key) {
@@ -227,12 +243,17 @@ abstract class RouterDataWidgetState<T extends StatefulWidget, E extends HRouter
   E? initData(BuildContext context);
 
   E? get data {
-    return context.findAncestorStateOfType<_HRouteModelState>()?.history?.data as E?;
+    return context
+        .findAncestorStateOfType<_HRouteModelState>()
+        ?.history
+        ?.data as E?;
   }
 
   @override
   void initState() {
-    _history = context.findAncestorStateOfType<_HRouteModelState>()?.history;
+    _history = context
+        .findAncestorStateOfType<_HRouteModelState>()
+        ?.history;
     if (null != _history) {
       if (!_history!.isInitData) {
         _history!.isInitData = true;
