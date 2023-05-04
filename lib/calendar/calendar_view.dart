@@ -186,7 +186,7 @@ class _CalendarContent extends StatelessWidget {
     TextStyle garyStyle = theme?.garyStyle ?? const TextStyle(color: Color(0xffcccccc));
     TextStyle lunarDayStyle = theme?.lunarDayStyle ?? const TextStyle(color: Color(0xffcccccc), fontSize: 10);
     bool otherDay = showOtherDay ?? theme?.showOtherDay ?? false;
-    bool lunary = showLunary ?? theme?.showLunary ?? true;
+    bool lunar = showLunary ?? theme?.showLunary ?? true;
     DateTime now = DateTime.now();
     Color todayColor = theme?.todayColor ?? Colors.orange;
     Color todayTextColor = theme?.todayTextColor ?? Colors.white;
@@ -233,7 +233,7 @@ class _CalendarContent extends StatelessWidget {
                               ? (isToday ? dayStyle.copyWith(color: todayTextColor) : dayStyle)
                               : (isToday ? garyStyle.copyWith(color: todayTextColor) : garyStyle),
                         ),
-                        if (lunary) ...[
+                        if (lunar) ...[
                           Text(
                             info.lunarFestival ?? info.festival ?? info.term ?? info.lunarDayName ?? "",
                             style: (isToday ? lunarDayStyle.copyWith(color: todayTextColor) : lunarDayStyle),

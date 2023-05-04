@@ -129,8 +129,8 @@ class _HButtonState extends State<HButton> {
     child = InkWell(
       mouseCursor: mouseCursor,
       onTap: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onTap!),
-      onDoubleTap: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onDoubleTap!),
-      onLongPress: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onLongPress!),
+      onDoubleTap: null == widget.onDoubleTap || _isWaiting ? null : () => onWaitingEvent(widget.onDoubleTap!),
+      onLongPress: null == widget.onLongPress || _isWaiting ? null : () => onWaitingEvent(widget.onLongPress!),
       onTapDown: widget.onTapDown,
       onTapUp: widget.onTapUp,
       onTapCancel: widget.onTapCancel,

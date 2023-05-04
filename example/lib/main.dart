@@ -1,3 +1,4 @@
+import 'package:example/page/page_h_badge.dart';
 import 'package:example/page/page_h_border.dart';
 import 'package:example/page/page_h_button.dart';
 import 'package:example/page/page_h_layout.dart';
@@ -71,13 +72,22 @@ class _MyHomePageState extends State<MyHomePage> {
               }));
             },
             child: const Text("PageHLink"),
-          ), TextButton(
+          ),
+          TextButton(
             onPressed: () {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
                 return const PageHBorder();
               }));
             },
             child: const Text("PageHBorder"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+                return const PageHBadge();
+              }));
+            },
+            child: const Text("PageHBadge"),
           ),
         ],
       ),
