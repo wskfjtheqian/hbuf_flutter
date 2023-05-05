@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/h_badge.dart';
 import 'package:hbuf_flutter/widget/h_button.dart';
+import 'package:hbuf_flutter/widget/h_color.dart';
 
 class PageHBadge extends StatelessWidget {
   const PageHBadge({Key? key}) : super(key: key);
@@ -22,16 +23,66 @@ class PageHBadge extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   HBadge(
-                    decoration:  BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    value: 505,
-                    padding: EdgeInsets.all(0),
+                    style: context.dotBadge,
+                    value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {
-                      },
+                      onTap: () async {},
+                      child: const Text("默认按钮"),
+                    ),
+                  ),
+                  HBadge(
+                    style: context.defaultBadge.copyWith(
+                      color: context.brandColor,
+                    ),
+                    value: 99,
+                    child: HButton(
+                      style: context.defaultButton.copyWith(),
+                      onTap: () async {},
+                      child: const Text("默认按钮"),
+                    ),
+                  ),
+                  HBadge(
+                    style: context.defaultBadge.copyWith(
+                      color: context.successColor,
+                    ),
+                    value: 99,
+                    child: HButton(
+                      style: context.defaultButton.copyWith(),
+                      onTap: () async {},
+                      child: const Text("默认按钮"),
+                    ),
+                  ),
+                  HBadge(
+                    style: context.defaultBadge.copyWith(
+                      color: context.warningColor,
+                    ),
+                    value: 99,
+                    child: HButton(
+                      style: context.defaultButton.copyWith(),
+                      onTap: () async {},
+                      child: const Text("默认按钮"),
+                    ),
+                  ),
+                  HBadge(
+                    style: context.defaultBadge.copyWith(
+                      color: context.dangerColor,
+                    ),
+                    value: 99,
+                    child: HButton(
+                      style: context.defaultButton.copyWith(),
+                      onTap: () async {},
+                      child: const Text("默认按钮"),
+                    ),
+                  ),
+                  HBadge(
+                    style: context.defaultBadge.copyWith(
+                      color: context.infoColor,
+                    ),
+                    value: 99,
+                    child: HButton(
+                      style: context.defaultButton.copyWith(),
+                      onTap: () async {},
                       child: const Text("默认按钮"),
                     ),
                   ),
