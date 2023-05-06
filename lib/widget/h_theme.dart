@@ -3,6 +3,7 @@ import 'package:hbuf_flutter/hbuf_flutter.dart';
 import 'package:hbuf_flutter/widget/h_badge.dart';
 import 'package:hbuf_flutter/widget/h_color.dart';
 import 'package:hbuf_flutter/widget/h_link.dart';
+import 'package:hbuf_flutter/widget/h_tag.dart';
 import 'package:hbuf_flutter/widget/h_text.dart';
 
 import 'h_border.dart';
@@ -51,7 +52,10 @@ class HThemeData {
 
   final HBadgeThemeData badgeTheme;
 
+  final HTagThemeData tagTheme;
+
   const HThemeData({
+    this.tagTheme = const HTagThemeData(),
     this.textTheme = const HTextThemeData(),
     this.sizeTheme = const HSizeThemeData(),
     this.colorTheme = const HColorThemeData(),
