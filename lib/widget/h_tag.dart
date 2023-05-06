@@ -58,18 +58,6 @@ class _HTagState extends State<HTag> {
       textStyle = textStyle.copyWith(color: textStyle.color?[400]);
     }
 
-    if (null != style.padding) {
-      child = Padding(
-        padding: style.padding!,
-        child: child,
-      );
-    }
-    child = Center(
-      widthFactor: 1,
-      heightFactor: 1,
-      child: child,
-    );
-
     OutlinedBorder shape = style.shape;
     if (style.plain && (shape.side.width == 0 || shape.side.style == BorderStyle.none)) {
       shape = shape.copyWith(
@@ -128,10 +116,19 @@ class _HTagState extends State<HTag> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         child,
-        icon,
+        Padding(
+          padding: EdgeInsets.only(left: (style.padding!.left+ style.padding!.right) / 2),
+          child: icon,
+        ),
       ],
     );
 
+    if (null != style.padding) {
+      child = Padding(
+        padding: style.padding!,
+        child: child,
+      );
+    }
     child = DefaultTextStyle(
       style: textStyle,
       child: IconTheme(
@@ -346,10 +343,10 @@ class HTagThemeData {
   final HTagStyle miniTag;
 
   const HTagThemeData({
-    this.defaultTag = const HTagStyle(minWidth: 104, minHeight: 40, textStyle: TextStyle(fontSize: 14), padding: EdgeInsets.all(8)),
-    this.mediumTag = const HTagStyle(minWidth: 98, minHeight: 36, textStyle: TextStyle(fontSize: 14), padding: EdgeInsets.all(8)),
-    this.smallTag = const HTagStyle(minWidth: 80, minHeight: 32, textStyle: TextStyle(fontSize: 12), padding: EdgeInsets.all(4)),
-    this.miniTag = const HTagStyle(minWidth: 80, minHeight: 28, textStyle: TextStyle(fontSize: 12), padding: EdgeInsets.all(2)),
+    this.defaultTag = const HTagStyle(minWidth: 86, minHeight: 32, textStyle: TextStyle(fontSize: 12), padding: EdgeInsets.all(4)),
+    this.mediumTag = const HTagStyle(minWidth: 76, minHeight: 28, textStyle: TextStyle(fontSize: 10), padding: EdgeInsets.all(4)),
+    this.smallTag = const HTagStyle(minWidth: 72, minHeight: 24, textStyle: TextStyle(fontSize: 10), padding: EdgeInsets.all(2)),
+    this.miniTag = const HTagStyle(minWidth: 63, minHeight: 20, textStyle: TextStyle(fontSize: 10), padding: EdgeInsets.all(1)),
   });
 
   HTagThemeData copyWith({
