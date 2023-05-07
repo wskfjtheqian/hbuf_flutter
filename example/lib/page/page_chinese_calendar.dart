@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hbuf_flutter/calendar/calendar_utils.dart';
 import 'package:hbuf_flutter/calendar/calendar_select.dart';
+import 'package:hbuf_flutter/calendar/calendar_utils.dart';
 import 'package:hbuf_flutter/calendar/calendar_view.dart';
+import 'package:hbuf_flutter/hbuf_flutter.dart';
 
 class PageChineseCalendar extends StatefulWidget {
   const PageChineseCalendar({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class PageChineseCalendar extends StatefulWidget {
 class _PageChineseCalendarState extends State<PageChineseCalendar> {
   @override
   Widget build(BuildContext context) {
+    var id = HRouteModel.of(context).getString("id");
     return Scaffold(
       appBar: AppBar(),
       body: ListView(

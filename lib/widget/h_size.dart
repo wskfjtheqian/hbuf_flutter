@@ -148,7 +148,7 @@ class HSizeRender extends RenderProxyBox {
 
       var width = constraints.biggest.width / _style.count;
       if (_style.sizes!.containsKey(key)) {
-        minWidth = maxWidth = width * _style.sizes![key]!;
+        minWidth = maxWidth = width * _style.sizes![key]! - 0.00001;
       } else {
         minWidth = maxWidth = constraints.biggest.width;
       }
@@ -205,7 +205,6 @@ class HSizeStyle {
       count: count ?? this.count,
     );
   }
-
 
   @override
   String toString() {

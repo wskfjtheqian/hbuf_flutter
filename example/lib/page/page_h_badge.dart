@@ -19,8 +19,8 @@ class PageHBadge extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 16,
+                runSpacing: 16,
                 children: [
                   HBadge(
                     style: context.dotBadge,

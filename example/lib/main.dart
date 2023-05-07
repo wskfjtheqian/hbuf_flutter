@@ -1,14 +1,13 @@
 import 'package:example/page/page_h_badge.dart';
 import 'package:example/page/page_h_border.dart';
 import 'package:example/page/page_h_button.dart';
+import 'package:example/page/page_h_from.dart';
 import 'package:example/page/page_h_layout.dart';
+import 'package:example/page/page_h_link.dart';
 import 'package:example/page/page_h_size.dart';
 import 'package:example/page/page_h_tag.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
-
-import 'page/page_h_link.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,86 +18,238 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HTheme(
-      child: MaterialApp(
-        title: 'Syncfusion DataGrid Demo',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: MyHomePage(),
+      child: HRouter(
+        home: "/",
+        routers: {
+          HPath("/", (context) => const PageInit()),
+          HPath("/home", (context) => PageHome()),
+          HPath("/home/size", (context) => const PageHSize()),
+          HPath("/home/layout", (context) => const PageHLayout()),
+          HPath("/home/border", (context) => const PageHBorder()),
+          HPath("/home/button", (context) => const PageHButton()),
+          HPath("/home/link", (context) => const PageHLink()),
+          HPath("/home/tag", (context) => const PageHTag()),
+          HPath("/home/badge", (context) => const PageHBadge()),
+          HPath("/home/from", (context) => const PageHFrom()),
+
+          // HPath("/home/calendar/:id", (context) => const PageChineseCalendar()),
+          // HPath("/home/color", (context) => const PageColorSelect()),
+          // HPath("/home/form", (context) => const PageFrom()),
+          // HPath("/home/menu", (context) => const PageMenuBar()),
+          // HPath("/home/particle1", (context) => const PageParticle1()),
+          // HPath("/home/rich_text", (context) => const PageRichText()),
+          // HPath("/home/router/:id", (context) => const PageRouter()),
+          // HPath("/home/router/:id/1", (context) => const PageRouter1()),
+          // HPath("/home/router/:id/2", (context) => const PageRouter2()),
+        },
+        builder: (context, HRouterDelegate delegate) {
+          return MaterialApp.router(
+            routerDelegate: delegate,
+            routeInformationParser: delegate,
+            title: 'Syncfusion DataGrid Demo',
+            theme: ThemeData(primarySwatch: Colors.blue),
+          );
+        },
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  /// Creates the home page.
-  MyHomePage({Key? key}) : super(key: key);
+class PageInit extends StatefulWidget {
+  const PageInit({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<PageInit> createState() => _PageInitState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _PageInitState extends State<PageInit> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      HRouter.of(context).pushNamedAndRemoveUntil("/home", (route) => true);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold();
+  }
+}
+
+class PageHome extends StatefulWidget {
+  /// Creates the home page.
+  PageHome({Key? key}) : super(key: key);
+
+  @override
+  _PageHomeState createState() => _PageHomeState();
+}
+
+class _PageHomeState extends State<PageHome> {
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return Scaffold(
-      body: ListView(
-        children: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHSize();
-              }));
-            },
-            child: const Text("HSize"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHLayout();
-              }));
-            },
-            child: const Text("PageHLayout"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHButton();
-              }));
-            },
-            child: const Text("PageHButton"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHLink();
-              }));
-            },
-            child: const Text("PageHLink"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHBorder();
-              }));
-            },
-            child: const Text("PageHBorder"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHBadge();
-              }));
-            },
-            child: const Text("PageHBadge"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-                return const PageHTag();
-              }));
-            },
-            child: const Text("PageHTag"),
-          ),
-        ],
+      appBar: AppBar(title: Text("Hbuf flutter")),
+      body: DecoratedBox(
+        decoration: BoxDecoration(color: Colors.black87),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 200,
+              child: ListView(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/size",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HSize"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/layout",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HLayout"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/border",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HBorder"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/link",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HLink"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/button",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HButton"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/badge",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HBadge"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/tag",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HTag"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/from",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HFrom"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/calendar/123",
+                        (path) => path.isSub("/home"),
+                        params: {"name": "name"},
+                      );
+                    },
+                    child: const Text("chinese calendar"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/form",
+                        (path) => path.isSub("/home"),
+                        params: {"name": "name"},
+                      );
+                    },
+                    child: const Text("from"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/menu",
+                        (path) => path.isSub("/home"),
+                        params: {"name": "name"},
+                      );
+                    },
+                    child: const Text("MenuBar"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushName("/home/particle1");
+                    },
+                    child: const Text("Particle1"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushName("/home/color");
+                    },
+                    child: const Text("Color Select"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushName("/home/rich_text");
+                    },
+                    child: const Text("Rich Text"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushName("/home/router/12");
+                    },
+                    child: const Text("Multi-level routing"),
+                  ),
+                ],
+              ),
+            ),
+            if (MediaQuery.of(context).size.width > 600)
+              Expanded(
+                child: Theme(
+                  data: theme = Theme.of(context).copyWith(
+                    appBarTheme: theme.appBarTheme.copyWith(
+                      color: Colors.white,
+                      titleTextStyle: const TextStyle(
+                        color: Colors.black,
+                      ),
+                      iconTheme: const IconThemeData(
+                        color: Colors.black,
+                      ),
+                      elevation: 0.5,
+                    ),
+                  ),
+                  child: HSubRouter(
+                    prefix: "/home",
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
