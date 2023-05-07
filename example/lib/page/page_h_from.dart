@@ -30,7 +30,7 @@ class _PageHFromState extends State<PageHFrom> {
             child: Column(
               children: [
                 HFormField(
-                  label: const Text("Username:"),
+                  label: const Text("Username"),
                   builder: (context, field) {
                     return TextField();
                   },
@@ -46,10 +46,16 @@ class _PageHFromState extends State<PageHFrom> {
                   },
                 ),
                 HCheckBoxField(
-                  label: const Text("HRadioField"),
+                  label: const Text("HCheckBoxField"),
                   items: <HCheckBoxItem<int>>{
                     const HCheckBoxItem(value: 1, text: "111"),
                     const HCheckBoxItem(value: 2, text: "222"),
+                  },
+                ),
+                HSliderField(
+                  label: const Text("HSliderField"),
+                  onChange: (value){
+                    print(value);
                   },
                 ),
                 HFormField(

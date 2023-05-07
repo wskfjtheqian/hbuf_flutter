@@ -62,7 +62,10 @@ class HThemeData {
 
   final HCheckBoxThemeData checkBoxTheme;
 
+  final HSliderThemeData sliderTheme;
+
   const HThemeData({
+    this.sliderTheme = const HSliderThemeData(),
     this.checkBoxTheme = const HCheckBoxThemeData(),
     this.radioTheme = const HRadioThemeData(),
     this.switchTheme = const HSwitchThemeData(),
