@@ -7,7 +7,7 @@ typedef OnFileFormBuild = Widget Function(BuildContext context, FileFormBuild fi
 
 Widget onFileFormBuild(BuildContext context, FileFormBuild field) {
   return HSize(
-    minHeight: field.minHeight,
+    minFieldHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,
     child: Padding(

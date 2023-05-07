@@ -1,18 +1,68 @@
 import 'package:flutter/widgets.dart';
 import 'package:hbuf_flutter/widget/h_size.dart';
 
+class HFormStyle {
+  final double minFieldHeight;
+  final double maxFieldHeight;
+  final Map<double, int>? labelSize;
+  final Map<double, int>? childSize;
+  final int count;
+  final TextStyle labelStyle;
+  final EdgeInsetsGeometry fieldPadding;
+
+  const HFormStyle({
+    this.minFieldHeight = 46,
+    this.maxFieldHeight = double.infinity,
+    this.labelSize,
+    this.childSize,
+    this.count = 0,
+    this.labelStyle = const TextStyle(),
+    this.fieldPadding = const EdgeInsets.only(left: 0, bottom: 16, right: 16, top: 16),
+  });
+}
+
+class HFormFieldStyle {
+  final double minFieldHeight;
+  final double maxFieldHeight;
+  final Map<double, int>? labelSize;
+  final Map<double, int>? childSize;
+  final TextStyle labelStyle;
+  final EdgeInsetsGeometry? fieldPadding;
+
+  const HFormFieldStyle({
+    this.minFieldHeight = 46.0,
+    this.maxFieldHeight = double.infinity,
+    this.labelSize,
+    this.childSize,
+    this.fieldPadding,
+    this.labelStyle = const TextStyle(),
+  });
+}
+
 class HForm extends StatefulWidget {
-  final HSizeStyle labelSize;
-  final HSizeStyle childSize;
+  final HFormStyle? style;
+
+  final WidgetBuilder builder;
+
+  final WillPopCallback? onWillPop;
+
+  final VoidCallback? onChanged;
+
+  final HAutoValidateMode autoValidateMode;
+
+  final bool enabled;
+
+  final bool onlyRead;
 
   const HForm({
     super.key,
-    required this.child,
+    required this.builder,
     this.onWillPop,
     this.onChanged,
     HAutoValidateMode? autoValidateMode,
-    required this.labelSize,
-    required this.childSize,
+    this.style,
+    this.enabled = true,
+    this.onlyRead = false,
   }) : autoValidateMode = autoValidateMode ?? HAutoValidateMode.disabled;
 
   static HFormState? maybeOf(BuildContext context) {
@@ -38,14 +88,6 @@ class HForm extends StatefulWidget {
     return hFormState!;
   }
 
-  final Widget child;
-
-  final WillPopCallback? onWillPop;
-
-  final VoidCallback? onChanged;
-
-  final HAutoValidateMode autoValidateMode;
-
   @override
   HFormState createState() => HFormState();
 }
@@ -56,6 +98,8 @@ class HFormState extends State<HForm> {
   final Set<HFormFieldState<dynamic>> _fields = <HFormFieldState<dynamic>>{};
 
   bool _dispose = false;
+
+  HFormStyle get style => widget.style ?? HFormStyle();
 
   void _fieldDidChange() {
     widget.onChanged?.call();
@@ -111,7 +155,7 @@ class HFormState extends State<HForm> {
       child: _HFormScope(
         hFormState: this,
         generation: _generation,
-        child: widget.child,
+        child: widget.builder(context),
       ),
     );
   }
@@ -170,13 +214,13 @@ typedef HFormFieldSetter<T> = void Function(T? newValue);
 typedef HFormFieldBuilder<T> = Widget Function(BuildContext context, HFormFieldState<T> field);
 
 class HFormField<T> extends StatefulWidget {
+  final HFormFieldStyle? style;
+
   final Widget? label;
 
-  final HSizeStyle? labelSize;
-
-  final HSizeStyle? childSize;
-
   final HFormFieldSetter<T>? onSaved;
+
+  final HFormFieldSetter<T>? onChange;
 
   final HFormFieldValidator<T>? validator;
 
@@ -184,11 +228,13 @@ class HFormField<T> extends StatefulWidget {
 
   final T? initialValue;
 
-  final bool enabled;
-
   final HAutoValidateMode autoValidateMode;
 
   final String? restorationId;
+
+  final bool? enabled;
+
+  final bool? onlyRead;
 
   const HFormField({
     super.key,
@@ -196,12 +242,13 @@ class HFormField<T> extends StatefulWidget {
     this.onSaved,
     this.validator,
     this.initialValue,
-    this.enabled = true,
-    HAutoValidateMode? autoValidateMode,
     this.restorationId,
     this.label,
-    this.labelSize,
-    this.childSize,
+    this.style,
+    this.onChange,
+    this.enabled = true,
+    this.onlyRead,
+    HAutoValidateMode? autoValidateMode,
   }) : autoValidateMode = autoValidateMode ?? HAutoValidateMode.disabled;
 
   @override
@@ -226,6 +273,10 @@ class HFormFieldState<T> extends State<HFormField<T>> with RestorationMixin {
   void save() {
     widget.onSaved?.call(value);
   }
+
+  bool get enabled => widget.enabled ?? HForm.of(context).widget.enabled;
+
+  bool get onlyRead => widget.onlyRead ?? HForm.of(context).widget.onlyRead;
 
   void reset() {
     setState(() {
@@ -262,6 +313,7 @@ class HFormFieldState<T> extends State<HFormField<T>> with RestorationMixin {
   }
 
   void didChange(T? value) {
+    widget.onChange?.call(value);
     setState(() {
       _value = value;
       _hasInteractedByUser.value = true;
@@ -292,7 +344,7 @@ class HFormFieldState<T> extends State<HFormField<T>> with RestorationMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.enabled) {
+    if (enabled) {
       switch (widget.autoValidateMode) {
         case HAutoValidateMode.always:
           _validate();
@@ -311,12 +363,14 @@ class HFormFieldState<T> extends State<HFormField<T>> with RestorationMixin {
     Widget? label = widget.label;
 
     var width = MediaQuery.of(context).size.width;
-    var labelSize = widget.labelSize ?? HForm.of(context).widget.labelSize;
-    var childSize = widget.childSize ?? HForm.of(context).widget.childSize;
-    var labelCount = _getCount(width, labelSize.sizes, labelSize.count);
-    var childCount = _getCount(width, childSize.sizes, childSize.count);
+    var labelSize = widget.style?.labelSize ?? HForm.of(context).style.labelSize;
+    var childSize = widget.style?.childSize ?? HForm.of(context).style.childSize;
+    var count = HForm.of(context).style.count;
 
-    if (labelCount + childCount <= labelSize.count) {
+    var labelCount = _getCount(width, labelSize, count);
+    var childCount = _getCount(width, childSize, count);
+
+    if (labelCount + childCount <= count) {
       label = Align(
         alignment: Alignment.centerRight,
         child: label,
@@ -327,14 +381,22 @@ class HFormFieldState<T> extends State<HFormField<T>> with RestorationMixin {
       crossAxisAlignment: WrapCrossAlignment.end,
       children: [
         HSize(
-          style: labelSize,
+          style: HSizeStyle(
+            sizes: labelSize,
+            count: count,
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: widget.style?.fieldPadding ?? HForm.of(context).style.fieldPadding,
             child: label,
           ),
         ),
         HSize(
-          style: childSize,
+          style: HSizeStyle(
+            sizes: childSize,
+            count: count,
+            minHeight: widget.style?.minFieldHeight ?? HForm.of(context).style.minFieldHeight,
+            maxHeight: widget.style?.maxFieldHeight ?? HForm.of(context).style.maxFieldHeight,
+          ),
           child: child,
         ),
       ],
@@ -345,7 +407,7 @@ class HFormFieldState<T> extends State<HFormField<T>> with RestorationMixin {
   int _getCount(double width, Map<double, int>? sizes, int count) {
     if (null != sizes) {
       var keys = sizes.keys.toList()..sort((a, b) => (b - a).ceil());
-      for (double item in keys!) {
+      for (double item in keys) {
         if (width >= item) {
           width = item;
           break;

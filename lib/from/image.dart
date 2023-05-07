@@ -8,7 +8,7 @@ typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild 
 
 Widget onImageFormBuild(BuildContext context, ImageFormBuild field) {
   return HSize(
-    minHeight: field.minHeight,
+    minFieldHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,
     child: Padding(

@@ -5,7 +5,7 @@ typedef OnMenuFormBuild<T> = Widget Function(BuildContext context, MenuFormBuild
 
 Widget onMenuFormBuild<T>(BuildContext context, MenuFormBuild<T> field) {
   return HSize(
-    minHeight: field.minHeight,
+    minFieldHeight: field.minHeight,
     sizes: field.widthSizes,
     count: field.widthCount,
     child: Padding(
