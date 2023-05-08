@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/auto_layout.dart';
 
-typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, double outWidth, double outHeight, {List<String>? extensions});
+typedef OnImageFormFieldAdd = void Function(BuildContext context, OnImageFormField field, bool clip, double outWidth, double outHeight,
+    {List<String>? extensions});
 typedef OnImageFormFieldTap = void Function(BuildContext context, List<ImageFormImage>? list, ImageFormImage item);
 
 typedef OnImageFormBuild = Widget Function(BuildContext context, ImageFormBuild field);
@@ -33,6 +34,7 @@ Widget onImageFormBuild(BuildContext context, ImageFormBuild field) {
           outHeight: field.outHeight,
           enabled: field.enabled,
           readOnly: field.readOnly,
+          clip: field.clip,
         ),
       ),
     ),
@@ -94,6 +96,8 @@ class ImageFormField extends FormField<List<ImageFormImage>> {
 
   final bool readOnly;
 
+  final bool clip;
+
   final List<String>? extensions;
 
   ImageFormField({
@@ -116,6 +120,7 @@ class ImageFormField extends FormField<List<ImageFormImage>> {
     required this.outWidth,
     required this.outHeight,
     this.readOnly = false,
+    this.clip = false,
     this.extensions,
   }) : super(
           key: key,
@@ -139,7 +144,7 @@ class ImageFormField extends FormField<List<ImageFormImage>> {
                 fit: fit,
                 readOnly: readOnly,
                 onAdd: (context) {
-                  (onAdd ?? onImageFormFieldAdd)?.call(context, OnImageFormField(field, onChanged), outWidth, outHeight, extensions: extensions);
+                  (onAdd ?? onImageFormFieldAdd)?.call(context, OnImageFormField(field, onChanged), clip, outWidth, outHeight, extensions: extensions);
                 },
                 onTap: (context, list, item) {
                   (onTap ?? onImageFormFieldTap)?.call(context, list, item);
@@ -348,6 +353,7 @@ class ImageFormBuild {
   OnImageFormBuild onBuild = onImageFormBuild;
   List<String>? extensions;
   bool visible = true;
+  bool clip = false;
 
   Widget build(BuildContext context) {
     return visible ? onBuild(context, this) : const LimitedBox(maxWidth: 0.0, maxHeight: 0.0);

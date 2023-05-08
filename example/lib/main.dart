@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:html';
+
 import 'package:example/page/page_chinese_calendar.dart';
 import 'package:example/page/page_color_select.dart';
 import 'package:example/page/page_from.dart';
@@ -5,12 +8,16 @@ import 'package:example/page/page_menu_bar.dart';
 import 'package:example/page/page_particle_1.dart';
 import 'package:example/page/page_rich_text.dart';
 import 'package:example/page/page_router.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:hbuf_dart/hbuf_dart.dart';
+import 'package:hbuf_flutter/hbuf_flutter.dart';
 import 'package:hbuf_flutter/router/delegate.dart';
 import 'package:hbuf_flutter/router/path.dart';
 import 'package:hbuf_flutter/router/router.dart';
 
 void main() {
+  onFileFormFieldAdd = _onFileFormFieldAdd;
   runApp(MyApp());
 }
 
@@ -43,6 +50,37 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+}
+
+Future<void> _onFileFormFieldAdd(BuildContext context, TextEditingController controller, {List<String>? extensions}) async {
+  XTypeGroup typeGroup = XTypeGroup(
+    label: 'file',
+    extensions: extensions,
+  );
+  final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+  if (null == file) {
+    return;
+  }
+
+  var http = Http();
+
+  var request = await http.post(Uri.parse("http://localhost:8088/file/upload/image?name=${Uri.encodeComponent("in.jpg")}"));
+  await request.setData(file.openRead());
+  var response = await request.close();
+
+  if (StatusCode.ok != response.statusCode) {
+    throw HttpException(response.statusCode, uri: request.uri);
+  }
+
+  var data = <int>[];
+  for (var item in await response.body.toList()) {
+    data.addAll(item);
+  }
+  var result = Result.fromMap(json.decode(utf8.decode(data)));
+  if (0 != result?.code) {
+    throw result!;
+  }
+  controller.text = result!.data!;
 }
 
 class PageInit extends StatefulWidget {

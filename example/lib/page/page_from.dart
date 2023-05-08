@@ -21,13 +21,11 @@ class _PageFromState extends State<PageFrom> {
           children: [
             ImageFormField(
               maxCount: 4,
-              onAdd: (context, field, width, height, {extensions}) async {},
+              onAdd: (context, field, edit, width, height, {extensions}) async {},
               outWidth: 300,
               outHeight: 300,
             ),
-            FileFormField(
-              onAdd: (context, field, {extensions}) async {},
-            ),
+            FileFormField(),
             DateTimeFormField(),
             SwitchFormField(),
           ],

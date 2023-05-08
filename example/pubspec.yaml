@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   hbuf_flutter:
     path: ../
+  hbuf_dart:
+    path: ../../hbuf_dart
   syncfusion_flutter_datagrid: ^20.1.61
   file_selector: ^0.9.0
 
