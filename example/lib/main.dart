@@ -1,3 +1,4 @@
+import 'package:example/page/page_color_select.dart';
 import 'package:example/page/page_h_badge.dart';
 import 'package:example/page/page_h_border.dart';
 import 'package:example/page/page_h_button.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
           HPath("/home/tag", (context) => const PageHTag()),
           HPath("/home/badge", (context) => const PageHBadge()),
           HPath("/home/from", (context) => const PageHFrom()),
+          HPath("/home/color", (context) => const PageColorSelect()),
 
           // HPath("/home/calendar/:id", (context) => const PageChineseCalendar()),
           // HPath("/home/color", (context) => const PageColorSelect()),
@@ -170,6 +172,15 @@ class _PageHomeState extends State<PageHome> {
                       );
                     },
                     child: const Text("HFrom"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/color",
+                        (path) => path.isSub("/home"),
+                      );
+                    },
+                    child: const Text("HColorSelect"),
                   ),
                   TextButton(
                     onPressed: () {

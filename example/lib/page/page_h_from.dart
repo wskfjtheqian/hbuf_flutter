@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/from/h_color_field.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 import 'package:hbuf_flutter/widget/h_button.dart';
 import 'package:hbuf_flutter/widget/h_color.dart';
@@ -54,9 +55,11 @@ class _PageHFromState extends State<PageHFrom> {
                 ),
                 HSliderField(
                   label: const Text("HSliderField"),
-                  onChange: (value){
-                    print(value);
-                  },
+                  onChange: (value) {},
+                ),
+                HColorField(
+                  label: const Text("HColorField"),
+                  onChange: (value) {},
                 ),
                 HFormField(
                   builder: (context, field) {

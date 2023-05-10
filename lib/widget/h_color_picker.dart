@@ -1,17 +1,16 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-typedef OnColorChanged = void Function(HSVColor color);
+typedef OnHColorChanged = void Function(HSVColor color);
 
-enum ColorSliderDirection {
+enum HColorSliderDirection {
   horizontal,
   vertical,
 }
 
-class ColorBox extends RenderObjectWidget {
+class HColorBox extends SingleChildRenderObjectWidget {
   final HSVColor color;
 
   final double backBoxSize;
@@ -20,18 +19,20 @@ class ColorBox extends RenderObjectWidget {
 
   final Color backBoxColor1;
 
-  const ColorBox({
+  final BoxBorder? border;
+
+  final BorderRadius? borderRadius;
+
+  const HColorBox({
     super.key,
+    super.child,
     required this.color,
     this.backBoxSize = 6,
     this.backBoxColor0 = Colors.grey,
     this.backBoxColor1 = Colors.white,
+    this.border,
+    this.borderRadius,
   });
-
-  @override
-  RenderObjectElement createElement() {
-    return _ColorBoxElement(this);
-  }
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -40,6 +41,9 @@ class ColorBox extends RenderObjectWidget {
       backBoxSize: backBoxSize,
       backBoxColor0: backBoxColor0,
       backBoxColor1: backBoxColor1,
+      border: border,
+      borderRadius: borderRadius,
+      textDirection: Directionality.maybeOf(context),
     );
   }
 
@@ -49,7 +53,10 @@ class ColorBox extends RenderObjectWidget {
       ..color = color
       ..backBoxSize = backBoxSize
       ..backBoxColor1 = backBoxColor1
-      ..backBoxColor0 = backBoxColor0;
+      ..backBoxColor0 = backBoxColor0
+      ..border = border
+      ..textDirection = Directionality.maybeOf(context)
+      ..borderRadius = borderRadius;
   }
 
   @override
@@ -62,16 +69,30 @@ class ColorBox extends RenderObjectWidget {
   }
 }
 
-class _ColorBoxElement extends RenderObjectElement {
-  _ColorBoxElement(super.widget);
-}
-
-class _ColorBoxRender extends RenderProxyBox {
-  _ColorBoxRender({required HSVColor color, required double backBoxSize, required Color backBoxColor0, required Color backBoxColor1}) {
+class _ColorBoxRender extends RenderProxyBoxWithHitTestBehavior {
+  _ColorBoxRender({
+    required HSVColor color,
+    required double backBoxSize,
+    required Color backBoxColor0,
+    required Color backBoxColor1,
+    BorderRadius? borderRadius,
+    BoxBorder? border,
+    TextDirection? textDirection,
+  }) : super(behavior: HitTestBehavior.opaque) {
     _color = color;
-    backBoxSize = backBoxSize;
-    backBoxColor0 = backBoxColor0;
-    backBoxColor1 = backBoxColor1;
+    _backBoxSize = backBoxSize;
+    _backBoxColor0 = backBoxColor0;
+    _backBoxColor1 = backBoxColor1;
+    _borderRadius = borderRadius;
+    _border = border;
+    _textDirection = textDirection;
+  }
+
+  TextDirection? _textDirection;
+
+  set textDirection(TextDirection? value) {
+    _textDirection = value;
+    markNeedsPaint();
   }
 
   double _backBoxSize = 6.0;
@@ -85,6 +106,20 @@ class _ColorBoxRender extends RenderProxyBox {
 
   set backBoxColor0(Color value) {
     _backBoxColor0 = value;
+    markNeedsPaint();
+  }
+
+  BorderRadius? _borderRadius;
+
+  set borderRadius(BorderRadius? value) {
+    _borderRadius = value;
+    markNeedsPaint();
+  }
+
+  BoxBorder? _border;
+
+  set border(BoxBorder? value) {
+    _border = value;
     markNeedsPaint();
   }
 
@@ -103,37 +138,56 @@ class _ColorBoxRender extends RenderProxyBox {
   }
 
   @override
-  void performResize() {
-    size = constraints.biggest;
-  }
-
-  @override
-  bool get sizedByParent => true;
-
-  @override
-  void performLayout() {}
+  RRect get _clip => _borderRadius?.resolve(_textDirection).toRRect(Offset.zero & size) ?? RRect.fromRectAndCorners(Offset.zero & size);
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    var clip = _clip;
+    if (null != _borderRadius) {
+      layer = context.pushClipRRect(
+        needsCompositing,
+        offset,
+        clip.outerRect,
+        clip,
+        paintContent,
+        clipBehavior: Clip.antiAlias,
+        oldLayer: layer as ClipRRectLayer?,
+      );
+    } else {
+      paintContent(context, offset);
+    }
+  }
+
+  void paintContent(PaintingContext context, Offset offset) {
     var rect = offset & size;
     _paintBack(context.canvas, rect, _backBoxSize, _backBoxColor0, _backBoxColor1);
-    context.canvas.drawRect(
-      rect,
+    Path path;
+    if (null != _borderRadius) {
+      path = Path()..addRRect(_borderRadius!.resolve(_textDirection).toRRect(rect));
+    } else {
+      path = Path()..addRect(rect);
+    }
+
+    context.canvas.drawPath(
+      path,
       Paint()
         ..color = _color.toColor()
         ..style = PaintingStyle.fill,
     );
+    super.paint(context, offset);
+
+    _border?.paint(context.canvas, rect, textDirection: _textDirection, borderRadius: _borderRadius);
   }
 }
 
-class ColorOpacitySlider extends RenderObjectWidget {
-  final ColorSliderDirection direction;
+class HColorOpacitySlider extends RenderObjectWidget {
+  final HColorSliderDirection direction;
 
   final HSVColor color;
 
   final HSVColor value;
 
-  final OnColorChanged onChanged;
+  final OnHColorChanged onChanged;
 
   final double backBoxSize;
 
@@ -141,12 +195,12 @@ class ColorOpacitySlider extends RenderObjectWidget {
 
   final Color backBoxColor1;
 
-  const ColorOpacitySlider({
+  const HColorOpacitySlider({
     super.key,
     required this.color,
     required this.value,
     required this.onChanged,
-    this.direction = ColorSliderDirection.horizontal,
+    this.direction = HColorSliderDirection.horizontal,
     this.backBoxSize = 6,
     this.backBoxColor0 = Colors.grey,
     this.backBoxColor1 = Colors.white,
@@ -154,12 +208,12 @@ class ColorOpacitySlider extends RenderObjectWidget {
 
   @override
   RenderObjectElement createElement() {
-    return _ColorOpacitySliderElement(this);
+    return _HColorOpacitySliderElement(this);
   }
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _ColorOpacitySliderRender(
+    return _HColorOpacitySliderRender(
       direction: direction,
       color: color,
       value: value,
@@ -171,7 +225,7 @@ class ColorOpacitySlider extends RenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, covariant _ColorOpacitySliderRender renderObject) {
+  void updateRenderObject(BuildContext context, covariant _HColorOpacitySliderRender renderObject) {
     renderObject
       ..direction = direction
       ..color = color
@@ -184,7 +238,7 @@ class ColorOpacitySlider extends RenderObjectWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(EnumProperty<ColorSliderDirection>('direction', direction));
+    properties.add(EnumProperty<HColorSliderDirection>('direction', direction));
     properties.add(DiagnosticsProperty<HSVColor>('color', color));
     properties.add(DiagnosticsProperty<HSVColor>('value', value));
     properties.add(DoubleProperty('backBoxSize', backBoxSize));
@@ -193,17 +247,17 @@ class ColorOpacitySlider extends RenderObjectWidget {
   }
 }
 
-class _ColorOpacitySliderElement extends RenderObjectElement {
-  _ColorOpacitySliderElement(super.widget);
+class _HColorOpacitySliderElement extends RenderObjectElement {
+  _HColorOpacitySliderElement(super.widget);
 
   @override
-  ColorOpacitySlider get widget => super.widget as ColorOpacitySlider;
+  HColorOpacitySlider get widget => super.widget as HColorOpacitySlider;
 
   @override
-  _ColorOpacitySliderRender get renderObject => super.renderObject as _ColorOpacitySliderRender;
+  _HColorOpacitySliderRender get renderObject => super.renderObject as _HColorOpacitySliderRender;
 
   @override
-  void update(covariant ColorOpacitySlider newWidget) {
+  void update(covariant HColorOpacitySlider newWidget) {
     if (widget.color != newWidget.color) {
       renderObject.value = newWidget.value;
     }
@@ -211,16 +265,16 @@ class _ColorOpacitySliderElement extends RenderObjectElement {
   }
 }
 
-class _ColorOpacitySliderRender extends RenderProxyBox {
+class _HColorOpacitySliderRender extends RenderProxyBox {
   double _alignment = 0;
 
   late Gradient _gradient;
 
-  _ColorOpacitySliderRender({
+  _HColorOpacitySliderRender({
     required HSVColor color,
-    required ColorSliderDirection direction,
+    required HColorSliderDirection direction,
     required HSVColor value,
-    required OnColorChanged onChanged,
+    required OnHColorChanged onChanged,
     required double backBoxSize,
     required Color backBoxColor0,
     required Color backBoxColor1,
@@ -235,20 +289,20 @@ class _ColorOpacitySliderRender extends RenderProxyBox {
     createGradient();
   }
 
-  late OnColorChanged _onChanged;
+  late OnHColorChanged _onChanged;
 
   set value(HSVColor value) {
     _alignment = value.alpha * 2 - 1;
     markNeedsPaint();
   }
 
-  set onChanged(OnColorChanged value) {
+  set onChanged(OnHColorChanged value) {
     _onChanged = value;
   }
 
-  late ColorSliderDirection _direction;
+  late HColorSliderDirection _direction;
 
-  set direction(ColorSliderDirection value) {
+  set direction(HColorSliderDirection value) {
     _direction = value;
     createGradient();
     markNeedsPaint();
@@ -286,8 +340,8 @@ class _ColorOpacitySliderRender extends RenderProxyBox {
   void createGradient() {
     _gradient = LinearGradient(
       colors: [_color.withAlpha(0).toColor(), _color.toColor()],
-      begin: ColorSliderDirection.horizontal == _direction ? Alignment.centerLeft : Alignment.topCenter,
-      end: ColorSliderDirection.horizontal == _direction ? Alignment.centerRight : Alignment.bottomCenter,
+      begin: HColorSliderDirection.horizontal == _direction ? Alignment.centerLeft : Alignment.topCenter,
+      end: HColorSliderDirection.horizontal == _direction ? Alignment.centerRight : Alignment.bottomCenter,
     );
   }
 
@@ -305,7 +359,7 @@ class _ColorOpacitySliderRender extends RenderProxyBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     var rect = offset & size;
-    var thumbRect = ColorSliderDirection.horizontal == _direction
+    var thumbRect = HColorSliderDirection.horizontal == _direction
         ? Rect.fromLTWH(rect.left + size.width * (_alignment + 1) / 2 - 6, rect.top, 12, size.height)
         : Rect.fromLTWH(rect.left, rect.top + size.height * (_alignment + 1) / 2 - 6, size.width, 12);
     var thumbPaint = Paint()
@@ -322,14 +376,14 @@ class _ColorOpacitySliderRender extends RenderProxyBox {
   void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
     super.handleEvent(event, entry);
     if (event is PointerMoveEvent) {
-      _alignment = ColorSliderDirection.horizontal == _direction
+      _alignment = HColorSliderDirection.horizontal == _direction
           ? min(1, max(-1, event.localPosition.dx / (size.width / 2) - 1))
           : min(1, max(-1, event.localPosition.dy / (size.height / 2) - 1));
 
       _onChanged(_color.withAlpha((_alignment + 1) / 2));
       markNeedsPaint();
     } else if (event is PointerDownEvent) {
-      _alignment = ColorSliderDirection.horizontal == _direction
+      _alignment = HColorSliderDirection.horizontal == _direction
           ? min(1, max(-1, event.localPosition.dx / (size.width / 2) - 1))
           : min(1, max(-1, event.localPosition.dy / (size.height / 2) - 1));
 
@@ -357,17 +411,17 @@ void _paintBack(Canvas canvas, Rect rect, double boxSize, Color color0, Color co
   }
 }
 
-class ColorLinearSlider extends RenderObjectWidget {
-  final ColorSliderDirection direction;
+class HColorLinearSlider extends RenderObjectWidget {
+  final HColorSliderDirection direction;
 
   final HSVColor value;
 
-  final OnColorChanged onChanged;
+  final OnHColorChanged onChanged;
 
-  const ColorLinearSlider({
+  const HColorLinearSlider({
     super.key,
     required this.value,
-    this.direction = ColorSliderDirection.vertical,
+    this.direction = HColorSliderDirection.vertical,
     required this.onChanged,
   });
 
@@ -378,7 +432,7 @@ class ColorLinearSlider extends RenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _ColorLinearSliderRender(
+    return _HColorLinearSliderRender(
       direction: direction,
       onChanged: onChanged,
       value: value,
@@ -386,14 +440,14 @@ class ColorLinearSlider extends RenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, covariant _ColorLinearSliderRender renderObject) {
+  void updateRenderObject(BuildContext context, covariant _HColorLinearSliderRender renderObject) {
     renderObject.direction = direction;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(EnumProperty<ColorSliderDirection>('direction', direction));
+    properties.add(EnumProperty<HColorSliderDirection>('direction', direction));
     properties.add(DiagnosticsProperty<HSVColor>('value', value));
   }
 }
@@ -402,13 +456,13 @@ class _ColorLinearSliderElement extends RenderObjectElement {
   _ColorLinearSliderElement(super.widget);
 
   @override
-  ColorLinearSlider get widget => super.widget as ColorLinearSlider;
+  HColorLinearSlider get widget => super.widget as HColorLinearSlider;
 
   @override
-  _ColorLinearSliderRender get renderObject => super.renderObject as _ColorLinearSliderRender;
+  _HColorLinearSliderRender get renderObject => super.renderObject as _HColorLinearSliderRender;
 
   @override
-  void update(covariant ColorLinearSlider newWidget) {
+  void update(covariant HColorLinearSlider newWidget) {
     if (widget.value != newWidget.value) {
       renderObject.value = newWidget.value;
     }
@@ -416,16 +470,16 @@ class _ColorLinearSliderElement extends RenderObjectElement {
   }
 }
 
-class _ColorLinearSliderRender extends RenderProxyBox {
+class _HColorLinearSliderRender extends RenderProxyBox {
   late Gradient _gradient;
 
   double _alignment = 0;
 
-  late OnColorChanged _onChanged;
+  late OnHColorChanged _onChanged;
 
-  _ColorLinearSliderRender({
-    required ColorSliderDirection direction,
-    required OnColorChanged onChanged,
+  _HColorLinearSliderRender({
+    required HColorSliderDirection direction,
+    required OnHColorChanged onChanged,
     required HSVColor value,
   }) {
     _direction = direction;
@@ -439,15 +493,15 @@ class _ColorLinearSliderRender extends RenderProxyBox {
     markNeedsPaint();
   }
 
-  late ColorSliderDirection _direction;
+  late HColorSliderDirection _direction;
 
-  set direction(ColorSliderDirection value) {
+  set direction(HColorSliderDirection value) {
     _direction = value;
     createGradient();
     markNeedsPaint();
   }
 
-  set onChanged(OnColorChanged value) {
+  set onChanged(OnHColorChanged value) {
     _onChanged = value;
   }
 
@@ -462,8 +516,8 @@ class _ColorLinearSliderRender extends RenderProxyBox {
         const HSVColor.fromAHSV(1.0, 060.0, 1.0, 1.0).toColor(),
         const HSVColor.fromAHSV(1.0, 000.0, 1.0, 1.0).toColor(),
       ],
-      begin: ColorSliderDirection.horizontal == _direction ? Alignment.centerLeft : Alignment.topCenter,
-      end: ColorSliderDirection.horizontal == _direction ? Alignment.centerRight : Alignment.bottomCenter,
+      begin: HColorSliderDirection.horizontal == _direction ? Alignment.centerLeft : Alignment.topCenter,
+      end: HColorSliderDirection.horizontal == _direction ? Alignment.centerRight : Alignment.bottomCenter,
     );
   }
 
@@ -481,7 +535,7 @@ class _ColorLinearSliderRender extends RenderProxyBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     var rect = offset & size;
-    var thumbRect = ColorSliderDirection.horizontal == _direction
+    var thumbRect = HColorSliderDirection.horizontal == _direction
         ? Rect.fromLTWH(rect.left + size.width * (_alignment + 1) / 2 - 6, rect.top, 12, size.height)
         : Rect.fromLTWH(rect.left, rect.top + size.height * (_alignment + 1) / 2 - 6, size.width, 12);
     var thumbPaint = Paint()
@@ -497,14 +551,14 @@ class _ColorLinearSliderRender extends RenderProxyBox {
   void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
     super.handleEvent(event, entry);
     if (event is PointerMoveEvent) {
-      _alignment = ColorSliderDirection.horizontal == _direction
+      _alignment = HColorSliderDirection.horizontal == _direction
           ? min(1, max(-1, event.localPosition.dx / (size.width / 2) - 1))
           : min(1, max(-1, event.localPosition.dy / (size.height / 2) - 1));
 
       _onChanged(HSVColor.fromAHSV(1.0, 360 * (1 - (_alignment + 1) / 2), 1.0, 1.0));
       markNeedsPaint();
     } else if (event is PointerDownEvent) {
-      _alignment = ColorSliderDirection.horizontal == _direction
+      _alignment = HColorSliderDirection.horizontal == _direction
           ? min(1, max(-1, event.localPosition.dx / (size.width / 2) - 1))
           : min(1, max(-1, event.localPosition.dy / (size.height / 2) - 1));
 
@@ -519,14 +573,14 @@ class _ColorLinearSliderRender extends RenderProxyBox {
   }
 }
 
-class ColorBrightSlider extends RenderObjectWidget {
+class HColorBrightSlider extends RenderObjectWidget {
   final HSVColor color;
 
   final HSVColor value;
 
-  final OnColorChanged onChanged;
+  final OnHColorChanged onChanged;
 
-  const ColorBrightSlider({
+  const HColorBrightSlider({
     super.key,
     required this.color,
     required this.value,
@@ -535,12 +589,12 @@ class ColorBrightSlider extends RenderObjectWidget {
 
   @override
   RenderObjectElement createElement() {
-    return _ColorBrightSliderElement(this);
+    return _HColorBrightSliderElement(this);
   }
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _ColorBrightSliderRender(
+    return _HColorBrightSliderRender(
       color: color,
       value: value,
       onChanged: onChanged,
@@ -548,24 +602,24 @@ class ColorBrightSlider extends RenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, covariant _ColorBrightSliderRender renderObject) {
+  void updateRenderObject(BuildContext context, covariant _HColorBrightSliderRender renderObject) {
     renderObject
       ..onChanged = onChanged
       ..color = color;
   }
 }
 
-class _ColorBrightSliderElement extends RenderObjectElement {
-  _ColorBrightSliderElement(super.widget);
+class _HColorBrightSliderElement extends RenderObjectElement {
+  _HColorBrightSliderElement(super.widget);
 
   @override
-  ColorBrightSlider get widget => super.widget as ColorBrightSlider;
+  HColorBrightSlider get widget => super.widget as HColorBrightSlider;
 
   @override
-  _ColorBrightSliderRender get renderObject => super.renderObject as _ColorBrightSliderRender;
+  _HColorBrightSliderRender get renderObject => super.renderObject as _HColorBrightSliderRender;
 
   @override
-  void update(covariant ColorBrightSlider newWidget) {
+  void update(covariant HColorBrightSlider newWidget) {
     if (widget.value != newWidget.value) {
       renderObject.value = newWidget.value;
     }
@@ -573,7 +627,7 @@ class _ColorBrightSliderElement extends RenderObjectElement {
   }
 }
 
-class _ColorBrightSliderRender extends RenderProxyBox {
+class _HColorBrightSliderRender extends RenderProxyBox {
   late Gradient _colorGradient;
 
   late Gradient _brightGradient;
@@ -582,11 +636,11 @@ class _ColorBrightSliderRender extends RenderProxyBox {
 
   late Alignment _alignment;
 
-  late OnColorChanged _onChanged;
+  late OnHColorChanged _onChanged;
 
-  _ColorBrightSliderRender({
+  _HColorBrightSliderRender({
     required HSVColor color,
-    required OnColorChanged onChanged,
+    required OnHColorChanged onChanged,
     required HSVColor value,
   }) {
     _onChanged = onChanged;
@@ -620,7 +674,7 @@ class _ColorBrightSliderRender extends RenderProxyBox {
     );
   }
 
-  set onChanged(OnColorChanged value) {
+  set onChanged(OnHColorChanged value) {
     _onChanged = value;
   }
 
@@ -675,12 +729,12 @@ class _ColorBrightSliderRender extends RenderProxyBox {
   }
 }
 
-class ColorSelect extends StatefulWidget {
+class HColorSelect extends StatefulWidget {
   final HSVColor color;
 
   final double spacing;
 
-  final OnColorChanged changed;
+  final OnHColorChanged changed;
 
   final double backBoxSize;
 
@@ -688,10 +742,10 @@ class ColorSelect extends StatefulWidget {
 
   final Color backBoxColor1;
 
-  const ColorSelect({
+  const HColorSelect({
     Key? key,
     required this.color,
-    this.spacing = 12,
+    this.spacing = 10,
     required this.changed,
     this.backBoxSize = 6,
     this.backBoxColor0 = Colors.grey,
@@ -699,7 +753,7 @@ class ColorSelect extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ColorSelectState createState() => _ColorSelectState();
+  _HColorSelectState createState() => _HColorSelectState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -712,7 +766,7 @@ class ColorSelect extends StatefulWidget {
   }
 }
 
-class _ColorSelectState extends State<ColorSelect> {
+class _HColorSelectState extends State<HColorSelect> {
   HSVColor _brightColor = HSVColor.fromColor(const Color(0xffff0000));
 
   HSVColor _opacityColor = HSVColor.fromColor(const Color(0xffff0000));
@@ -727,7 +781,7 @@ class _ColorSelectState extends State<ColorSelect> {
           child: Row(
             children: [
               Expanded(
-                child: ColorBrightSlider(
+                child: HColorBrightSlider(
                   color: _brightColor,
                   value: _opacityColor,
                   onChanged: (HSVColor color) {
@@ -742,8 +796,8 @@ class _ColorSelectState extends State<ColorSelect> {
               Padding(
                 padding: EdgeInsets.only(left: widget.spacing),
                 child: SizedBox(
-                  width: 26,
-                  child: ColorLinearSlider(
+                  width: 24,
+                  child: HColorLinearSlider(
                     value: widget.color,
                     onChanged: (HSVColor color) {
                       setState(() {
@@ -762,11 +816,11 @@ class _ColorSelectState extends State<ColorSelect> {
         Padding(
           padding: EdgeInsets.only(top: widget.spacing),
           child: SizedBox(
-            height: 26,
+            height: 24,
             child: Row(
               children: [
                 Expanded(
-                  child: ColorOpacitySlider(
+                  child: HColorOpacitySlider(
                     backBoxSize: widget.backBoxSize,
                     backBoxColor0: widget.backBoxColor0,
                     backBoxColor1: widget.backBoxColor1,
@@ -783,9 +837,9 @@ class _ColorSelectState extends State<ColorSelect> {
                 Padding(
                   padding: EdgeInsets.only(left: widget.spacing),
                   child: SizedBox(
-                    width: 26,
-                    height: 26,
-                    child: ColorBox(
+                    width: 24,
+                    height: 24,
+                    child: HColorBox(
                       backBoxSize: widget.backBoxSize,
                       backBoxColor0: widget.backBoxColor0,
                       backBoxColor1: widget.backBoxColor1,
@@ -807,28 +861,28 @@ class _ColorSelectState extends State<ColorSelect> {
 /// 选择颜色
 /// color 默认颜色
 /// 返回选择的颜色
-Future<Color> showSelectColorPicker(BuildContext context, {required Color color}) async {
+Future<Color?> showSelectHColorPicker(BuildContext context, {required Color color}) async {
   return await showDialog(
     context: context,
     builder: (context) {
       return Center(
-        child: SelectColorPicker(color: color),
+        child: HSelectColorPicker(color: color),
       );
     },
   );
 }
 
-class SelectColorPicker extends StatefulWidget {
+class HSelectColorPicker extends StatefulWidget {
   final Color color;
 
-  const SelectColorPicker({Key? key, required this.color}) : super(key: key);
+  const HSelectColorPicker({Key? key, required this.color}) : super(key: key);
 
   @override
-  _SelectColorPickerState createState() => _SelectColorPickerState();
+  _HSelectColorPickerState createState() => _HSelectColorPickerState();
 }
 
-class _SelectColorPickerState extends State<SelectColorPicker> {
-  Color _color = Color(0);
+class _HSelectColorPickerState extends State<HSelectColorPicker> {
+  Color _color = const Color(0x00000000);
 
   @override
   void initState() {
@@ -848,7 +902,7 @@ class _SelectColorPickerState extends State<SelectColorPicker> {
             SizedBox(
               width: 260,
               height: 260,
-              child: ColorSelect(
+              child: HColorSelect(
                 color: HSVColor.fromColor(widget.color),
                 changed: (HSVColor color) {
                   setState(() {
@@ -902,4 +956,82 @@ class _SelectColorPickerState extends State<SelectColorPicker> {
       ),
     );
   }
+}
+
+class HColorButton extends StatelessWidget {
+  final HSelectColorStyle style;
+
+  final Color? color;
+
+  final ValueChanged<Color?>? onChanged;
+
+  const HColorButton({
+    Key? key,
+    required this.style,
+    this.color,
+    this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var style = this.style;
+    return SizedBox(
+      width: style.width,
+      height: style.height,
+      child: DecoratedBox(
+        decoration: style.decoration,
+        child: Padding(
+          padding: EdgeInsets.all(style.padding),
+          child: HColorBox(
+            color: HSVColor.fromColor(color ?? const Color(0x00000000)),
+            borderRadius: style.borderRadius,
+            border: style.border,
+            child: Material(
+              color: const Color(0x00000000),
+              child: InkWell(
+                onTap: () async {
+                  var value = await showSelectHColorPicker(context, color: color ?? const Color(0xffffffff));
+                  onChanged?.call(value);
+                },
+                child: Icon(
+                  Icons.keyboard_arrow_down_sharp,
+                  size: style.iconSize,
+                  color: HSLColor.fromColor(color ?? const Color(0x00000000)).lightness > 0.5 ? const Color(0xff666666) : const Color(0xffffffff),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HSelectColorStyle {
+  final double width;
+
+  final double height;
+
+  final BoxDecoration decoration;
+
+  final double padding;
+
+  final double iconSize;
+
+  final BoxBorder? border;
+
+  final BorderRadius? borderRadius;
+
+  const HSelectColorStyle({
+    this.width = 40,
+    this.height = 40,
+    this.decoration = const BoxDecoration(
+      border: Border.fromBorderSide(BorderSide(color: Color(0xffe6e6e6))),
+      borderRadius: BorderRadius.all(Radius.circular(4)),
+    ),
+    this.border = const Border.fromBorderSide(BorderSide(color: Color(0xff999999), width: 1)),
+    this.borderRadius = const BorderRadius.all(Radius.circular(2)),
+    this.padding = 4,
+    this.iconSize = 18,
+  });
 }
