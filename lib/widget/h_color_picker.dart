@@ -2,6 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hbuf_flutter/generated/l10n.dart';
+import 'package:hbuf_flutter/widget/h_button.dart';
+import 'package:hbuf_flutter/widget/h_color.dart';
+
+import 'h_theme.dart';
 
 typedef OnHColorChanged = void Function(HSVColor color);
 
@@ -861,27 +866,33 @@ class _HColorSelectState extends State<HColorSelect> {
 /// 选择颜色
 /// color 默认颜色
 /// 返回选择的颜色
-Future<Color?> showSelectHColorPicker(BuildContext context, {required Color color}) async {
+Future<Color?> showHColorPicker(BuildContext context, {required Color color}) async {
   return await showDialog(
     context: context,
     builder: (context) {
       return Center(
-        child: HSelectColorPicker(color: color),
+        child: HColorPicker(color: color),
       );
     },
   );
 }
 
-class HSelectColorPicker extends StatefulWidget {
+typedef HColorPickerTextCall = String Function(BuildContext context);
+
+HColorPickerTextCall colorPickerOkTextCall = (context) => "确定";
+
+HColorPickerTextCall colorPickerCancelTextCall = (context) => "取消";
+
+class HColorPicker extends StatefulWidget {
   final Color color;
 
-  const HSelectColorPicker({Key? key, required this.color}) : super(key: key);
+  const HColorPicker({Key? key, required this.color}) : super(key: key);
 
   @override
-  _HSelectColorPickerState createState() => _HSelectColorPickerState();
+  _HColorPickerState createState() => _HColorPickerState();
 }
 
-class _HSelectColorPickerState extends State<HSelectColorPicker> {
+class _HColorPickerState extends State<HColorPicker> {
   Color _color = const Color(0x00000000);
 
   @override
@@ -932,20 +943,24 @@ class _HSelectColorPickerState extends State<HSelectColorPicker> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
-                    child: TextButton(
-                      child: const Text("取消"),
-                      onPressed: () {
+                    child: HButton(
+                      style: context.smallButton,
+                      child: Text(S.of(context).cancelButtonLabel),
+                      onTap: () async {
                         Navigator.of(context).pop();
                       },
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+                  HButton(
+                    style: context.smallButton.copyWith(
+                      color: MaterialStatePropertyAll(context.brandColor),
+                    ),
+                    onTap: () async {
                       Navigator.of(context).pop(_color);
                     },
-                    child: const Text(
-                      "确定",
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      S.of(context).okButtonLabel,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -959,7 +974,7 @@ class _HSelectColorPickerState extends State<HSelectColorPicker> {
 }
 
 class HColorButton extends StatelessWidget {
-  final HSelectColorStyle style;
+  final HColorButtonStyle? style;
 
   final Color? color;
 
@@ -974,7 +989,7 @@ class HColorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var style = this.style;
+    var style = this.style ?? HColorButtonTheme.of(context).defaultColorButton;
     return SizedBox(
       width: style.width,
       height: style.height,
@@ -990,7 +1005,7 @@ class HColorButton extends StatelessWidget {
               color: const Color(0x00000000),
               child: InkWell(
                 onTap: () async {
-                  var value = await showSelectHColorPicker(context, color: color ?? const Color(0xffffffff));
+                  var value = await showHColorPicker(context, color: color ?? const Color(0xffffffff));
                   onChanged?.call(value);
                 },
                 child: Icon(
@@ -1007,7 +1022,7 @@ class HColorButton extends StatelessWidget {
   }
 }
 
-class HSelectColorStyle {
+class HColorButtonStyle {
   final double width;
 
   final double height;
@@ -1022,7 +1037,7 @@ class HSelectColorStyle {
 
   final BorderRadius? borderRadius;
 
-  const HSelectColorStyle({
+  const HColorButtonStyle({
     this.width = 40,
     this.height = 40,
     this.decoration = const BoxDecoration(
@@ -1034,4 +1049,131 @@ class HSelectColorStyle {
     this.padding = 4,
     this.iconSize = 18,
   });
+
+  HColorButtonStyle copyWith({
+    double? width,
+    double? height,
+    BoxDecoration? decoration,
+    double? padding,
+    double? iconSize,
+    BoxBorder? border,
+    BorderRadius? borderRadius,
+  }) {
+    return HColorButtonStyle(
+      width: width ?? this.width,
+      height: height ?? this.height,
+      decoration: decoration ?? this.decoration,
+      padding: padding ?? this.padding,
+      iconSize: iconSize ?? this.iconSize,
+      border: border ?? this.border,
+      borderRadius: borderRadius ?? this.borderRadius,
+    );
+  }
+
+  HColorButtonStyle copyFill({
+    BoxBorder? border,
+    BorderRadius? borderRadius,
+  }) {
+    return HColorButtonStyle(
+      width: width,
+      height: height,
+      decoration: decoration,
+      padding: padding,
+      iconSize: iconSize,
+      border: this.border ?? border,
+      borderRadius: this.borderRadius ?? borderRadius,
+    );
+  }
+
+  HColorButtonStyle merge(HColorButtonStyle? other) {
+    if (other == null) {
+      return this;
+    }
+    return copyWith(
+      width: other.width,
+      height: other.height,
+      decoration: other.decoration,
+      padding: other.padding,
+      iconSize: other.iconSize,
+      border: other.border,
+      borderRadius: other.borderRadius,
+    );
+  }
+}
+
+class HColorButtonTheme extends InheritedTheme {
+  const HColorButtonTheme({
+    super.key,
+    required this.data,
+    required super.child,
+  });
+
+  final HColorButtonThemeData data;
+
+  static HColorButtonThemeData of(BuildContext context) {
+    final theme = context.dependOnInheritedWidgetOfExactType<HColorButtonTheme>();
+    return theme?.data ?? HTheme.of(context).colorButtonTheme;
+  }
+
+  @override
+  Widget wrap(BuildContext context, Widget child) {
+    return HColorButtonTheme(data: data, child: child);
+  }
+
+  @override
+  bool updateShouldNotify(HColorButtonTheme oldWidget) => data != oldWidget.data;
+}
+
+extension HColorButtonContext on BuildContext {
+  HColorButtonStyle get defaultColorButton => HColorButtonTheme.of(this).defaultColorButton;
+
+  HColorButtonStyle get mediumColorButton => HColorButtonTheme.of(this).mediumColorButton;
+
+  HColorButtonStyle get smallColorButton => HColorButtonTheme.of(this).smallColorButton;
+
+  HColorButtonStyle get miniColorButton => HColorButtonTheme.of(this).miniColorButton;
+}
+
+class HColorButtonThemeData {
+  final HColorButtonStyle defaultColorButton;
+
+  final HColorButtonStyle mediumColorButton;
+
+  final HColorButtonStyle smallColorButton;
+
+  final HColorButtonStyle miniColorButton;
+
+  const HColorButtonThemeData({
+    this.defaultColorButton = const HColorButtonStyle(),
+    this.mediumColorButton = const HColorButtonStyle(width: 36, height: 36),
+    this.smallColorButton = const HColorButtonStyle(width: 32, height: 32),
+    this.miniColorButton = const HColorButtonStyle(width: 28, height: 28),
+  });
+
+  HColorButtonThemeData copyWith({
+    HColorButtonStyle? defaultColorButton,
+    HColorButtonStyle? mediumColorButton,
+    HColorButtonStyle? smallColorButton,
+    HColorButtonStyle? miniColorButton,
+  }) {
+    return HColorButtonThemeData(
+      defaultColorButton: defaultColorButton ?? this.defaultColorButton,
+      mediumColorButton: mediumColorButton ?? this.mediumColorButton,
+      smallColorButton: smallColorButton ?? this.smallColorButton,
+      miniColorButton: miniColorButton ?? this.miniColorButton,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HColorButtonThemeData &&
+          runtimeType == other.runtimeType &&
+          defaultColorButton == other.defaultColorButton &&
+          mediumColorButton == other.mediumColorButton &&
+          smallColorButton == other.smallColorButton &&
+          miniColorButton == other.miniColorButton;
+
+  @override
+  int get hashCode => defaultColorButton.hashCode ^ mediumColorButton.hashCode ^ smallColorButton.hashCode ^ miniColorButton.hashCode;
 }

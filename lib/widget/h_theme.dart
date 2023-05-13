@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
-import 'package:hbuf_flutter/widget/h_badge.dart';
-import 'package:hbuf_flutter/widget/h_checkbox.dart';
 import 'package:hbuf_flutter/widget/h_color.dart';
-import 'package:hbuf_flutter/widget/h_link.dart';
-import 'package:hbuf_flutter/widget/h_tag.dart';
 import 'package:hbuf_flutter/widget/h_text.dart';
 
-import 'h_border.dart';
 import 'h_button.dart';
-import 'h_layout.dart';
-import 'h_switch.dart';
+import 'h_color_picker.dart';
 
 class HTheme extends InheritedTheme {
   const HTheme({
@@ -64,7 +58,10 @@ class HThemeData {
 
   final HSliderThemeData sliderTheme;
 
+  final HColorButtonThemeData colorButtonTheme;
+
   const HThemeData({
+    this.colorButtonTheme = const HColorButtonThemeData(),
     this.sliderTheme = const HSliderThemeData(),
     this.checkBoxTheme = const HCheckBoxThemeData(),
     this.radioTheme = const HRadioThemeData(),

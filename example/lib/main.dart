@@ -8,6 +8,7 @@ import 'package:example/page/page_h_link.dart';
 import 'package:example/page/page_h_size.dart';
 import 'package:example/page/page_h_tag.dart';
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/generated/l10n.dart';
 import 'package:hbuf_flutter/hbuf_flutter.dart';
 
 void main() {
@@ -50,6 +51,9 @@ class MyApp extends StatelessWidget {
             routeInformationParser: delegate,
             title: 'Syncfusion DataGrid Demo',
             theme: ThemeData(primarySwatch: Colors.blue),
+            localizationsDelegates: [
+              S.delegate,
+            ],
           );
         },
       ),

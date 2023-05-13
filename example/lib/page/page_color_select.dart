@@ -33,7 +33,7 @@ class _PageColorSelectState extends State<PageColorSelect> {
           ),
           TextButton(
             onPressed: () async {
-              var color = await showSelectHColorPicker(context, color: Colors.green);
+              var color = await showHColorPicker(context, color: Colors.green);
               if (null != _color) {
                 setState(() {
                   _color = color;

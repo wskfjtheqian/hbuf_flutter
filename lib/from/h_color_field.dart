@@ -6,6 +6,7 @@ import 'h_from.dart';
 
 class HColorField extends HFormField<Color?> {
   HColorField({
+    super.key,
     super.onSaved,
     super.onChange,
     super.validator,
@@ -16,13 +17,14 @@ class HColorField extends HFormField<Color?> {
     super.label,
     super.style,
     super.autoValidateMode,
+    final HColorButtonStyle? colorStyle,
   }) : super(builder: (context, field) {
           return Align(
             alignment: Alignment.centerLeft,
             child: HColorButton(
-              style: HSelectColorStyle(),
+              style: colorStyle,
               color: field.value,
-              onChanged: (value){
+              onChanged: (value) {
                 field.didChange(value);
               },
             ),
