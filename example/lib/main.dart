@@ -5,6 +5,7 @@ import 'package:example/page/page_h_button.dart';
 import 'package:example/page/page_h_from.dart';
 import 'package:example/page/page_h_layout.dart';
 import 'package:example/page/page_h_link.dart';
+import 'package:example/page/page_h_menu.dart';
 import 'package:example/page/page_h_size.dart';
 import 'package:example/page/page_h_tag.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
           HPath("/home/tag", (context) => const PageHTag()),
           HPath("/home/badge", (context) => const PageHBadge()),
           HPath("/home/from", (context) => const PageHFrom()),
-          HPath("/home/color", (context) => const PageColorSelect()),
+          HPath("/home/color", (context) => const PageHColorSelect()),
+          HPath("/home/menu", (context) => const PageHMenu()),
 
           // HPath("/home/calendar/:id", (context) => const PageChineseCalendar()),
           // HPath("/home/color", (context) => const PageColorSelect()),
@@ -189,6 +191,17 @@ class _PageHomeState extends State<PageHome> {
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/menu",
+                            (path) => path.isSub("/home"),
+                        params: {"name": "name"},
+                      );
+                    },
+                    child: const Text("HMenu"),
+                  ),
+
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
                         "/home/calendar/123",
                         (path) => path.isSub("/home"),
                         params: {"name": "name"},
@@ -196,6 +209,9 @@ class _PageHomeState extends State<PageHome> {
                     },
                     child: const Text("chinese calendar"),
                   ),
+
+
+
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
@@ -206,16 +222,7 @@ class _PageHomeState extends State<PageHome> {
                     },
                     child: const Text("from"),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      HRouter.of(context).pushNamedAndRemoveUntil(
-                        "/home/menu",
-                        (path) => path.isSub("/home"),
-                        params: {"name": "name"},
-                      );
-                    },
-                    child: const Text("MenuBar"),
-                  ),
+
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushName("/home/particle1");

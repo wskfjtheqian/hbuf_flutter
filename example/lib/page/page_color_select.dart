@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/widget/h_color_picker.dart';
 
-class PageColorSelect extends StatefulWidget {
-  const PageColorSelect({Key? key}) : super(key: key);
+class PageHColorSelect extends StatefulWidget {
+  const PageHColorSelect({Key? key}) : super(key: key);
 
   @override
-  _PageColorSelectState createState() => _PageColorSelectState();
+  _PageHColorSelectState createState() => _PageHColorSelectState();
 }
 
-class _PageColorSelectState extends State<PageColorSelect> {
+class _PageHColorSelectState extends State<PageHColorSelect> {
   Color? _color = Colors.green;
 
   @override
@@ -26,22 +26,23 @@ class _PageColorSelectState extends State<PageColorSelect> {
               changed: (HSVColor color) {},
             ),
           ),
-          SizedBox(
-            width: 100,
-            height: 100,
-            child: HColorBox(color: HSVColor.fromColor(_color!)),
+          Wrap(
+            spacing: 8,
+            children: [
+              HColorButton(
+                style: context.defaultColorButton,
+              ),
+              HColorButton(
+                style: context.mediumColorButton,
+              ),
+              HColorButton(
+                style: context.smallColorButton,
+              ),
+              HColorButton(
+                style: context.miniColorButton,
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              var color = await showHColorPicker(context, color: Colors.green);
-              if (null != _color) {
-                setState(() {
-                  _color = color;
-                });
-              }
-            },
-            child: Text("选择颜色"),
-          )
         ],
       ),
     );
