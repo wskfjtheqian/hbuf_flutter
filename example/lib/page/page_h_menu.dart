@@ -12,33 +12,15 @@ class PageHMenu extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  HPopupMenuButton<int>(
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const HPopupMenuItem<int>(
-                          child: Text("1"),
-                          value: 1,
-                        ),
-                      ];
-                    },
-                    initialValue: {},
-                    onChanged: (value) {
-                      print(value);
-                    },
-                    child: Text("默认按钮"),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              HMenuButton(),
+              Spacer(),
+              HMenuButton(),
+            ],
+          ),
         ),
       ),
     );
