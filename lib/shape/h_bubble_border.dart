@@ -10,21 +10,41 @@ enum HBubblePosition {
   top,
 }
 
+class ArrowAlign {
+  final double align;
+
+  const ArrowAlign(this.align);
+
+  static const ArrowAlign start = ArrowAlign(-1);
+
+  static const ArrowAlign center = ArrowAlign(0);
+
+  static const ArrowAlign end = ArrowAlign(1);
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is ArrowAlign && runtimeType == other.runtimeType && align == other.align;
+
+  @override
+  int get hashCode => align.hashCode;
+}
+
 class HBubbleBorder extends OutlinedBorder {
   final BorderRadius radius;
   final Size arrowSize;
   final HBubblePosition position;
+  final ArrowAlign align;
 
   const HBubbleBorder({
     BorderSide side = BorderSide.none,
-    this.radius = const BorderRadius.all(Radius.circular(8)),
-    this.arrowSize = const Size(6, 6),
+    this.radius = const BorderRadius.all(Radius.circular(32)),
+    this.arrowSize = const Size(32, 32),
     required this.position,
+    this.align = ArrowAlign.center,
   }) : super(side: side);
 
   @override
   EdgeInsetsGeometry get dimensions {
-    return EdgeInsets.all(side.width);
+    return EdgeInsets.only(left: side.width);
   }
 
   @override
@@ -58,6 +78,7 @@ class HBubbleBorder extends OutlinedBorder {
       ).deflate(side.width),
       arrowSize,
       position,
+      align,
     );
   }
 
@@ -73,6 +94,7 @@ class HBubbleBorder extends OutlinedBorder {
       ).deflate(side.width),
       arrowSize,
       position,
+      align,
     );
   }
 
@@ -93,6 +115,7 @@ class HBubbleBorder extends OutlinedBorder {
             ).deflate(side.width),
             arrowSize,
             position,
+            align,
           ),
           side.toPaint(),
         );
@@ -119,7 +142,7 @@ class HBubbleBorder extends OutlinedBorder {
   }
 }
 
-Path _getPath(RRect rect, Size arrowSize, HBubblePosition position) {
+Path _getPath(RRect rect, Size arrowSize, HBubblePosition position, ArrowAlign align) {
   var path = Path();
   if (position == HBubblePosition.left) {
     path.moveTo(rect.left, rect.top);
@@ -134,14 +157,22 @@ Path _getPath(RRect rect, Size arrowSize, HBubblePosition position) {
         -math.pi / 2, false);
     path.lineTo(rect.right - arrowSize.width, rect.top + arrowSize.height);
     path.lineTo(rect.right, rect.top);
-
   } else if (position == HBubblePosition.top) {
-    path.arcTo(Rect.fromLTWH(rect.left, rect.top, rect.tlRadius.x, rect.tlRadius.y), -math.pi / 2, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.left, rect.bottom - rect.blRadius.y, rect.blRadius.x, rect.blRadius.y), -math.pi, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.right - arrowSize.width - rect.brRadius.x, rect.bottom - rect.brRadius.y, rect.brRadius.x, rect.brRadius.y), math.pi / 2,
-        -math.pi / 2, false);
-    path.lineTo(rect.right - arrowSize.width, rect.top + arrowSize.height);
-    path.lineTo(rect.right, rect.top);
+    double x = rect.width / 2 * (1 + align.align);
+    path.moveTo(x, -arrowSize.height);
+
+    double arrow = math.max(x - arrowSize.width / 2, 0);
+    double width = math.min(rect.tlRadiusX, arrow);
+    path.lineTo(arrow, 0);
+    path.arcTo(Rect.fromLTWH(0, 0, width, rect.trRadiusY * (width / rect.tlRadiusX)), -math.pi / 2, -math.pi / 2, false);
+
+    path.arcTo(Rect.fromLTWH(0, rect.height - rect.blRadiusY, rect.blRadiusX, rect.blRadiusY), -math.pi, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(rect.width - rect.brRadiusX, rect.height - rect.brRadiusY, rect.brRadiusX, rect.brRadiusY), math.pi / 2, -math.pi / 2, false);
+
+    arrow = rect.width - math.min(rect.width, x + arrowSize.width / 2);
+    width = math.min(rect.trRadiusX, arrow);
+    path.arcTo(Rect.fromLTWH(rect.right - width, 0, width, rect.trRadiusY * (width / rect.trRadiusX)), 0, -math.pi / 2, false);
+    path.lineTo(rect.right - arrow, 0);
   }
 
   path.close();
@@ -153,11 +184,13 @@ class HClipBubble extends CustomClipper<Path> {
   final BorderRadius radius;
   final Size arrowSize;
   final HBubblePosition position;
+  final ArrowAlign align;
 
   HClipBubble({
     this.radius = const BorderRadius.all(Radius.zero),
     this.arrowSize = const Size(6, 6),
     required this.position,
+    this.align = ArrowAlign.center,
   });
 
   @override
@@ -172,6 +205,7 @@ class HClipBubble extends CustomClipper<Path> {
       ),
       arrowSize,
       position,
+      align,
     );
   }
 
