@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hbuf_flutter/shape/h_bubble_border.dart';
 
 class HMenuButton extends StatelessWidget {
   const HMenuButton({Key? key}) : super(key: key);
@@ -541,12 +542,12 @@ class HMenuStyle {
 
   const HMenuStyle({
     this.elevation = 4.0,
-    this.color,
+    this.color =Colors.greenAccent,
     this.shadowColor,
     this.surfaceTintColor,
     this.textStyle,
-    this.borderRadius = const BorderRadius.all(Radius.circular(8)),
-    this.shape,
+    this.borderRadius,
+    this.shape = const HBubbleBorder(position: HBubblePosition.top),
     this.borderOnForeground = true,
     this.minHeight = 100,
     this.maxHeight = 200,
