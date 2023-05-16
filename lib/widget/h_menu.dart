@@ -547,7 +547,7 @@ class HMenuStyle {
     this.surfaceTintColor,
     this.textStyle,
     this.borderRadius,
-    this.shape = const HBubbleBorder(position: HBubblePosition.top),
+    this.shape = const HBubbleBorder(position: HBubblePosition.right),
     this.borderOnForeground = true,
     this.minHeight = 100,
     this.maxHeight = 200,

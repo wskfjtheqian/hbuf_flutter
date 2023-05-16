@@ -8,6 +8,7 @@ enum HBubblePosition {
   left,
   right,
   top,
+  bottom,
 }
 
 class ArrowAlign {
@@ -30,17 +31,36 @@ class ArrowAlign {
 
 class HBubbleBorder extends OutlinedBorder {
   final BorderRadius radius;
+
   final Size arrowSize;
+
   final HBubblePosition position;
+
   final ArrowAlign align;
 
   const HBubbleBorder({
     BorderSide side = BorderSide.none,
-    this.radius = const BorderRadius.all(Radius.circular(32)),
-    this.arrowSize = const Size(32, 32),
+    this.radius = const BorderRadius.all(Radius.circular(12)),
+    this.arrowSize = const Size(6, 6),
     required this.position,
     this.align = ArrowAlign.center,
   }) : super(side: side);
+
+  HBubbleBorder copyWith({
+    BorderSide? side,
+    BorderRadius? radius,
+    Size? arrowSize,
+    HBubblePosition? position,
+    ArrowAlign? align,
+  }) {
+    return HBubbleBorder(
+      side: side ?? this.side,
+      radius: radius ?? this.radius,
+      arrowSize: arrowSize ?? this.arrowSize,
+      position: position ?? this.position,
+      align: align ?? this.align,
+    );
+  }
 
   @override
   EdgeInsetsGeometry get dimensions {
@@ -123,11 +143,6 @@ class HBubbleBorder extends OutlinedBorder {
   }
 
   @override
-  HBubbleBorder copyWith({BorderSide? side}) {
-    return HBubbleBorder(position: position, side: side ?? this.side);
-  }
-
-  @override
   bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) return false;
     return other is HBubbleBorder && other.side == side;
@@ -142,37 +157,77 @@ class HBubbleBorder extends OutlinedBorder {
   }
 }
 
-Path _getPath(RRect rect, Size arrowSize, HBubblePosition position, ArrowAlign align) {
+Path _getPath(RRect r, Size arrowSize, HBubblePosition position, ArrowAlign align) {
   var path = Path();
   if (position == HBubblePosition.left) {
-    path.moveTo(rect.left, rect.top);
-    path.lineTo(rect.left + arrowSize.width, rect.top + arrowSize.height);
-    path.arcTo(Rect.fromLTWH(rect.left + arrowSize.width, rect.bottom - rect.blRadius.y, rect.blRadius.x, rect.blRadius.y), -math.pi, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.right - rect.brRadius.x, rect.bottom - rect.brRadius.y, rect.brRadius.x, rect.brRadius.y), math.pi / 2, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.right - rect.trRadius.x, rect.top, rect.trRadius.x, rect.trRadius.y), 0, -math.pi / 2, false);
+    double y = r.height / 2 * (1 + align.align);
+
+    double arrow = math.max(y - arrowSize.height / 2, 0);
+    double height = math.min(r.tlRadiusY, arrow);
+
+    path.arcTo(Rect.fromLTWH(r.left, r.top, r.tlRadiusX * (height / r.tlRadiusY), height), -math.pi / 2, -math.pi / 2, false);
+    path.lineTo(r.left, r.top + arrow);
+    path.lineTo(r.left - arrowSize.width, r.top + y);
+
+    arrow = r.height - math.min(r.height, y + arrowSize.height / 2);
+    height = math.min(r.blRadiusY, arrow);
+    path.lineTo(r.left, r.bottom - arrow);
+
+    path.arcTo(Rect.fromLTWH(r.left, r.bottom - height, r.blRadiusX * (height / r.blRadiusY), height), -math.pi, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(r.right - r.brRadiusX, r.bottom - r.brRadiusY, r.brRadiusX, r.brRadiusY), math.pi / 2, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(r.right - r.trRadiusX, r.top, r.trRadiusX, r.trRadiusY), 0, -math.pi / 2, false);
   } else if (position == HBubblePosition.right) {
-    path.arcTo(Rect.fromLTWH(rect.left, rect.top, rect.tlRadius.x, rect.tlRadius.y), -math.pi / 2, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.left, rect.bottom - rect.blRadius.y, rect.blRadius.x, rect.blRadius.y), -math.pi, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.right - arrowSize.width - rect.brRadius.x, rect.bottom - rect.brRadius.y, rect.brRadius.x, rect.brRadius.y), math.pi / 2,
-        -math.pi / 2, false);
-    path.lineTo(rect.right - arrowSize.width, rect.top + arrowSize.height);
-    path.lineTo(rect.right, rect.top);
+    double y = r.height / 2 * (1 + align.align);
+
+    path.arcTo(Rect.fromLTWH(r.left, r.top, r.tlRadiusX, r.tlRadiusY), -math.pi / 2, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(r.left, r.bottom - r.blRadiusY, r.blRadiusX, r.blRadiusY), -math.pi, -math.pi / 2, false);
+
+    double arrow = r.height - math.min(r.height, y + arrowSize.height / 2);
+    double height = math.min(r.blRadiusY, arrow);
+    double width = r.brRadiusX * (height / r.brRadiusY);
+    path.arcTo(Rect.fromLTWH(r.right - width, r.bottom - height, width, height), math.pi / 2, -math.pi / 2, false);
+    path.lineTo(r.right, r.bottom - arrow);
+
+    path.lineTo(r.right + arrowSize.width, r.top + y);
+
+    arrow = math.max(y - arrowSize.height / 2, 0);
+    height = math.min(r.tlRadiusY, arrow);
+    width = r.trRadiusX * (height / r.trRadiusY);
+
+    path.lineTo(r.right, r.top + arrow);
+    path.arcTo(Rect.fromLTWH(r.right - width, r.top, width, height), 0, -math.pi / 2, false);
   } else if (position == HBubblePosition.top) {
-    double x = rect.width / 2 * (1 + align.align);
-    path.moveTo(x, -arrowSize.height);
+    double x = r.width / 2 * (1 + align.align);
+    path.moveTo(r.left + x, r.top - arrowSize.height);
 
     double arrow = math.max(x - arrowSize.width / 2, 0);
-    double width = math.min(rect.tlRadiusX, arrow);
-    path.lineTo(arrow, 0);
-    path.arcTo(Rect.fromLTWH(0, 0, width, rect.trRadiusY * (width / rect.tlRadiusX)), -math.pi / 2, -math.pi / 2, false);
+    double width = math.min(r.tlRadiusX, arrow);
+    path.lineTo(r.left + arrow, r.top);
+    path.arcTo(Rect.fromLTWH(r.left, r.top, width, r.trRadiusY * (width / r.tlRadiusX)), -math.pi / 2, -math.pi / 2, false);
 
-    path.arcTo(Rect.fromLTWH(0, rect.height - rect.blRadiusY, rect.blRadiusX, rect.blRadiusY), -math.pi, -math.pi / 2, false);
-    path.arcTo(Rect.fromLTWH(rect.width - rect.brRadiusX, rect.height - rect.brRadiusY, rect.brRadiusX, rect.brRadiusY), math.pi / 2, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(r.left, r.bottom - r.blRadiusY, r.blRadiusX, r.blRadiusY), -math.pi, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(r.right - r.brRadiusX, r.bottom - r.brRadiusY, r.brRadiusX, r.brRadiusY), math.pi / 2, -math.pi / 2, false);
 
-    arrow = rect.width - math.min(rect.width, x + arrowSize.width / 2);
-    width = math.min(rect.trRadiusX, arrow);
-    path.arcTo(Rect.fromLTWH(rect.right - width, 0, width, rect.trRadiusY * (width / rect.trRadiusX)), 0, -math.pi / 2, false);
-    path.lineTo(rect.right - arrow, 0);
+    arrow = r.width - math.min(r.width, x + arrowSize.width / 2);
+    width = math.min(r.trRadiusX, arrow);
+    path.arcTo(Rect.fromLTWH(r.right - width, r.top, width, r.trRadiusY * (width / r.trRadiusX)), 0, -math.pi / 2, false);
+    path.lineTo(r.right - arrow, r.top);
+  } else if (position == HBubblePosition.bottom) {
+    double x = r.width / 2 * (1 + align.align);
+    path.arcTo(Rect.fromLTWH(r.left, r.top, r.tlRadiusX, r.trRadiusY), -math.pi / 2, -math.pi / 2, false);
+
+    double arrow = math.max(x - arrowSize.width / 2, 0);
+    double width = math.min(r.blRadiusX, arrow);
+    path.arcTo(Rect.fromLTWH(r.left, r.bottom - r.blRadiusY, width, r.blRadiusY * (width / r.blRadiusX)), -math.pi, -math.pi / 2, false);
+    path.lineTo(r.left + arrow, r.bottom);
+    path.lineTo(r.left + x, r.bottom + arrowSize.height);
+
+    arrow = r.width - math.min(r.width, x + arrowSize.width / 2);
+    width = math.min(r.brRadiusX, arrow);
+    path.lineTo(r.right - arrow, r.bottom);
+
+    path.arcTo(Rect.fromLTWH(r.right - width, r.bottom - r.brRadiusY, width, r.brRadiusY * (width / r.brRadiusX)), math.pi / 2, -math.pi / 2, false);
+    path.arcTo(Rect.fromLTWH(r.right - r.trRadiusX, r.top, r.trRadiusX, r.trRadiusY), 0, -math.pi / 2, false);
   }
 
   path.close();
