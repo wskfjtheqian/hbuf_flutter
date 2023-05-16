@@ -185,16 +185,18 @@ class _HMenuRoute<T> extends PopupRoute<T> {
         minHeight: style.minHeight,
         maxHeight: style.maxHeight,
         position: position(),
+        boxShadow: 0 == style.elevation
+            ? null
+            : BoxShadow(
+                color: style.shadowColor ?? const Color(0x80000000),
+                offset: Offset(style.elevation / 2, style.elevation / 2),
+                blurRadius: style.elevation,
+              ),
+        textStyle: style.textStyle,
+        shape: style.shape,
+        color: style.color,
         child: Material(
-          elevation: style.elevation,
-          color: style.color,
-          shadowColor: style.shadowColor,
-          surfaceTintColor: style.surfaceTintColor,
-          textStyle: style.textStyle,
-          borderRadius: style.borderRadius,
-          shape: style.shape,
-          borderOnForeground: style.borderOnForeground,
-          clipBehavior: Clip.antiAlias,
+          color: Colors.transparent,
           child: RawScrollbar(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -224,12 +226,22 @@ class _HMenu extends SingleChildRenderObjectWidget {
 
   final Rect position;
 
-  _HMenu({
+  final ShapeBorder shape;
+
+  final Color? color;
+
+  final BoxShadow? boxShadow;
+
+  const _HMenu({
     super.key,
     super.child,
     required this.minHeight,
     required this.maxHeight,
     required this.position,
+    TextStyle? textStyle,
+    required this.shape,
+    this.color,
+    this.boxShadow,
   });
 
   @override
@@ -238,6 +250,9 @@ class _HMenu extends SingleChildRenderObjectWidget {
       position: position,
       minHeight: minHeight,
       maxHeight: maxHeight,
+      shape: shape,
+      color: color,
+      boxShadow: boxShadow,
     );
   }
 
@@ -246,6 +261,9 @@ class _HMenu extends SingleChildRenderObjectWidget {
     renderObject
       ..position = position
       ..minHeight = minHeight
+      ..shape = shape
+      ..color = color
+      ..boxShadow = boxShadow
       ..maxHeight = maxHeight;
   }
 }
@@ -255,10 +273,49 @@ class _HMenuRenderBox extends RenderProxyBoxWithHitTestBehavior {
     required double minHeight,
     required double maxHeight,
     required Rect position,
+    required ShapeBorder shape,
+    required Color? color,
+    required BoxShadow? boxShadow,
   }) {
     _minHeight = minHeight;
     _maxHeight = maxHeight;
     _position = position;
+    _shape = shape;
+    _color = color;
+    _boxShadow = boxShadow;
+  }
+
+  BoxShadow? _boxShadow;
+
+  BoxShadow? get boxShadow => _boxShadow;
+
+  set boxShadow(BoxShadow? value) {
+    if (_boxShadow != value) {
+      _boxShadow = value;
+      markNeedsPaint();
+    }
+  }
+
+  Color? _color;
+
+  Color? get color => _color;
+
+  set color(Color? value) {
+    if (_color != value) {
+      _color = value;
+      markNeedsPaint();
+    }
+  }
+
+  late ShapeBorder _shape;
+
+  ShapeBorder get shape => _shape;
+
+  set shape(ShapeBorder value) {
+    if (_shape != value) {
+      _shape = value;
+      markNeedsLayout();
+    }
   }
 
   Rect _position = Rect.zero;
@@ -358,6 +415,36 @@ class _HMenuRenderBox extends RenderProxyBoxWithHitTestBehavior {
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    if (child != null) {
+      var rect = (child!.parentData as BoxParentData).offset & child!.size;
+      if (null != boxShadow) {
+        final Paint paint = boxShadow!.toPaint();
+        final Rect bounds = rect.shift(boxShadow!.offset).inflate(boxShadow!.spreadRadius);
+        var path = shape.getInnerPath(bounds);
+        context.canvas.drawPath(path, paint);
+      }
+      var path = shape.getInnerPath(rect);
+      if (color != null) {
+        context.canvas.drawPath(
+          path,
+          Paint()
+            ..color = color!
+            ..style = PaintingStyle.fill,
+        );
+      }
+      shape.paint(context.canvas, rect);
+
+      // for (final BoxShadow boxShadow in _decoration.boxShadow!) {
+      //
+      //   final Rect bounds = rect.shift(boxShadow.offset).inflate(boxShadow.spreadRadius);
+      //   _paintBox(canvas, bounds, paint, textDirection);
+      // }
+
+      context.clipPathAndPaint(path, Clip.antiAlias, offset & child!.size, () => painter(context, Offset.zero));
+    }
+  }
+
+  painter(PaintingContext context, Offset offset) {
     if (child != null) {
       context.paintChild(child!, offset + (child!.parentData as BoxParentData).offset);
     }
@@ -520,15 +607,9 @@ class HMenuStyle {
 
   final Color? shadowColor;
 
-  final Color? surfaceTintColor;
-
   final TextStyle? textStyle;
 
-  final ShapeBorder? shape;
-
-  final bool borderOnForeground;
-
-  final BorderRadiusGeometry? borderRadius;
+  final ShapeBorder shape;
 
   final double minHeight;
 
@@ -542,13 +623,10 @@ class HMenuStyle {
 
   const HMenuStyle({
     this.elevation = 4.0,
-    this.color =Colors.greenAccent,
+    this.color = Colors.greenAccent,
     this.shadowColor,
-    this.surfaceTintColor,
     this.textStyle,
-    this.borderRadius,
-    this.shape = const HBubbleBorder(position: HBubblePosition.right),
-    this.borderOnForeground = true,
+    this.shape = const HBubbleBorder(position: HBubblePosition.top),
     this.minHeight = 100,
     this.maxHeight = 200,
     this.minWidth = 100,
