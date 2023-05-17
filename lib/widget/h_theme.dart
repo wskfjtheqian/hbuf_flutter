@@ -5,6 +5,7 @@ import 'package:hbuf_flutter/widget/h_text.dart';
 
 import 'h_button.dart';
 import 'h_color_picker.dart';
+import 'h_menu.dart';
 
 class HTheme extends InheritedTheme {
   const HTheme({
@@ -60,7 +61,12 @@ class HThemeData {
 
   final HColorButtonThemeData colorButtonTheme;
 
+  final HMenuThemeData menuTheme;
+
+
+
   const HThemeData({
+    this.menuTheme = const HMenuThemeData(),
     this.colorButtonTheme = const HColorButtonThemeData(),
     this.sliderTheme = const HSliderThemeData(),
     this.checkBoxTheme = const HCheckBoxThemeData(),

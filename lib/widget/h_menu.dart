@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:hbuf_flutter/shape/h_bubble_border.dart';
+
+import 'h_border.dart';
+import 'h_cascader.dart';
+import 'h_theme.dart';
 
 class HMenuButton extends StatelessWidget {
   const HMenuButton({Key? key}) : super(key: key);
@@ -8,100 +11,100 @@ class HMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      child: const Text("data"),
+      child: const Text("datadatadatadatadatadatadatadata"),
       onTap: () {
         showHMenu<int>(
           context,
           limit: null,
           builder: (BuildContext context) {
             return [
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 1,
-                child: Text("HMenuItem1"),
+                child: Text("HCascaderItem1"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 2,
-                child: Text("HMenuItem2"),
+                child: Text("HCascaderItem2"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 3,
-                child: Text("HMenuItem3"),
+                child: Text("HCascaderItem3"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 4,
-                child: Text("HMenuItem4"),
+                child: Text("HCascaderItem4"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 5,
-                child: Text("HMenuItem5"),
+                child: Text("HCascaderItem5"),
                 builder: (context) {
                   return [
-                    HMenuItem<int>(
+                    HCascaderItem<int>(
                       value: 6,
-                      child: Text("HMenuItem6"),
+                      child: Text("HCascaderItem6"),
                       builder: (context) {
                         return [
-                          HMenuItem<int>(
+                          HCascaderItem<int>(
                             value: 7,
-                            child: Text("HMenuItem7"),
+                            child: Text("HCascaderItem7"),
                           ),
-                          HMenuItem<int>(
+                          HCascaderItem<int>(
                             value: 8,
-                            child: Text("HMenuItem8"),
+                            child: Text("HCascaderItem8"),
                           ),
-                          HMenuItem<int>(
+                          HCascaderItem<int>(
                             value: 9,
-                            child: Text("HMenuItem9"),
+                            child: Text("HCascaderItem9"),
                           ),
-                          HMenuItem<int>(
+                          HCascaderItem<int>(
                             value: 10,
-                            child: Text("HMenuItem10"),
+                            child: Text("HCascaderItem10"),
                           ),
-                          HMenuItem<int>(
+                          HCascaderItem<int>(
                             value: 11,
-                            child: Text("HMenuItem11"),
+                            child: Text("HCascaderItem11"),
                           ),
                         ];
                       },
                     ),
-                    HMenuItem<int>(
+                    HCascaderItem<int>(
                       value: 12,
-                      child: Text("HMenuItem12"),
+                      child: Text("HCascaderItem12"),
                     ),
-                    HMenuItem<int>(
+                    HCascaderItem<int>(
                       value: 13,
-                      child: Text("HMenuItem13"),
+                      child: Text("HCascaderItem13"),
                     ),
-                    HMenuItem<int>(
+                    HCascaderItem<int>(
                       value: 14,
-                      child: Text("HMenuItem14"),
+                      child: Text("HCascaderItem14"),
                     ),
-                    HMenuItem<int>(
+                    HCascaderItem<int>(
                       value: 15,
-                      child: Text("HMenuItem15"),
+                      child: Text("HCascaderItem15"),
                     ),
-                    HMenuItem<int>(
+                    HCascaderItem<int>(
                       value: 16,
-                      child: Text("HMenuItem16"),
+                      child: Text("HCascaderItem16"),
                     ),
                   ];
                 },
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 17,
-                child: Text("HMenuItem"),
+                child: Text("HCascaderItem"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 18,
-                child: Text("HMenuItem"),
+                child: Text("HCascaderItem"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 19,
-                child: Text("HMenuItem"),
+                child: Text("HCascaderItem"),
               ),
-              HMenuItem<int>(
+              HCascaderItem<int>(
                 value: 20,
-                child: Text("HMenuItem"),
+                child: Text("HCascaderItem"),
               ),
             ];
           },
@@ -112,15 +115,12 @@ class HMenuButton extends StatelessWidget {
   }
 }
 
-typedef HMenuItemBuilder<T> = List<HMenuItem<T>> Function(BuildContext context);
-typedef OnHMenuChange<T> = void Function(Set<T> value);
-
 void showHMenu<T>(
   BuildContext context, {
   HMenuStyle style = const HMenuStyle(),
-  required HMenuItemBuilder<T> builder,
+  required HCascaderItemBuilder<T> builder,
   required Set<T> value,
-  OnHMenuChange<T>? onChange,
+  OnHCascaderChange<T>? onChange,
   int? limit = 1,
 }) {
   var nav = Navigator.of(context, rootNavigator: true);
@@ -151,11 +151,11 @@ class _HMenuRoute<T> extends PopupRoute<T> {
 
   final HMenuStyle style;
 
-  final HMenuItemBuilder<T> builder;
+  final HCascaderItemBuilder<T> builder;
 
   final Set<T> value;
 
-  final OnHMenuChange<T>? onChange;
+  final OnHCascaderChange<T>? onChange;
 
   final int? limit;
 
@@ -188,26 +188,23 @@ class _HMenuRoute<T> extends PopupRoute<T> {
         boxShadow: 0 == style.elevation
             ? null
             : BoxShadow(
-                color: style.shadowColor ?? const Color(0x80000000),
-                offset: Offset(style.elevation / 2, style.elevation / 2),
+                color: style.shadowColor ?? const Color(0x16000000),
+                offset: Offset(style.elevation / 4, style.elevation / 4),
                 blurRadius: style.elevation,
               ),
-        textStyle: style.textStyle,
         shape: style.shape,
         color: style.color,
         child: Material(
           color: Colors.transparent,
-          child: RawScrollbar(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: _HMenuColumn<T>(
-                minWidth: style.minWidth,
-                maxWidth: style.maxWidth,
-                builder: builder,
-                value: value,
-                onChange: onChange,
-                limit: limit,
-              ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: HCascader<T>(
+              minWidth: style.minWidth,
+              maxWidth: style.maxWidth,
+              builder: builder,
+              value: value,
+              onChange: onChange,
+              limit: limit,
             ),
           ),
         ),
@@ -238,7 +235,6 @@ class _HMenu extends SingleChildRenderObjectWidget {
     required this.minHeight,
     required this.maxHeight,
     required this.position,
-    TextStyle? textStyle,
     required this.shape,
     this.color,
     this.boxShadow,
@@ -390,21 +386,30 @@ class _HMenuRenderBox extends RenderProxyBoxWithHitTestBehavior {
         shrinkWrapHeight ? child!.size.height * 1.0 : double.infinity,
       ));
 
+      HBubblePosition? pos;
       double top;
-      if (winSize.height < _position.bottom + child!.size.height) {
-        top = _position.top - child!.size.height;
+      double offset = shape is HBubbleBorder ? (shape as HBubbleBorder).arrowSize.height : 0;
+      if (winSize.height < position.bottom + child!.size.height) {
+        top = position.top - child!.size.height - offset;
+        pos = HBubblePosition.bottom;
       } else {
-        top = _position.bottom;
+        top = position.bottom + offset;
+        pos = HBubblePosition.top;
       }
 
-      double left = winSize.width - _position.left - child!.size.width;
+      double left = winSize.width - position.left - child!.size.width;
       if (left < 0) {
-        left = _position.left + left;
+        left = position.left + left;
       } else {
-        left = _position.left;
+        left = position.left;
       }
+
+      double align = ((position.left + position.width / 2 - left) - (child!.size.width / 2)) / (child!.size.width / 2);
 
       (child!.parentData as BoxParentData).offset = Offset(left, top);
+      if (shape is HBubbleBorder) {
+        _shape = (shape as HBubbleBorder).copyWith(position: pos, align: ArrowAlign(align));
+      }
     } else {
       size = constraints.constrain(Size(
         shrinkWrapWidth ? 0.0 : double.infinity,
@@ -459,155 +464,12 @@ class _HMenuRenderBox extends RenderProxyBoxWithHitTestBehavior {
   }
 }
 
-class _HMenuColumn<T> extends StatefulWidget {
-  final double minWidth;
-
-  final double maxWidth;
-
-  final HMenuItemBuilder builder;
-
-  final Set<T> value;
-
-  final OnHMenuChange<T>? onChange;
-
-  final int? limit;
-
-  const _HMenuColumn({
-    Key? key,
-    required this.builder,
-    required this.minWidth,
-    required this.maxWidth,
-    required this.value,
-    required this.onChange,
-    this.limit,
-  }) : super(key: key);
-
-  @override
-  State<_HMenuColumn<T>> createState() => _HMenuColumnState<T>();
-}
-
-class _HMenuColumnState<T> extends State<_HMenuColumn<T>> {
-  HMenuItemBuilder? _builder;
-
-  final _scrollKey = GlobalKey();
-
-  @override
-  Widget build(BuildContext context) {
-    Widget child = ConstrainedBox(
-      constraints: BoxConstraints(minWidth: widget.minWidth, maxWidth: widget.maxWidth),
-      child: SingleChildScrollView(
-        key: _scrollKey,
-        child: Column(
-          children: widget.builder(context),
-        ),
-      ),
-    );
-
-    if (null != _builder) {
-      child = Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          child,
-          const VerticalDivider(width: 1),
-          _HMenuColumn<T>(
-            builder: _builder!,
-            minWidth: widget.minWidth,
-            maxWidth: widget.maxWidth,
-            value: widget.value,
-            onChange: widget.onChange,
-            limit: widget.limit,
-          ),
-        ],
-      );
-    }
-    return child;
-  }
-
-  void onTap(BuildContext context, T value, HMenuItemBuilder? builder) {
-    setState(() {
-      _builder = builder;
-      if (widget.value.contains(value)) {
-        widget.value.remove(value);
-      } else {
-        widget.value.add(value);
-      }
-    });
-    widget.onChange?.call(widget.value);
-    if (1 == widget.limit) {
-      Navigator.of(context).pop();
-    }
-  }
-
-  bool hashValue(T value) {
-    return widget.value.contains(value);
-  }
-}
-
-class HMenuItem<T> extends StatelessWidget {
-  final T value;
-
-  final Widget child;
-
-  final HMenuItemStyle? style;
-
-  final HMenuItemBuilder<T>? builder;
-
-  const HMenuItem({
-    Key? key,
-    required this.value,
-    required this.child,
-    this.style,
-    this.builder,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var style = this.style ?? const HMenuItemStyle();
-    var column = context.findAncestorStateOfType<_HMenuColumnState<T>>()!;
-    return SizedBox(
-      height: style.height,
-      child: InkWell(
-        onTap: () {
-          column.onTap(context, value, builder);
-        },
-        child: Padding(
-          padding: style.padding,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (column.widget.limit != 1)
-                Checkbox(
-                  value: column.hashValue(value),
-                  onChanged: (_) {
-                    column.onTap(context, value, builder);
-                  },
-                ),
-              child,
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: null != builder
-                    ? const Icon(
-                        Icons.chevron_right_outlined,
-                      )
-                    : null,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class HMenuStyle {
   final double elevation;
 
   final Color? color;
 
   final Color? shadowColor;
-
-  final TextStyle? textStyle;
 
   final ShapeBorder shape;
 
@@ -619,29 +481,68 @@ class HMenuStyle {
 
   final double maxWidth;
 
-  final HMenuItemStyle itemStyle;
+  final HCascaderStyle itemStyle;
 
   const HMenuStyle({
     this.elevation = 4.0,
-    this.color = Colors.greenAccent,
-    this.shadowColor,
-    this.textStyle,
-    this.shape = const HBubbleBorder(position: HBubblePosition.top),
-    this.minHeight = 100,
+    this.color = const Color(0xffffffff),
+    this.shadowColor = const Color(0x20000000),
+    this.shape = const HBubbleBorder(position: HBubblePosition.top, side: BorderSide(color: Color(0xffe4e7ed))),
+    this.minHeight = 1,
     this.maxHeight = 200,
-    this.minWidth = 100,
-    this.maxWidth = 200,
-    this.itemStyle = const HMenuItemStyle(),
+    this.minWidth = 180,
+    this.maxWidth = 260,
+    this.itemStyle = const HCascaderStyle(),
   });
 }
 
-class HMenuItemStyle {
-  final EdgeInsets padding;
-
-  final double height;
-
-  const HMenuItemStyle({
-    this.padding = const EdgeInsets.symmetric(horizontal: 8),
-    this.height = 42,
+class HMenuTheme extends InheritedTheme {
+  const HMenuTheme({
+    super.key,
+    required this.data,
+    required super.child,
   });
+
+  final HMenuThemeData data;
+
+  static HMenuThemeData _of(BuildContext context) {
+    final theme = context.dependOnInheritedWidgetOfExactType<HMenuTheme>();
+    return theme?.data ?? HTheme.of(context).menuTheme;
+  }
+
+  @override
+  Widget wrap(BuildContext context, Widget child) {
+    return HMenuTheme(data: data, child: child);
+  }
+
+  @override
+  bool updateShouldNotify(HMenuTheme oldWidget) => data != oldWidget.data;
+}
+
+extension HMenuContext on BuildContext {
+  HMenuStyle get defaultMenu {
+    return HMenuTheme._of(this).defaultMenu;
+  }
+}
+
+class HMenuThemeData {
+  final HMenuStyle defaultMenu;
+
+  const HMenuThemeData({
+    this.defaultMenu = const HMenuStyle(),
+  });
+
+  HMenuThemeData copyWith({
+    HMenuStyle? defaultMenu,
+  }) {
+    return HMenuThemeData(
+      defaultMenu: defaultMenu ?? this.defaultMenu,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is HMenuThemeData && runtimeType == other.runtimeType && defaultMenu == other.defaultMenu;
+
+  @override
+  int get hashCode => defaultMenu.hashCode;
 }

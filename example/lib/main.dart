@@ -2,6 +2,7 @@ import 'package:example/page/page_color_select.dart';
 import 'package:example/page/page_h_badge.dart';
 import 'package:example/page/page_h_border.dart';
 import 'package:example/page/page_h_button.dart';
+import 'package:example/page/page_h_cascader.dart';
 import 'package:example/page/page_h_from.dart';
 import 'package:example/page/page_h_layout.dart';
 import 'package:example/page/page_h_link.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
           HPath("/home/from", (context) => const PageHFrom()),
           HPath("/home/color", (context) => const PageHColorSelect()),
           HPath("/home/menu", (context) => const PageHMenu()),
+          HPath("/home/cascader", (context) => const PageHCascader()),
 
           // HPath("/home/calendar/:id", (context) => const PageChineseCalendar()),
           // HPath("/home/color", (context) => const PageColorSelect()),
@@ -191,14 +193,23 @@ class _PageHomeState extends State<PageHome> {
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/cascader",
+                        (path) => path.isSub("/cascader"),
+                        params: {"name": "name"},
+                      );
+                    },
+                    child: const Text("HCascader"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
                         "/home/menu",
-                            (path) => path.isSub("/home"),
+                        (path) => path.isSub("/home"),
                         params: {"name": "name"},
                       );
                     },
                     child: const Text("HMenu"),
                   ),
-
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
@@ -209,9 +220,6 @@ class _PageHomeState extends State<PageHome> {
                     },
                     child: const Text("chinese calendar"),
                   ),
-
-
-
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
@@ -222,7 +230,6 @@ class _PageHomeState extends State<PageHome> {
                     },
                     child: const Text("from"),
                   ),
-
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushName("/home/particle1");
