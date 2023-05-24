@@ -6,6 +6,7 @@ export 'from/text.dart';
 export 'from/image.dart';
 export 'from/file.dart';
 export 'from/datetime.dart';
+export 'from/click.dart';
 export 'tables/tables.dart';
 export 'tables/tables_build.dart';
 export 'utils/datetime.dart';
