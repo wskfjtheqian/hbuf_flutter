@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -182,7 +184,6 @@ class _ItemRenderBox extends RenderBox
   void performLayout() {
     final BoxConstraints constraints = this.constraints;
 
-    size = constraints.biggest;
     var children = getChildrenAsList();
     children[0].layout(const BoxConstraints(), parentUsesSize: true);
     var checkBoxSize = children[0].size;
@@ -193,8 +194,13 @@ class _ItemRenderBox extends RenderBox
     children[1].layout(const BoxConstraints(), parentUsesSize: true);
     var labelSize = children[1].size;
 
-    children[1].layout(const BoxConstraints(), parentUsesSize: true);
-   iconSize = children[1].size;
+    var width = checkBoxSize.width + labelSize.width + iconSize.width;
+    var height = max(checkBoxSize.height, max(iconSize.height, labelSize.height));
+    size = constraints.constrain(Size(width, height));
+
+    (children[0].parentData as _ItemParentData).offset = Offset(0, (size.height - checkBoxSize.height) / 2);
+    (children[1].parentData as _ItemParentData).offset = Offset(checkBoxSize.width, (size.height - labelSize.height) / 2);
+    (children[2].parentData as _ItemParentData).offset = Offset(size.width - iconSize.width, (size.height - iconSize.height) / 2);
   }
 
   @override
