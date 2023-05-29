@@ -213,3 +213,30 @@ class _ItemRenderBox extends RenderBox
     defaultPaint(context, offset);
   }
 }
+
+class _HCascaderContent extends SingleChildRenderObjectWidget {
+  _HCascaderContent({super.key, super.child});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _HCascaderRenderBox();
+  }
+
+  @override
+  void didUnmountRenderObject(covariant RenderObject renderObject) {}
+}
+
+class _HCascaderRenderBox extends RenderProxyBox {
+  @override
+  bool get sizedByParent => false;
+
+  @override
+  void performLayout() {
+    if (child != null) {
+      child!.layout(constraints, parentUsesSize: true);
+      size = child!.size;
+    } else {
+      size = computeSizeForNoChild(constraints);
+    }
+  }
+}
