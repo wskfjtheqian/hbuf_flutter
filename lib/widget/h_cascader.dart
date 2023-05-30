@@ -45,7 +45,8 @@ class _HCascaderState<T> extends State<HCascader<T>> {
       constraints: BoxConstraints(minWidth: widget.minWidth, maxWidth: widget.maxWidth),
       child: SingleChildScrollView(
         key: _scrollKey,
-        child: Column(
+        child: _HConnect(
+          minWidth: widget.minWidth,
           children: widget.builder(context),
         ),
       ),
@@ -117,8 +118,7 @@ class HCascaderItem<T> extends StatelessWidget {
         // column.onTap(context, value, builder);
       },
       child: SizedBox(
-        width: 200,
-        height: 100,
+        height: 40,
         child: _HItem(
           children: [
             Checkbox(
@@ -164,12 +164,6 @@ class _ItemParentData extends ContainerBoxParentData<RenderBox> {}
 
 class _ItemRenderBox extends RenderBox
     with ContainerRenderObjectMixin<RenderBox, _ItemParentData>, RenderBoxContainerDefaultsMixin<RenderBox, _ItemParentData> {
-  _ItemRenderBox({
-    List<RenderBox>? children,
-  }) {
-    addAll(children);
-  }
-
   @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! _ItemParentData) {
@@ -214,29 +208,86 @@ class _ItemRenderBox extends RenderBox
   }
 }
 
-class _HCascaderContent extends SingleChildRenderObjectWidget {
-  _HCascaderContent({super.key, super.child});
+class _HConnect extends MultiChildRenderObjectWidget {
+  final double minWidth;
+
+  _HConnect({super.key, super.children = const <Widget>[], required this.minWidth});
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _HCascaderRenderBox();
+    return _ConnectRenderBox(minWidth: minWidth);
   }
 
   @override
-  void didUnmountRenderObject(covariant RenderObject renderObject) {}
+  void updateRenderObject(BuildContext context, covariant _ConnectRenderBox renderObject) {
+    renderObject..minWidth = minWidth;
+  }
 }
 
-class _HCascaderRenderBox extends RenderProxyBox {
+class _ConnectParentData extends ContainerBoxParentData<RenderBox> {}
+
+class _ConnectRenderBox extends RenderBox
+    with ContainerRenderObjectMixin<RenderBox, _ConnectParentData>, RenderBoxContainerDefaultsMixin<RenderBox, _ConnectParentData> {
+  _ConnectRenderBox({required double minWidth}) {
+    _minWidth = minWidth;
+  }
+
+  double _minWidth = 0;
+
+  double get minWidth => _minWidth;
+
+  set minWidth(double value) {
+    if (_minWidth != value) {
+      _minWidth = value;
+      markNeedsLayout();
+    }
+  }
+
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! _ConnectParentData) {
+      child.parentData = _ConnectParentData();
+    }
+  }
+
   @override
   bool get sizedByParent => false;
 
   @override
   void performLayout() {
-    if (child != null) {
-      child!.layout(constraints, parentUsesSize: true);
-      size = child!.size;
-    } else {
-      size = computeSizeForNoChild(constraints);
+    final BoxConstraints constraints = this.constraints;
+
+    double width = 0;
+    var child = firstChild;
+    while (child != null) {
+      final _ConnectParentData childParentData = child.parentData! as _ConnectParentData;
+      child.layout(const BoxConstraints(), parentUsesSize: true);
+      if (width < child.size.width) {
+        width = child.size.width;
+      }
+      child = childParentData.nextSibling;
     }
+
+    double dy = 0;
+    child = firstChild;
+    while (child != null) {
+      final _ConnectParentData childParentData = child.parentData! as _ConnectParentData;
+      child.layout(BoxConstraints(minWidth: width), parentUsesSize: true);
+      childParentData.offset = Offset(0, dy);
+      dy += child.size.height;
+      child = childParentData.nextSibling;
+    }
+
+    size = constraints.constrain(Size(width, dy));
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    return defaultHitTestChildren(result, position: position);
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    defaultPaint(context, offset);
   }
 }

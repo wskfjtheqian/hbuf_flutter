@@ -490,7 +490,7 @@ class HMenuStyle {
     this.shape = const HBubbleBorder(position: HBubblePosition.top, side: BorderSide(color: Color(0xffe4e7ed))),
     this.minHeight = 1,
     this.maxHeight = 200,
-    this.minWidth = 180,
+    this.minWidth = 0,
     this.maxWidth = 260,
     this.itemStyle = const HCascaderStyle(),
   });
