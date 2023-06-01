@@ -3,7 +3,7 @@ import 'package:hbuf_flutter/widget/auto_layout.dart';
 
 typedef OnClickFormFieldTap<T> = void Function(BuildContext context, FormFieldState<T>);
 
-typedef OnClickFormBuild = Widget Function(BuildContext context, ClickFormBuild field);
+typedef OnClickFormBuild<T> = Widget Function(BuildContext context, ClickFormBuild<T> field);
 
 Widget onClickFormBuild<T>(BuildContext context, ClickFormBuild<T> field) {
   return AutoLayout(
@@ -197,7 +197,7 @@ class ClickFormBuild<T> {
   int widthCount = 24;
   Map<double, int> widthSizes = {};
   EdgeInsetsGeometry padding = const EdgeInsets.only();
-  OnClickFormBuild onBuild = onClickFormBuild;
+  OnClickFormBuild<T> onBuild = onClickFormBuild;
   bool visible = true;
 
   Widget build(BuildContext context) {
