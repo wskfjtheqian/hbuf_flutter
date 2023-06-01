@@ -12,7 +12,7 @@ class HCascader<T> extends StatefulWidget {
 
   final double maxWidth;
 
-  final HCascaderItemBuilder builder;
+  final HCascaderItemBuilder<T> builder;
 
   final Set<T> value;
 
@@ -35,7 +35,7 @@ class HCascader<T> extends StatefulWidget {
 }
 
 class _HCascaderState<T> extends State<HCascader<T>> {
-  HCascaderItemBuilder? _builder;
+  HCascaderItemBuilder<T>? _builder;
 
   final _scrollKey = GlobalKey();
 
@@ -72,7 +72,7 @@ class _HCascaderState<T> extends State<HCascader<T>> {
     return child;
   }
 
-  void onTap(BuildContext context, T value, HCascaderItemBuilder? builder) {
+  void onTap(BuildContext context, T value, HCascaderItemBuilder<T>? builder) {
     setState(() {
       _builder = builder;
       if (widget.value.contains(value)) {
@@ -112,18 +112,20 @@ class HCascaderItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var style = this.style ?? const HCascaderStyle();
-    // var column = context.findAncestorStateOfType<_HCascaderState<T>>()!;
+    var column = context.findAncestorStateOfType<_HCascaderState<T>>();
     return InkWell(
       onTap: () {
-        // column.onTap(context, value, builder);
+        column?.onTap(context, value, builder);
       },
       child: SizedBox(
         height: 40,
         child: _HItem(
           children: [
             Checkbox(
-              value: true,
-              onChanged: (bool? value) {},
+              value: column?.hashValue(value),
+              onChanged: (bool? v) {
+                column?.onTap(context, value, builder);
+              },
             ),
             child,
             const Icon(Icons.chevron_right_outlined),
@@ -268,6 +270,7 @@ class _ConnectRenderBox extends RenderBox
       child = childParentData.nextSibling;
     }
 
+    width = max(width, _minWidth);
     double dy = 0;
     child = firstChild;
     while (child != null) {

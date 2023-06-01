@@ -188,8 +188,8 @@ class _HMenuRoute<T> extends PopupRoute<T> {
         boxShadow: 0 == style.elevation
             ? null
             : BoxShadow(
-                color: style.shadowColor ?? const Color(0x16000000),
-                offset: Offset(style.elevation / 4, style.elevation / 4),
+                color: style.shadowColor ?? const Color(0x30000000),
+                offset: Offset(0, style.elevation / 6),
                 blurRadius: style.elevation,
               ),
         shape: style.shape,
@@ -484,13 +484,13 @@ class HMenuStyle {
   final HCascaderStyle itemStyle;
 
   const HMenuStyle({
-    this.elevation = 4.0,
+    this.elevation = 12.0,
     this.color = const Color(0xffffffff),
-    this.shadowColor = const Color(0x20000000),
-    this.shape = const HBubbleBorder(position: HBubblePosition.top, side: BorderSide(color: Color(0xffe4e7ed))),
+    this.shadowColor = const Color(0x10000000),
+    this.shape = const HBubbleBorder(position: HBubblePosition.top, side: BorderSide(color: Color(0xffe4e7ed),width: 1)),
     this.minHeight = 1,
     this.maxHeight = 200,
-    this.minWidth = 0,
+    this.minWidth = 180,
     this.maxWidth = 260,
     this.itemStyle = const HCascaderStyle(),
   });

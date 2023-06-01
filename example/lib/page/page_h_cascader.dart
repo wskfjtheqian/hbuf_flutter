@@ -12,7 +12,7 @@ class PageHCascader extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(16),
-        child: HCascader(
+        child: HCascader<int>(
           minWidth: 50,
           builder: (BuildContext context) {
             return [
