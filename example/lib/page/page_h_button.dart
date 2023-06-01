@@ -23,7 +23,7 @@ class PageHButton extends StatelessWidget {
                 children: [
                   HButton(
                     style: context.defaultButton.copyWith(),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                     child: Text("默认按钮"),
@@ -32,7 +32,7 @@ class PageHButton extends StatelessWidget {
                     style: context.defaultButton.copyWith(
                       color: MaterialStatePropertyAll(context.brandColor),
                     ),
-                    onTap: () async {
+                    onTap: (context) async {
                       await Future.delayed(const Duration(seconds: 5));
                     },
                     child: const Text("主要按钮"),
@@ -41,7 +41,7 @@ class PageHButton extends StatelessWidget {
                     style: context.defaultButton.copyWith(
                       color: MaterialStatePropertyAll(context.successColor),
                     ),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                     child: const Text("成功按钮"),
@@ -78,7 +78,7 @@ class PageHButton extends StatelessWidget {
                       plain: true,
                     ),
                     child: Text("默认按钮"),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                   ),
@@ -88,7 +88,7 @@ class PageHButton extends StatelessWidget {
                       plain: true,
                     ),
                     child: const Text("主要按钮"),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                   ),
@@ -134,7 +134,7 @@ class PageHButton extends StatelessWidget {
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: Text("默认按钮"),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                   ),
@@ -144,7 +144,7 @@ class PageHButton extends StatelessWidget {
                       shape: MaterialStatePropertyAll(StadiumBorder()),
                     ),
                     child: const Text("主要按钮"),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                   ),
@@ -190,7 +190,7 @@ class PageHButton extends StatelessWidget {
                       shape: MaterialStatePropertyAll(CircleBorder()),
                     ),
                     child: Icon(Icons.search),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                   ),
@@ -200,7 +200,7 @@ class PageHButton extends StatelessWidget {
                       color: MaterialStatePropertyAll(context.brandColor),
                     ),
                     child: Icon(Icons.edit_note),
-                    onTap: () async {
+                    onTap: (context) async {
 
                     },
                   ),

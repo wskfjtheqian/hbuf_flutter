@@ -4,6 +4,7 @@ import 'package:hbuf_flutter/widget/h_color.dart';
 import 'package:hbuf_flutter/widget/h_text.dart';
 
 import 'h_button.dart';
+import 'h_cascader.dart';
 import 'h_color_picker.dart';
 import 'h_menu.dart';
 
@@ -63,9 +64,12 @@ class HThemeData {
 
   final HMenuThemeData menuTheme;
 
+  final HCascaderStyle cascaderStyle;
+
 
 
   const HThemeData({
+    this.cascaderStyle = const HCascaderStyle(),
     this.menuTheme = const HMenuThemeData(),
     this.colorButtonTheme = const HColorButtonThemeData(),
     this.sliderTheme = const HSliderThemeData(),

@@ -3,28 +3,28 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'h_checkbox.dart';
+import 'h_theme.dart';
+
 typedef HCascaderItemBuilder<T> = List<HCascaderItem<T>> Function(BuildContext context);
 
 typedef OnHCascaderChange<T> = void Function(Set<T> value);
 
 class HCascader<T> extends StatefulWidget {
-  final double minWidth;
-
-  final double maxWidth;
-
   final HCascaderItemBuilder<T> builder;
 
   final Set<T> value;
 
+  final int? limit;
+
   final OnHCascaderChange<T>? onChange;
 
-  final int? limit;
+  final HCascaderStyle? style;
 
   const HCascader({
     Key? key,
     required this.builder,
-    required this.minWidth,
-    required this.maxWidth,
+    this.style,
     required this.value,
     required this.onChange,
     this.limit,
@@ -39,15 +39,21 @@ class _HCascaderState<T> extends State<HCascader<T>> {
 
   final _scrollKey = GlobalKey();
 
+  HCascaderStyle get style => widget.style ?? HTheme.of(context).cascaderStyle;
+
   @override
   Widget build(BuildContext context) {
+    var style = this.style;
     Widget child = ConstrainedBox(
-      constraints: BoxConstraints(minWidth: widget.minWidth, maxWidth: widget.maxWidth),
-      child: SingleChildScrollView(
-        key: _scrollKey,
-        child: _HConnect(
-          minWidth: widget.minWidth,
-          children: widget.builder(context),
+      constraints: BoxConstraints(minWidth: style.minWidth, maxWidth: style.maxWidth),
+      child: Padding(
+        padding: style.padding,
+        child: SingleChildScrollView(
+          key: _scrollKey,
+          child: _HConnect(
+            minWidth: style.minWidth,
+            children: widget.builder(context),
+          ),
         ),
       ),
     );
@@ -60,8 +66,7 @@ class _HCascaderState<T> extends State<HCascader<T>> {
           const VerticalDivider(width: 1),
           HCascader<T>(
             builder: _builder!,
-            minWidth: widget.minWidth,
-            maxWidth: widget.maxWidth,
+            style: style,
             value: widget.value,
             onChange: widget.onChange,
             limit: widget.limit,
@@ -92,43 +97,142 @@ class _HCascaderState<T> extends State<HCascader<T>> {
   }
 }
 
-class HCascaderItem<T> extends StatelessWidget {
-  final T value;
+class HCascaderStyle {
+  final EdgeInsets padding;
 
+  final double minWidth;
+
+  final double maxWidth;
+
+  final HCascaderItemStyle itemStyle;
+
+  const HCascaderStyle({
+    this.minWidth = 180,
+    this.maxWidth = 260,
+    this.itemStyle = const HCascaderItemStyle(),
+    this.padding = const EdgeInsets.symmetric(vertical: 8),
+  });
+
+  HCascaderStyle copyWith({
+    EdgeInsets? padding,
+    double? minWidth,
+    double? maxWidth,
+    HCascaderItemStyle? itemStyle,
+  }) {
+    return HCascaderStyle(
+      padding: padding ?? this.padding,
+      minWidth: minWidth ?? this.minWidth,
+      maxWidth: maxWidth ?? this.maxWidth,
+      itemStyle: itemStyle ?? this.itemStyle,
+    );
+  }
+
+  HCascaderStyle merge(HCascaderStyle? other) {
+    if (other == null) {
+      return this;
+    }
+    return copyWith(
+      padding: other.padding,
+      minWidth: other.minWidth,
+      maxWidth: other.maxWidth,
+      itemStyle: other.itemStyle,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HCascaderStyle &&
+          runtimeType == other.runtimeType &&
+          padding == other.padding &&
+          minWidth == other.minWidth &&
+          maxWidth == other.maxWidth &&
+          itemStyle == other.itemStyle;
+
+  @override
+  int get hashCode => padding.hashCode ^ minWidth.hashCode ^ maxWidth.hashCode ^ itemStyle.hashCode;
+}
+
+class HCascaderItem<T> extends StatelessWidget {
   final Widget child;
 
-  final HCascaderStyle? style;
-
-  final HCascaderItemBuilder<T>? builder;
-
-  const HCascaderItem({
-    Key? key,
-    required this.value,
-    required this.child,
-    this.style,
-    this.builder,
-  }) : super(key: key);
+  const HCascaderItem({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    var style = this.style ?? const HCascaderStyle();
-    var column = context.findAncestorStateOfType<_HCascaderState<T>>();
+    return child;
+  }
+}
+
+class HCascaderText<T> extends HCascaderItem<T> {
+  final T value;
+
+  final HCascaderItemStyle? style;
+
+  final HCascaderItemBuilder<T>? builder;
+
+  const HCascaderText({
+    super.key,
+    required this.value,
+    required super.child,
+    this.style,
+    this.builder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var column = context.findAncestorStateOfType<_HCascaderState<T>>()!;
+    var style = this.style ?? column.style.itemStyle;
+    Widget child = this.child;
+    var textStyle = style.checkBoxStyle.textStyle;
+    if (null != textStyle) {
+      if (column.hashValue(value) ?? false) {
+        textStyle = textStyle.copyWith(color: style.checkBoxStyle.checkColor);
+      }
+      child = DefaultTextStyle(style: textStyle, child: child);
+    }
     return InkWell(
       onTap: () {
-        column?.onTap(context, value, builder);
+        column.onTap(context, value, builder);
       },
       child: SizedBox(
-        height: 40,
+        height: style.height,
         child: _HItem(
           children: [
-            Checkbox(
-              value: column?.hashValue(value),
-              onChanged: (bool? v) {
-                column?.onTap(context, value, builder);
-              },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Checkbox(
+                value: column?.hashValue(value),
+                onChanged: (bool? value) {
+                  column.onTap(context, this.value, builder);
+                },
+                tristate: style.checkBoxStyle.tristate,
+                mouseCursor: style.checkBoxStyle.mouseCursor,
+                activeColor: style.checkBoxStyle.activeColor,
+                fillColor: style.checkBoxStyle.fillColor,
+                checkColor: style.checkBoxStyle.checkColor,
+                focusColor: style.checkBoxStyle.focusColor,
+                hoverColor: style.checkBoxStyle.hoverColor,
+                overlayColor: style.checkBoxStyle.overlayColor,
+                splashRadius: style.checkBoxStyle.splashRadius,
+                materialTapTargetSize: style.checkBoxStyle.materialTapTargetSize,
+                visualDensity: style.checkBoxStyle.visualDensity,
+                focusNode: style.checkBoxStyle.focusNode,
+                autofocus: style.checkBoxStyle.autofocus,
+                shape: style.checkBoxStyle.shape,
+                side: style.checkBoxStyle.side,
+                isError: style.checkBoxStyle.isError,
+              ),
             ),
             child,
-            const Icon(Icons.chevron_right_outlined),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 8),
+              child: Icon(
+                Icons.chevron_right_outlined,
+                color: textStyle?.color,
+                size: (textStyle?.fontSize ?? 1) * 1.2,
+              ),
+            ),
           ],
         ),
       ),
@@ -136,18 +240,48 @@ class HCascaderItem<T> extends StatelessWidget {
   }
 }
 
-class HCascaderStyle {
-  final EdgeInsets padding;
-
+class HCascaderItemStyle {
   final double height;
 
-  final TextStyle textStyle;
+  final HCheckBoxStyle checkBoxStyle;
 
-  const HCascaderStyle({
-    this.padding = const EdgeInsets.symmetric(horizontal: 8),
+  const HCascaderItemStyle({
     this.height = 42,
-    this.textStyle = const TextStyle(color: Color(0xFF606266), fontSize: 14),
+    this.checkBoxStyle = const HCheckBoxStyle(
+      side: BorderSide(color: Color(0x00000000)),
+      fillColor: MaterialStatePropertyAll(Color(0x00000000)),
+      checkColor: Color(0xff409eff),
+      textStyle: TextStyle(color: Color(0xFF606266), fontSize: 14),
+    ),
   });
+
+  HCascaderItemStyle copyWith({
+    double? height,
+    HCheckBoxStyle? checkBoxStyle,
+  }) {
+    return HCascaderItemStyle(
+      height: height ?? this.height,
+      checkBoxStyle: checkBoxStyle ?? this.checkBoxStyle,
+    );
+  }
+
+  HCascaderItemStyle merge(HCascaderItemStyle? other) {
+    if (other == null) {
+      return this;
+    }
+    return copyWith(
+      height: other.height,
+      checkBoxStyle: other.checkBoxStyle,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HCascaderItemStyle && runtimeType == other.runtimeType && height == other.height && checkBoxStyle == other.checkBoxStyle;
+
+  @override
+  int get hashCode => height.hashCode ^ checkBoxStyle.hashCode;
 }
 
 class _HItem extends MultiChildRenderObjectWidget {

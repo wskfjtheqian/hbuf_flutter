@@ -4,8 +4,8 @@ import 'h_color.dart';
 import 'h_size.dart';
 import 'h_theme.dart';
 
-typedef HButtonTapCallback = Future<void> Function();
-typedef HButtonLongPressCallback = Future<void> Function();
+typedef HButtonTapCallback = Future<void> Function(BuildContext context);
+typedef HButtonLongPressCallback = Future<void> Function(BuildContext context);
 
 class HButton extends StatefulWidget {
   final Widget child;
@@ -128,9 +128,9 @@ class _HButtonState extends State<HButton> {
 
     child = InkWell(
       mouseCursor: mouseCursor,
-      onTap: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(widget.onTap!),
-      onDoubleTap: null == widget.onDoubleTap || _isWaiting ? null : () => onWaitingEvent(widget.onDoubleTap!),
-      onLongPress: null == widget.onLongPress || _isWaiting ? null : () => onWaitingEvent(widget.onLongPress!),
+      onTap: null == widget.onTap || _isWaiting ? null : () => onWaitingEvent(context, widget.onTap!),
+      onDoubleTap: null == widget.onDoubleTap || _isWaiting ? null : () => onWaitingEvent(context, widget.onDoubleTap!),
+      onLongPress: null == widget.onLongPress || _isWaiting ? null : () => onWaitingEvent(context, widget.onLongPress!),
       onTapDown: widget.onTapDown,
       onTapUp: widget.onTapUp,
       onTapCancel: widget.onTapCancel,
@@ -178,10 +178,10 @@ class _HButtonState extends State<HButton> {
     );
   }
 
-  Future<void> onWaitingEvent(HButtonTapCallback callback) async {
+  Future<void> onWaitingEvent(BuildContext context, HButtonTapCallback callback) async {
     try {
       setState(() => _isWaiting = true);
-      await callback();
+      await callback(context);
     } finally {
       setState(() => _isWaiting = false);
     }

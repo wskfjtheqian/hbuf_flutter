@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hbuf_flutter/generated/l10n.dart';
 import 'package:hbuf_flutter/widget/h_button.dart';
+import 'package:hbuf_flutter/widget/h_cascader.dart';
 import 'package:hbuf_flutter/widget/h_color.dart';
+import 'package:hbuf_flutter/widget/h_menu.dart';
 
 import 'h_theme.dart';
 
@@ -879,10 +881,6 @@ Future<Color?> showHColorPicker(BuildContext context, {required Color color}) as
 
 typedef HColorPickerTextCall = String Function(BuildContext context);
 
-HColorPickerTextCall colorPickerOkTextCall = (context) => "确定";
-
-HColorPickerTextCall colorPickerCancelTextCall = (context) => "取消";
-
 class HColorPicker extends StatefulWidget {
   final Color color;
 
@@ -946,7 +944,7 @@ class _HColorPickerState extends State<HColorPicker> {
                     child: HButton(
                       style: context.smallButton,
                       child: Text(S.of(context).cancelButtonLabel),
-                      onTap: () async {
+                      onTap: (context) async {
                         Navigator.of(context).pop();
                       },
                     ),
@@ -955,7 +953,7 @@ class _HColorPickerState extends State<HColorPicker> {
                     style: context.smallButton.copyWith(
                       color: MaterialStatePropertyAll(context.brandColor),
                     ),
-                    onTap: () async {
+                    onTap: (context) async {
                       Navigator.of(context).pop(_color);
                     },
                     child: Text(
@@ -1005,8 +1003,16 @@ class HColorButton extends StatelessWidget {
               color: const Color(0x00000000),
               child: InkWell(
                 onTap: () async {
-                  var value = await showHColorPicker(context, color: color ?? const Color(0xffffffff));
-                  onChanged?.call(value);
+                  showHMenu<Color>(context,
+                      builder: (context) {
+                        return [
+                          HCascaderItem<Color>(child: HColorPicker(color: color ?? const Color(0xffffffff))),
+                        ];
+                      },
+                      value: {color ?? const Color(0xffffffff)},
+                      onChange: (value) {
+                        onChanged?.call(value.first);
+                      });
                 },
                 child: Icon(
                   Icons.keyboard_arrow_down_sharp,

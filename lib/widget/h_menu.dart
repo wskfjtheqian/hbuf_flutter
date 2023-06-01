@@ -1,116 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hbuf_flutter/widget/h_button.dart';
 
 import 'h_border.dart';
 import 'h_cascader.dart';
 import 'h_theme.dart';
 
-class HMenuButton extends StatelessWidget {
-  const HMenuButton({Key? key}) : super(key: key);
+class HMenuButton<T> extends HButton {
+  final HMenuStyle menuStyle;
+
+  final HButtonStyle? style;
+
+  final HCascaderItemBuilder<T> builder;
+
+  final Set<T> value;
+
+  final OnHCascaderChange<T>? onChange;
+
+  final int? limit;
+
+  const HMenuButton({
+    super.key,
+    this.menuStyle = const HMenuStyle(),
+    required super.child,
+    this.style,
+    required this.builder,
+    required this.value,
+    this.onChange,
+    this.limit,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      child: const Text("datadatadatadatadatadatadatadata"),
-      onTap: () {
-        showHMenu<int>(
-          context,
-          limit: null,
-          builder: (BuildContext context) {
-            return [
-              HCascaderItem<int>(
-                value: 1,
-                child: Text("HCascaderItem1"),
-              ),
-              HCascaderItem<int>(
-                value: 2,
-                child: Text("HCascaderItem2"),
-              ),
-              HCascaderItem<int>(
-                value: 3,
-                child: Text("HCascaderItem3"),
-              ),
-              HCascaderItem<int>(
-                value: 4,
-                child: Text("HCascaderItem4"),
-              ),
-              HCascaderItem<int>(
-                value: 5,
-                child: Text("HCascaderItem5"),
-                builder: (context) {
-                  return [
-                    HCascaderItem<int>(
-                      value: 6,
-                      child: Text("HCascaderItem6"),
-                      builder: (context) {
-                        return [
-                          HCascaderItem<int>(
-                            value: 7,
-                            child: Text("HCascaderItem7"),
-                          ),
-                          HCascaderItem<int>(
-                            value: 8,
-                            child: Text("HCascaderItem8"),
-                          ),
-                          HCascaderItem<int>(
-                            value: 9,
-                            child: Text("HCascaderItem9"),
-                          ),
-                          HCascaderItem<int>(
-                            value: 10,
-                            child: Text("HCascaderItem10"),
-                          ),
-                          HCascaderItem<int>(
-                            value: 11,
-                            child: Text("HCascaderItem11"),
-                          ),
-                        ];
-                      },
-                    ),
-                    HCascaderItem<int>(
-                      value: 12,
-                      child: Text("HCascaderItem12"),
-                    ),
-                    HCascaderItem<int>(
-                      value: 13,
-                      child: Text("HCascaderItem13"),
-                    ),
-                    HCascaderItem<int>(
-                      value: 14,
-                      child: Text("HCascaderItem14"),
-                    ),
-                    HCascaderItem<int>(
-                      value: 15,
-                      child: Text("HCascaderItem15"),
-                    ),
-                    HCascaderItem<int>(
-                      value: 16,
-                      child: Text("HCascaderItem16"),
-                    ),
-                  ];
-                },
-              ),
-              HCascaderItem<int>(
-                value: 17,
-                child: Text("HCascaderItem"),
-              ),
-              HCascaderItem<int>(
-                value: 18,
-                child: Text("HCascaderItem"),
-              ),
-              HCascaderItem<int>(
-                value: 19,
-                child: Text("HCascaderItem"),
-              ),
-              HCascaderItem<int>(
-                value: 20,
-                child: Text("HCascaderItem"),
-              ),
-            ];
-          },
-          value: {},
-        );
-      },
+  HButtonTapCallback? get onTap => _onTap;
+
+  Future<void> _onTap(BuildContext context) async {
+    showHMenu<T>(
+      context,
+      builder: builder,
+      value: value,
+      limit: limit,
+      onChange: onChange,
+      style: menuStyle,
     );
   }
 }
@@ -196,16 +126,12 @@ class _HMenuRoute<T> extends PopupRoute<T> {
         color: style.color,
         child: Material(
           color: Colors.transparent,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: HCascader<T>(
-              minWidth: style.minWidth,
-              maxWidth: style.maxWidth,
-              builder: builder,
-              value: value,
-              onChange: onChange,
-              limit: limit,
-            ),
+          child: HCascader<T>(
+            style: style.cascaderStyle,
+            builder: builder,
+            value: value,
+            onChange: onChange,
+            limit: limit,
           ),
         ),
       );
@@ -477,22 +403,16 @@ class HMenuStyle {
 
   final double maxHeight;
 
-  final double minWidth;
-
-  final double maxWidth;
-
-  final HCascaderStyle itemStyle;
+  final HCascaderStyle cascaderStyle;
 
   const HMenuStyle({
     this.elevation = 12.0,
     this.color = const Color(0xffffffff),
     this.shadowColor = const Color(0x10000000),
-    this.shape = const HBubbleBorder(position: HBubblePosition.top, side: BorderSide(color: Color(0xffe4e7ed),width: 1)),
+    this.shape = const HBubbleBorder(position: HBubblePosition.top, side: BorderSide(color: Color(0xffe4e7ed), width: 1)),
     this.minHeight = 1,
     this.maxHeight = 200,
-    this.minWidth = 180,
-    this.maxWidth = 260,
-    this.itemStyle = const HCascaderStyle(),
+    this.cascaderStyle = const HCascaderStyle(),
   });
 }
 

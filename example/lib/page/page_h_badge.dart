@@ -27,7 +27,7 @@ class PageHBadge extends StatelessWidget {
                     value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {},
+                      onTap: (context) async {},
                       child: const Text("默认按钮"),
                     ),
                   ),
@@ -38,7 +38,7 @@ class PageHBadge extends StatelessWidget {
                     value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {},
+                      onTap: (context) async {},
                       child: const Text("默认按钮"),
                     ),
                   ),
@@ -49,7 +49,7 @@ class PageHBadge extends StatelessWidget {
                     value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {},
+                      onTap: (context) async {},
                       child: const Text("默认按钮"),
                     ),
                   ),
@@ -60,7 +60,7 @@ class PageHBadge extends StatelessWidget {
                     value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {},
+                      onTap: (context) async {},
                       child: const Text("默认按钮"),
                     ),
                   ),
@@ -71,7 +71,7 @@ class PageHBadge extends StatelessWidget {
                     value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {},
+                      onTap: (context) async {},
                       child: const Text("默认按钮"),
                     ),
                   ),
@@ -82,7 +82,7 @@ class PageHBadge extends StatelessWidget {
                     value: 99,
                     child: HButton(
                       style: context.defaultButton.copyWith(),
-                      onTap: () async {},
+                      onTap: (context) async {},
                       child: const Text("默认按钮"),
                     ),
                   ),

@@ -13,100 +13,98 @@ class PageHCascader extends StatelessWidget {
       body: Container(
         padding: EdgeInsets.all(16),
         child: HCascader<int>(
-          minWidth: 50,
           builder: (BuildContext context) {
             return [
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 1,
                 child: Text("HCascaderItem1"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 2,
                 child: Text("HCascaderItem2"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 3,
                 child: Text("HCascaderItem3"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 4,
                 child: Text("HCascaderItem4"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 5,
                 child: Text("HCascaderItem5"),
                 builder: (context) {
                   return [
-                    HCascaderItem<int>(
+                    HCascaderText<int>(
                       value: 6,
                       child: Text("HCascaderItem6"),
                       builder: (context) {
                         return [
-                          HCascaderItem<int>(
+                          HCascaderText<int>(
                             value: 7,
                             child: Text("HCascaderItem7"),
                           ),
-                          HCascaderItem<int>(
+                          HCascaderText<int>(
                             value: 8,
                             child: Text("HCascaderItem8"),
                           ),
-                          HCascaderItem<int>(
+                          HCascaderText<int>(
                             value: 9,
                             child: Text("HCascaderItem9"),
                           ),
-                          HCascaderItem<int>(
+                          HCascaderText<int>(
                             value: 10,
                             child: Text("HCascaderItem10"),
                           ),
-                          HCascaderItem<int>(
+                          HCascaderText<int>(
                             value: 11,
                             child: Text("HCascaderItem11"),
                           ),
                         ];
                       },
                     ),
-                    HCascaderItem<int>(
+                    HCascaderText<int>(
                       value: 12,
                       child: Text("HCascaderItem12"),
                     ),
-                    HCascaderItem<int>(
+                    HCascaderText<int>(
                       value: 13,
                       child: Text("HCascaderItem13"),
                     ),
-                    HCascaderItem<int>(
+                    HCascaderText<int>(
                       value: 14,
                       child: Text("HCascaderItem14"),
                     ),
-                    HCascaderItem<int>(
+                    HCascaderText<int>(
                       value: 15,
                       child: Text("HCascaderItem15"),
                     ),
-                    HCascaderItem<int>(
+                    HCascaderText<int>(
                       value: 16,
                       child: Text("HCascaderItem16"),
                     ),
                   ];
                 },
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 17,
                 child: Text("HCascaderItem"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 18,
                 child: Text("HCascaderItem"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 19,
                 child: Text("HCascaderItem"),
               ),
-              HCascaderItem<int>(
+              HCascaderText<int>(
                 value: 20,
                 child: Text("HCascaderItem"),
               ),
             ];
           },
-          maxWidth: 200,
           value: {},
           onChange: (Set<dynamic> value) {},
         ),

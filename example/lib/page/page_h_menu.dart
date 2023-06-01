@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hbuf_flutter/widget/h_cascader.dart';
 import 'package:hbuf_flutter/widget/h_menu.dart';
 
 class PageHMenu extends StatelessWidget {
@@ -16,9 +17,21 @@ class PageHMenu extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              HMenuButton(),
+              HMenuButton<int>(
+                builder: (BuildContext context) {
+                  return [const HCascaderText<int>(value: 1, child: Text("data"))];
+                },
+                value: {},
+                child: const Text("data"),
+              ),
               Spacer(),
-              HMenuButton(),
+              HMenuButton<int>(
+                builder: (BuildContext context) {
+                  return [const HCascaderText<int>(value: 1, child: Text("data"))];
+                },
+                value: {},
+                child: const Text("data"),
+              ),
             ],
           ),
         ),
