@@ -364,13 +364,6 @@ class _HMenuRenderBox extends RenderProxyBoxWithHitTestBehavior {
         );
       }
       shape.paint(context.canvas, rect);
-
-      // for (final BoxShadow boxShadow in _decoration.boxShadow!) {
-      //
-      //   final Rect bounds = rect.shift(boxShadow.offset).inflate(boxShadow.spreadRadius);
-      //   _paintBox(canvas, bounds, paint, textDirection);
-      // }
-
       context.clipPathAndPaint(path, Clip.antiAlias, offset & child!.size, () => painter(context, Offset.zero));
     }
   }
