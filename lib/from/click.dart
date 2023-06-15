@@ -22,7 +22,7 @@ Widget onClickFormBuild<T>(BuildContext context, ClickFormBuild<T> field) {
           onSaved: field.onSaved,
           validator: field.validator,
           autovalidateMode: field.autovalidateMode,
-          onTap: field.onTap,
+          onTap: (!field.readOnly && field.enabled) ? field.onTap : null,
           initialValue: field.initialValue,
           enabled: field.enabled,
           readOnly: field.readOnly,
@@ -31,7 +31,6 @@ Widget onClickFormBuild<T>(BuildContext context, ClickFormBuild<T> field) {
     ),
   );
 }
-
 
 class ClickFormField<T> extends FormField<T> {
   final FocusNode? focusNode;
