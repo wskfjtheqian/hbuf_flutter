@@ -289,14 +289,15 @@ class _FileFormFieldState extends State<FileFormField> {
 
   InkWell getSuffix(BuildContext context) {
     return InkWell(
-      onTap: () {
-        (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!, extensions: widget.extensions);
-      },
+      onTap: widget.readOnly || false == widget.enabled
+          ? null
+          : () {
+              (widget.onAdd ?? onFileFormFieldAdd)!.call(context, _controller!, extensions: widget.extensions);
+            },
       child: const Icon(Icons.file_open_outlined),
     );
   }
 }
-
 
 OnFileFormFieldAdd? onFileFormFieldAdd;
 
