@@ -20,9 +20,15 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(number) => "${number} pieces/page";
+
+  static String m1(total) => "${total} pieces";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "cancelButtonLabel": MessageLookupByLibrary.simpleMessage("Cancel"),
-        "okButtonLabel": MessageLookupByLibrary.simpleMessage("Ok")
+        "okButtonLabel": MessageLookupByLibrary.simpleMessage("Ok"),
+        "paginationMenuLabel": m0,
+        "paginationTotalLabel": m1
       };
 }

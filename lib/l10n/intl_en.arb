@@ -1,4 +1,6 @@
 {
   "cancelButtonLabel": "Cancel",
-  "okButtonLabel": "Ok"
+  "okButtonLabel": "Ok",
+  "paginationTotalLabel": "{total} pieces",
+  "paginationMenuLabel": "{number} pieces/page"
 }

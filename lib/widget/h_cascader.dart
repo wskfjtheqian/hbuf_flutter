@@ -80,6 +80,7 @@ class _HCascaderState<T> extends State<HCascader<T>> {
   void onTap(BuildContext context, T value, HCascaderItemBuilder<T>? builder) {
     setState(() {
       _builder = builder;
+      if(null == widget.limit){}
       if (widget.value.contains(value)) {
         widget.value.remove(value);
       } else {
@@ -225,14 +226,15 @@ class HCascaderText<T> extends HCascaderItem<T> {
               ),
             ),
             child,
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 8),
-              child: Icon(
-                Icons.chevron_right_outlined,
-                color: textStyle?.color,
-                size: (textStyle?.fontSize ?? 1) * 1.2,
+            if (null != builder)
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 8),
+                child: Icon(
+                  Icons.chevron_right_outlined,
+                  color: textStyle?.color,
+                  size: (textStyle?.fontSize ?? 1) * 1.2,
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -317,9 +319,11 @@ class _ItemRenderBox extends RenderBox
     var children = getChildrenAsList();
     children[0].layout(const BoxConstraints(), parentUsesSize: true);
     var checkBoxSize = children[0].size;
-
-    children[2].layout(const BoxConstraints(), parentUsesSize: true);
-    var iconSize = children[2].size;
+    Size iconSize = Size.zero;
+    if (2 < children.length) {
+      children[2].layout(const BoxConstraints(), parentUsesSize: true);
+      iconSize = children[2].size;
+    }
 
     children[1].layout(const BoxConstraints(), parentUsesSize: true);
     var labelSize = children[1].size;
@@ -330,7 +334,9 @@ class _ItemRenderBox extends RenderBox
 
     (children[0].parentData as _ItemParentData).offset = Offset(0, (size.height - checkBoxSize.height) / 2);
     (children[1].parentData as _ItemParentData).offset = Offset(checkBoxSize.width, (size.height - labelSize.height) / 2);
-    (children[2].parentData as _ItemParentData).offset = Offset(size.width - iconSize.width, (size.height - iconSize.height) / 2);
+    if (2 < children.length) {
+      (children[2].parentData as _ItemParentData).offset = Offset(size.width - iconSize.width, (size.height - iconSize.height) / 2);
+    }
   }
 
   @override

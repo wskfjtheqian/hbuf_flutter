@@ -69,6 +69,26 @@ class S {
       args: [],
     );
   }
+
+  /// `{total} pieces`
+  String paginationTotalLabel(Object total) {
+    return Intl.message(
+      '$total pieces',
+      name: 'paginationTotalLabel',
+      desc: '',
+      args: [total],
+    );
+  }
+
+  /// `{number} pieces/page`
+  String paginationMenuLabel(Object number) {
+    return Intl.message(
+      '$number pieces/page',
+      name: 'paginationMenuLabel',
+      desc: '',
+      args: [number],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -7,6 +7,7 @@ import 'package:example/page/page_h_from.dart';
 import 'package:example/page/page_h_layout.dart';
 import 'package:example/page/page_h_link.dart';
 import 'package:example/page/page_h_menu.dart';
+import 'package:example/page/page_h_pagination.dart';
 import 'package:example/page/page_h_size.dart';
 import 'package:example/page/page_h_tag.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
           HPath("/home/color", (context) => const PageHColorSelect()),
           HPath("/home/menu", (context) => const PageHMenu()),
           HPath("/home/cascader", (context) => const PageHCascader()),
+          HPath("/home/pagination", (context) => const PageHPagination()),
 
           // HPath("/home/calendar/:id", (context) => const PageChineseCalendar()),
           // HPath("/home/color", (context) => const PageColorSelect()),
@@ -194,12 +196,24 @@ class _PageHomeState extends State<PageHome> {
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
                         "/home/cascader",
-                        (path) => path.isSub("/cascader"),
+                        (path) => path.isSub("/home"),
                         params: {"name": "name"},
                       );
                     },
                     child: const Text("HCascader"),
                   ),
+                   TextButton(
+                    onPressed: () {
+                      HRouter.of(context).pushNamedAndRemoveUntil(
+                        "/home/pagination",
+                        (path) => path.isSub("/home"),
+                        params: {"name": "name"},
+                      );
+                    },
+                    child: const Text("HPagination"),
+                  ),
+
+
                   TextButton(
                     onPressed: () {
                       HRouter.of(context).pushNamedAndRemoveUntil(
