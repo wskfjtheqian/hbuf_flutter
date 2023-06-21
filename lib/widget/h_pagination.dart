@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/generated/l10n.dart';
+import 'package:hbuf_flutter/widget/h_button.dart';
 import 'package:hbuf_flutter/widget/h_menu.dart';
 
 import 'h_cascader.dart';
@@ -72,33 +73,33 @@ class _HPaginationState extends State<HPagination> {
 
     for (int i = start; i <= end; i++) {
       if (i == _page) {
-        children.add(TextButton(
-          onPressed: () {},
+        children.add(HButton(
+          onTap: (context) async {},
           style: style.buttonStyle,
           child: Text("$i"),
         ));
       } else if (start == i) {
-        children.add(TextButton(
-          onPressed: () => page = 1,
+        children.add(HButton(
+          onTap: (context) async => page = 1,
           style: style.buttonStyle,
           child: const Text("1"),
         ));
       } else if (end == i) {
-        children.add(TextButton(
-          onPressed: () => page = total,
+        children.add(HButton(
+          onTap: (context) async => page = total,
           style: style.buttonStyle,
           child: Text("$total"),
         ));
       } else if ((start + 1 == i && i != 2) || end - 1 == i && i != total - 1) {
-        children.add(TextButton(
+        children.add(HButton(
           style: style.buttonStyle,
-          onPressed: null,
+          onTap: null,
           child: const Icon(Icons.more_horiz, size: 18),
         ));
       } else {
-        children.add(TextButton(
+        children.add(HButton(
           style: style.buttonStyle,
-          onPressed: () => page = i,
+          onTap: (context) async => page = i,
           child: Text("$i"),
         ));
       }
@@ -112,44 +113,41 @@ class _HPaginationState extends State<HPagination> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: SizedBox(
-            width: 105,
-            height: 36,
-            child: HMenuButton<int>(
-              builder: (BuildContext context) {
-                return [
-                  for (var number in _pageNumber)
-                    HCascaderText<int>(
-                      value: number,
-                      child: Text(S.of(context).paginationTotalLabel(number.toString())),
-                    )
-                ];
-              },
-              value: {},
-              child: const Text("data"),
-              onChange: (val) {
-                _limit = val;
-              },
-              // value: _limit,
-              // items: [
-              //   for (var e in _pageNumber)
-              //     DropdownMenuItem(
-              //       value: e,
-              //       child: Text(S.of(context).paginationTotalLabel(e.toString())),
-              //     )
-              // ],
-              // onChanged: (val) {
-              //   setState(() {
-              //     _limit = val ?? 1;
-              //   });
-              //   int total = (widget.total / _limit).ceil();
-              //   _page = max(1, min(total, _page));
-              //   widget.onChange.call((_page - 1) * _limit, _limit);
-              // },
-              // decoration: const InputDecoration(
-              //   isDense: true,
-              // ),
-            ),
+          child: HMenuButton<int>(
+            style: style.buttonStyle,
+            builder: (BuildContext context) {
+              return [
+                for (var number in _pageNumber)
+                  HCascaderText<int>(
+                    value: number,
+                    child: Text(S.of(context).paginationTotalLabel(number.toString())),
+                  )
+              ];
+            },
+            value: {},
+            child: const Text("data"),
+            onChange: (val) {
+              _limit = val;
+            },
+            // value: _limit,
+            // items: [
+            //   for (var e in _pageNumber)
+            //     DropdownMenuItem(
+            //       value: e,
+            //       child: Text(S.of(context).paginationTotalLabel(e.toString())),
+            //     )
+            // ],
+            // onChanged: (val) {
+            //   setState(() {
+            //     _limit = val ?? 1;
+            //   });
+            //   int total = (widget.total / _limit).ceil();
+            //   _page = max(1, min(total, _page));
+            //   widget.onChange.call((_page - 1) * _limit, _limit);
+            // },
+            // decoration: const InputDecoration(
+            //   isDense: true,
+            // ),
           ),
         ),
         ...children,
@@ -164,13 +162,14 @@ class _HPaginationState extends State<HPagination> {
 }
 
 class HPaginationStyle {
-  final ButtonStyle buttonStyle;
+  final HButtonStyle buttonStyle;
 
   const HPaginationStyle(
-      {this.buttonStyle = const ButtonStyle(
-        minimumSize: MaterialStatePropertyAll(Size(28, 28)),
+      {this.buttonStyle = const HButtonStyle(
+        elevation: MaterialStatePropertyAll(0),
+        minWidth: MaterialStatePropertyAll(28),
+        minHeight: MaterialStatePropertyAll(28),
         padding: MaterialStatePropertyAll(EdgeInsets.all(4)),
-        visualDensity: VisualDensity(),
       )});
 }
 
