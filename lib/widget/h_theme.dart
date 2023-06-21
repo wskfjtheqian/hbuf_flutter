@@ -7,6 +7,7 @@ import 'h_button.dart';
 import 'h_cascader.dart';
 import 'h_color_picker.dart';
 import 'h_menu.dart';
+import 'h_pagination.dart';
 
 class HTheme extends InheritedTheme {
   const HTheme({
@@ -66,9 +67,12 @@ class HThemeData {
 
   final HCascaderStyle cascaderStyle;
 
+  final HPaginationThemeData paginationTheme;
+
 
 
   const HThemeData({
+    this.paginationTheme = const HPaginationThemeData(),
     this.cascaderStyle = const HCascaderStyle(),
     this.menuTheme = const HMenuThemeData(),
     this.colorButtonTheme = const HColorButtonThemeData(),
