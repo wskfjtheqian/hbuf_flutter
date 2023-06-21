@@ -37,7 +37,7 @@ class HPagination extends StatefulWidget {
 class _HPaginationState extends State<HPagination> {
   int _page = 1;
 
-  late Set<int> _pageNumber;
+  late List<int> _pageNumber;
 
   late Set<int> _limit;
 
@@ -45,7 +45,7 @@ class _HPaginationState extends State<HPagination> {
   void initState() {
     _limit = {widget.limit};
     _page = (widget.offset / widget.limit).ceil() + 1;
-    _pageNumber = {...widget.pageNumber, widget.limit};
+    _pageNumber = {...widget.pageNumber, widget.limit}.toList()..sort((a, b) => a.compareTo(b));
     super.initState();
   }
 
@@ -53,7 +53,7 @@ class _HPaginationState extends State<HPagination> {
   void didUpdateWidget(covariant HPagination oldWidget) {
     _limit = {widget.limit};
     _page = (widget.offset / widget.limit).ceil() + 1;
-    _pageNumber = {...widget.pageNumber, widget.limit};
+    _pageNumber = {...widget.pageNumber, widget.limit}.toList()..sort((a, b) => a.compareTo(b));
     super.didUpdateWidget(oldWidget);
   }
 
