@@ -2,5 +2,6 @@
   "cancelButtonLabel": "Cancel",
   "okButtonLabel": "Ok",
   "paginationTotalLabel": "{total} pieces",
-  "paginationMenuLabel": "{number} pieces/page"
+  "paginationMenuLabel": "{number} pieces/page",
+  "selectHintLabel": "Please select"
 }

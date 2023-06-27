@@ -89,6 +89,16 @@ class S {
       args: [number],
     );
   }
+
+  /// `Please select`
+  String get selectHintLabel {
+    return Intl.message(
+      'Please select',
+      name: 'selectHintLabel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

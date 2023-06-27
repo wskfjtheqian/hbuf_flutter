@@ -45,18 +45,18 @@ class HMenuButton<T> extends HButton {
   }
 }
 
-void showHMenu<T>(
+Future<void> showHMenu<T>(
   BuildContext context, {
   HMenuStyle style = const HMenuStyle(),
   required HCascaderItemBuilder<T> builder,
   required Set<T> value,
   OnHCascaderChange<T>? onChange,
   int? limit = 1,
-}) {
+}) async {
   var nav = Navigator.of(context, rootNavigator: true);
   final RenderBox button = context.findRenderObject()! as RenderBox;
 
-  nav.push(_HMenuRoute<T>(
+  await nav.push(_HMenuRoute<T>(
     position: () {
       if (!button.attached) {
         return Rect.zero;

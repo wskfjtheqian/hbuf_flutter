@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hbuf_flutter/generated/l10n.dart';
 import 'package:hbuf_flutter/widget/h_button.dart';
 import 'package:hbuf_flutter/widget/h_menu.dart';
+import 'package:hbuf_flutter/widget/h_select.dart';
 
 import 'h_cascader.dart';
 import 'h_theme.dart';
@@ -62,94 +63,103 @@ class _HPaginationState extends State<HPagination> {
     var style = widget.style ?? HTheme.of(context).paginationTheme.defaultPagination;
 
     var children = <Widget>[];
-    int total = (widget.total / _limit.first).ceil();
-    int temp = total < 6 ? total : 6;
-    int start = _page - temp ~/ 2;
-    start = start < 1 ? 1 : start;
-    int end = start + temp;
-    end = end < total ? end : total;
-    start = end - temp;
-    start = start < 1 ? 1 : start;
+    if (style.showButton) {
+      int total = (widget.total / _limit.first).ceil();
+      int temp = total < 6 ? total : 6;
+      int start = _page - temp ~/ 2;
+      start = start < 1 ? 1 : start;
+      int end = start + temp;
+      end = end < total ? end : total;
+      start = end - temp;
+      start = start < 1 ? 1 : start;
 
-    for (int i = start; i <= end; i++) {
-      if (i == _page) {
-        children.add(HButton(
-          onTap: (context) async {},
-          style: style.buttonStyle,
-          child: Text("$i"),
-        ));
-      } else if (start == i) {
-        children.add(HButton(
-          onTap: (context) async => page = 1,
-          style: style.buttonStyle,
-          child: const Text("1"),
-        ));
-      } else if (end == i) {
-        children.add(HButton(
-          onTap: (context) async => page = total,
-          style: style.buttonStyle,
-          child: Text("$total"),
-        ));
-      } else if ((start + 1 == i && i != 2) || end - 1 == i && i != total - 1) {
-        children.add(HButton(
-          style: style.buttonStyle,
-          onTap: null,
-          child: const Icon(Icons.more_horiz, size: 18),
-        ));
-      } else {
-        children.add(HButton(
-          style: style.buttonStyle,
-          onTap: (context) async => page = i,
-          child: Text("$i"),
-        ));
+      for (int i = start; i <= end; i++) {
+        if (i == _page) {
+          children.add(Padding(
+            padding: style.itemPadding,
+            child: HButton(
+              onTap: (context) async {},
+              style: style.activeStyle,
+              child: Text("$i"),
+            ),
+          ));
+        } else if (start == i) {
+          children.add(Padding(
+            padding: style.itemPadding,
+            child: HButton(
+              onTap: (context) async => page = 1,
+              style: style.buttonStyle,
+              child: const Text("1"),
+            ),
+          ));
+        } else if (end == i) {
+          children.add(Padding(
+            padding: style.itemPadding,
+            child: HButton(
+              onTap: (context) async => page = total,
+              style: style.buttonStyle,
+              child: Text("$total"),
+            ),
+          ));
+        } else if ((start + 1 == i && i != 2) || end - 1 == i && i != total - 1) {
+          children.add(Padding(
+            padding: style.itemPadding,
+            child: HButton(
+              style: style.buttonStyle,
+              child: const Icon(Icons.more_horiz, size: 18),
+            ),
+          ));
+        } else {
+          children.add(Padding(
+            padding: style.itemPadding,
+            child: HButton(
+              style: style.buttonStyle,
+              onTap: (context) async => page = i,
+              child: Text("$i"),
+            ),
+          ));
+        }
       }
     }
 
     return Row(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(S.of(context).paginationTotalLabel(widget.total.toString())),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: HMenuButton<int>(
-            style: style.buttonStyle,
-            builder: (BuildContext context) {
-              return [
-                for (var number in _pageNumber)
-                  HCascaderText<int>(
-                    value: number,
-                    child: Text(S.of(context).paginationTotalLabel(number.toString())),
-                  )
-              ];
-            },
-            value: {},
-            child: const Text("data"),
-            onChange: (val) {
-              _limit = val;
-            },
-            // value: _limit,
-            // items: [
-            //   for (var e in _pageNumber)
-            //     DropdownMenuItem(
-            //       value: e,
-            //       child: Text(S.of(context).paginationTotalLabel(e.toString())),
-            //     )
-            // ],
-            // onChanged: (val) {
-            //   setState(() {
-            //     _limit = val ?? 1;
-            //   });
-            //   int total = (widget.total / _limit).ceil();
-            //   _page = max(1, min(total, _page));
-            //   widget.onChange.call((_page - 1) * _limit, _limit);
-            // },
-            // decoration: const InputDecoration(
-            //   isDense: true,
-            // ),
+        if (style.showTotal)
+          Padding(
+            padding: style.itemPadding,
+            child: Text(
+              S.of(context).paginationTotalLabel(widget.total.toString()),
+              style: style.textTotal,
+            ),
           ),
-        ),
+        if (style.showMenu)
+          Padding(
+            padding: style.itemPadding,
+            child: HSelect<int>(
+              toText: (context, value) {
+                return (S.of(context).paginationTotalLabel(value.toString()));
+              },
+              builder: (BuildContext context) {
+                return [
+                  for (var number in _pageNumber)
+                    HCascaderText<int>(
+                      value: number,
+                      child: Text(S.of(context).paginationTotalLabel(number.toString())),
+                    )
+                ];
+              },
+              value: _limit,
+              onChange: (val) {
+                setState(() {
+                  _limit = val;
+                });
+                var value = val.first;
+                int total = (widget.total / value).ceil();
+                _page = max(1, min(total, _page));
+                widget.onChange.call((_page - 1) * value, value);
+              },
+            ),
+          ),
         ...children,
       ],
     );
@@ -164,13 +174,41 @@ class _HPaginationState extends State<HPagination> {
 class HPaginationStyle {
   final HButtonStyle buttonStyle;
 
-  const HPaginationStyle(
-      {this.buttonStyle = const HButtonStyle(
-        elevation: MaterialStatePropertyAll(0),
-        minWidth: MaterialStatePropertyAll(28),
-        minHeight: MaterialStatePropertyAll(28),
-        padding: MaterialStatePropertyAll(EdgeInsets.all(4)),
-      )});
+  final HButtonStyle activeStyle;
+
+  final EdgeInsets itemPadding;
+
+  final TextStyle textTotal;
+
+  final bool showTotal;
+
+  final bool showMenu;
+
+  final bool showButton;
+
+  const HPaginationStyle({
+    this.buttonStyle = const HButtonStyle(
+      elevation: MaterialStatePropertyAll(0),
+      minWidth: MaterialStatePropertyAll(28),
+      minHeight: MaterialStatePropertyAll(28),
+      padding: MaterialStatePropertyAll(EdgeInsets.all(4)),
+      color: MaterialStatePropertyAll(Color(0xfff4f4f5)),
+      textStyle: MaterialStatePropertyAll(TextStyle(color: Color(0xff606266), fontSize: 13)),
+    ),
+    this.activeStyle = const HButtonStyle(
+      elevation: MaterialStatePropertyAll(0),
+      minWidth: MaterialStatePropertyAll(28),
+      minHeight: MaterialStatePropertyAll(28),
+      padding: MaterialStatePropertyAll(EdgeInsets.all(4)),
+      color: MaterialStatePropertyAll(Color(0xff409eff)),
+      textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 13)),
+    ),
+    this.itemPadding = const EdgeInsets.only(right: 10),
+    this.textTotal = const TextStyle(color: Color(0xff606266), fontSize: 13),
+    this.showTotal = true,
+    this.showMenu = true,
+    this.showButton = true,
+  });
 }
 
 class HPaginationTheme extends InheritedTheme {
@@ -198,22 +236,10 @@ class HPaginationTheme extends InheritedTheme {
 
 extension HPaginationContext on BuildContext {
   HPaginationStyle get defaultPagination => HPaginationTheme.of(this).defaultPagination;
-//
-// HPaginationStyle get mediumPagination => HPaginationTheme.of(this).mediumPagination;
-//
-// HPaginationStyle get smallPagination => HPaginationTheme.of(this).smallPagination;
-//
-// HPaginationStyle get miniPagination => HPaginationTheme.of(this).miniPagination;
 }
 
 class HPaginationThemeData {
   final HPaginationStyle defaultPagination;
-
-  // final HPaginationStyle mediumPagination;
-  //
-  // final HPaginationStyle smallPagination;
-  //
-  // final HPaginationStyle miniPagination;
 
   const HPaginationThemeData({
     this.defaultPagination = const HPaginationStyle(),

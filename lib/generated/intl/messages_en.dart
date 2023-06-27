@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelButtonLabel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "okButtonLabel": MessageLookupByLibrary.simpleMessage("Ok"),
         "paginationMenuLabel": m0,
-        "paginationTotalLabel": m1
+        "paginationTotalLabel": m1,
+        "selectHintLabel": MessageLookupByLibrary.simpleMessage("Please select")
       };
 }

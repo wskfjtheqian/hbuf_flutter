@@ -13,13 +13,16 @@ class PageHPagination extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(16),
+        color: Colors.white,
         child: Column(
           children: [
             HPagination(
               total: 2000,
               limit: 50,
               offset: 0,
-              onChange: (int offset, int limit) {},
+              onChange: (int offset, int limit) {
+                print("offset $offset, limit $limit");
+              },
             ),
           ],
         ),
