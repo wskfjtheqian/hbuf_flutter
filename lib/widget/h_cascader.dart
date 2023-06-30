@@ -80,10 +80,20 @@ class _HCascaderState<T> extends State<HCascader<T>> {
   void onTap(BuildContext context, T value, HCascaderItemBuilder<T>? builder) {
     setState(() {
       _builder = builder;
-      if(null == widget.limit){}
-      if (widget.value.contains(value)) {
-        widget.value.remove(value);
+      if (null == widget.limit) {
+        if (widget.value.contains(value)) {
+          widget.value.remove(value);
+        } else {
+          widget.value.add(value);
+        }
+      } else if (1 < widget.limit!) {
+        if (widget.value.contains(value)) {
+          widget.value.remove(value);
+        } else if (widget.limit! > widget.value.length) {
+          widget.value.add(value);
+        }
       } else {
+        widget.value.clear();
         widget.value.add(value);
       }
     });

@@ -18,10 +18,21 @@ class PageHSelect extends StatelessWidget {
         child: Column(
           children: [
             HSelect<int>(
-              toText: (context, value) => "",
+              toText: (context, value) => value.toString(),
               builder: (BuildContext context) {
                 return [const HCascaderText<int>(value: 1, child: Text("data"))];
               },
+              value: {},
+            ),
+            HSelect<int>(
+              toText: (context, value) => value.toString(),
+              builder: (BuildContext context) {
+                return [
+                  const HCascaderText<int>(value: 1, child: Text("data")),
+                  const HCascaderText<int>(value: 2, child: Text("data")),
+                ];
+              },
+              limit: 10,
               value: {},
             ),
           ],

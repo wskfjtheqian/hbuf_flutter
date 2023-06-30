@@ -72,13 +72,22 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       );
+    } else {
+      child = Wrap(
+        children: [
+          for (var item in widget.value)
+            HTag(
+              child: Text(widget.toText(context, item)),
+            ),
+        ],
+      );
     }
 
     return HLayout(
       style: HLayoutStyle(
-        maxHeight: 30,
+        // maxHeight: 30,
         minHeight: 28,
-        // sizes: {lg: 8},
+        sizes: {lg: 8},
         maxWidth: 100,
         border: HBorder.all(width: 1, color: _colorTween.value!),
         borderRadius: BorderRadius.circular(4),
@@ -112,12 +121,17 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
             builder: widget.builder,
             value: widget.value,
             limit: widget.limit,
-            onChange: widget.onChange,
+            onChange: _onChange,
             style: widget.menuStyle,
           );
           _controller.reverse();
         },
       ),
     );
+  }
+
+  void _onChange(Set<T> value) {
+    widget.onChange?.call(value);
+    setState(() {});
   }
 }
