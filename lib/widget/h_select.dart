@@ -74,10 +74,18 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
       );
     } else {
       child = Wrap(
+        spacing: 4,
+        runSpacing: 4,
         children: [
           for (var item in widget.value)
             HTag(
+              style: HTheme.of(context).tagTheme.miniTag,
               child: Text(widget.toText(context, item)),
+              onTap: () async {
+                setState(() {
+                  widget.value.remove(item);
+                });
+              },
             ),
         ],
       );
@@ -100,7 +108,7 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(left: 6, right: 10),
-                  child: child!,
+                  child: child,
                 ),
               ),
               Transform.rotate(
