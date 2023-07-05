@@ -32,7 +32,9 @@ class _HTagState extends State<HTag> {
     super.initState();
     _controller.addListener(() {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {});
+       if(mounted){
+         setState(() {});
+       }
       });
     });
   }
@@ -115,7 +117,7 @@ class _HTagState extends State<HTag> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        child,
+        Expanded(child: child),
         Padding(
           padding: EdgeInsets.only(left: (style.padding!.left+ style.padding!.right) / 2),
           child: icon,

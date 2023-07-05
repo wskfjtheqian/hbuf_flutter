@@ -8,7 +8,7 @@ import 'package:hbuf_flutter/widget/h_cascader.dart';
 import 'h_menu.dart';
 
 class HSelect<T> extends StatefulWidget {
-  final HMenuStyle menuStyle;
+  final HSelectStyle? style;
 
   final HCascaderItemBuilder<T> builder;
 
@@ -26,7 +26,7 @@ class HSelect<T> extends StatefulWidget {
     required this.value,
     this.onChange,
     this.limit = 1,
-    this.menuStyle = const HMenuStyle(),
+    this.style,
     required this.toText,
   });
 
@@ -57,29 +57,30 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    var style = widget.style ?? HSelectTheme.of(context).defaultSelect;
     Widget? child;
     if (widget.value.isEmpty) {
       child = Text(
         S.of(context).selectHintLabel,
-        style: const TextStyle(color: Color(0xff606266), fontSize: 13),
+        style: style.hintStyle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       );
     } else if (widget.limit == 1) {
       child = Text(
         widget.toText(context, widget.value.first),
-        style: const TextStyle(color: Color(0xff606266), fontSize: 13),
+        style: style.textStyle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       );
     } else {
       child = Wrap(
-        spacing: 4,
-        runSpacing: 4,
+        spacing: style.spacing,
+        runSpacing: style.runSpacing,
         children: [
           for (var item in widget.value)
             HTag(
-              style: HTheme.of(context).tagTheme.miniTag,
+              style: style.tagStyle,
               child: Text(widget.toText(context, item)),
               onTap: () async {
                 setState(() {
@@ -92,22 +93,15 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
     }
 
     return HLayout(
-      style: HLayoutStyle(
-        // maxHeight: 30,
-        minHeight: 28,
-        sizes: {lg: 8},
-        maxWidth: 100,
-        border: HBorder.all(width: 1, color: _colorTween.value!),
-        borderRadius: BorderRadius.circular(4),
-      ),
+      style: style.layoutStyle,
       child: InkWell(
         child: Padding(
-          padding: const EdgeInsets.all(4.0),
+          padding: style.padding,
           child: Row(
             children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(left: 6, right: 10),
+                  padding: style.padding.copyWith(left: 0, top: 0, bottom: 0),
                   child: child,
                 ),
               ),
@@ -115,8 +109,8 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
                 angle: -pi * _controller.value + pi / 2,
                 child: Icon(
                   Icons.chevron_right,
-                  color: Color(0xff606266),
-                  size: 20,
+                  color: style.iconColor,
+                  size: style.iconSize,
                 ),
               ),
             ],
@@ -130,7 +124,7 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
             value: widget.value,
             limit: widget.limit,
             onChange: _onChange,
-            style: widget.menuStyle,
+            style: style.menuStyle,
           );
           _controller.reverse();
         },
@@ -142,4 +136,81 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
     widget.onChange?.call(value);
     setState(() {});
   }
+}
+
+class HSelectStyle {
+  final HMenuStyle menuStyle;
+
+  final TextStyle hintStyle;
+
+  final TextStyle textStyle;
+
+  final HLayoutStyle layoutStyle;
+
+  final EdgeInsets padding;
+
+  final double spacing;
+
+  final double runSpacing;
+
+  final Color iconColor;
+
+  final double iconSize;
+
+  final HTagStyle tagStyle;
+
+  const HSelectStyle({
+    this.tagStyle = const HTagStyle(minWidth: 63, minHeight: 20, textStyle: TextStyle(fontSize: 10), padding: EdgeInsets.all(1)),
+    this.iconColor = const Color(0xff606266),
+    this.iconSize = 20,
+    this.spacing = 4,
+    this.runSpacing = 4,
+    this.padding = const EdgeInsets.all(6),
+    this.menuStyle = const HMenuStyle(),
+    this.hintStyle = const TextStyle(color: Color(0xff606266), fontSize: 13),
+    this.textStyle = const TextStyle(color: Color(0xff606266), fontSize: 13),
+    this.layoutStyle = const HLayoutStyle(
+      minHeight: 28,
+      maxWidth: 100,
+      border: HBorder.symmetric(vertical: HBorderSide(width: 1, color: Color(0xff409eff)), horizontal: HBorderSide(width: 1, color: Color(0xff409eff))),
+      borderRadius: BorderRadius.all(
+        Radius.circular(4),
+      ),
+    ),
+  });
+}
+
+class HSelectTheme extends InheritedTheme {
+  const HSelectTheme({
+    super.key,
+    required this.data,
+    required super.child,
+  });
+
+  final HSelectThemeData data;
+
+  static HSelectThemeData of(BuildContext context) {
+    final theme = context.dependOnInheritedWidgetOfExactType<HSelectTheme>();
+    return theme?.data ?? HTheme.of(context).selectTheme;
+  }
+
+  @override
+  Widget wrap(BuildContext context, Widget child) {
+    return HSelectTheme(data: data, child: child);
+  }
+
+  @override
+  bool updateShouldNotify(HSelectTheme oldWidget) => data != oldWidget.data;
+}
+
+extension HSelectContext on BuildContext {
+  HSelectStyle get defaultSelect => HSelectTheme.of(this).defaultSelect;
+}
+
+class HSelectThemeData {
+  final HSelectStyle defaultSelect;
+
+  const HSelectThemeData({
+    this.defaultSelect = const HSelectStyle(),
+  });
 }
