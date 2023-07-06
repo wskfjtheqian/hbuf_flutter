@@ -179,6 +179,64 @@ class HLayoutStyle extends HSizeStyle {
       backgroundBlendMode.hashCode ^
       shape.hashCode ^
       position.hashCode;
+
+  static HLayoutStyle? lerp(HLayoutStyle? a, HLayoutStyle? b, double t) {
+    if (a == null && b == null) {
+      return null;
+    }
+    if (a == null) {
+      return b!.lerpFrom(null, t) ?? b;
+    }
+    if (b == null) {
+      return a.lerpTo(null, t) ?? a;
+    }
+    if (t == 0.0) {
+      return a;
+    }
+    if (t == 1.0) {
+      return b;
+    }
+    return b.lerpFrom(a, t) ?? a.lerpTo(b, t) ?? (t < 0.5 ? (a.lerpTo(null, t * 2.0) ?? a) : (b.lerpFrom(null, (t - 0.5) * 2.0) ?? b));
+  }
+
+  @override
+  HLayoutStyle? lerpFrom(HLayoutStyle? a, double t) {
+    if (a == null) {
+      return scale(t);
+    }
+    return a;
+  }
+
+  @override
+  HLayoutStyle? lerpTo(HLayoutStyle? b, double t) {
+    if (b == null) {
+      return scale(1.0 - t);
+    }
+    return b;
+  }
+
+  HLayoutStyle scale(double factor) {
+    return HLayoutStyle(
+      margin: EdgeInsets.lerp(null, margin, factor),
+      padding: EdgeInsets.lerp(null, padding, factor),
+      color: Color.lerp(null, color, factor),
+      image: image,
+      border: BoxBorder.lerp(null, border, factor),
+      borderRadius: BorderRadiusGeometry.lerp(null, borderRadius, factor),
+      boxShadow: BoxShadow.lerpList(null, boxShadow, factor),
+      gradient: gradient?.scale(factor),
+      backgroundBlendMode: backgroundBlendMode,
+      shape: shape,
+      position: position,
+    );
+  }
+}
+
+class HLayoutStyleTween extends Tween<HLayoutStyle?> {
+  HLayoutStyleTween({super.begin, super.end});
+
+  @override
+  HLayoutStyle? lerp(double t) => HLayoutStyle.lerp(begin, end, t);
 }
 
 class HLayoutTheme extends InheritedTheme {

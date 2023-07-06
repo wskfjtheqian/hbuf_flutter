@@ -37,13 +37,10 @@ class HSelect<T> extends StatefulWidget {
 class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  late Animation<Color?> _colorTween;
-
   @override
   void initState() {
-    super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
-    _colorTween = ColorTween(begin: const Color(0xffdcdfe6), end: const Color(0xff409eff)).animate(_controller);
+    super.initState();
     _controller.addListener(() {
       setState(() {});
     });
@@ -93,7 +90,7 @@ class _HSelectState<T> extends State<HSelect<T>> with SingleTickerProviderStateM
     }
 
     return HLayout(
-      style: style.layoutStyle,
+      style: HLayoutStyleTween(begin: style.layoutStyle, end: style.activateStyle).evaluate(_controller),
       child: InkWell(
         child: Padding(
           padding: style.padding,
@@ -147,6 +144,8 @@ class HSelectStyle {
 
   final HLayoutStyle layoutStyle;
 
+  final HLayoutStyle activateStyle;
+
   final EdgeInsets padding;
 
   final double spacing;
@@ -172,12 +171,23 @@ class HSelectStyle {
     this.layoutStyle = const HLayoutStyle(
       minHeight: 28,
       maxWidth: 100,
+      border: HBorder.symmetric(vertical: HBorderSide(width: 1, color: Color(0xffDCDFE6)), horizontal: HBorderSide(width: 1, color: Color(0xffDCDFE6))),
+      borderRadius: BorderRadius.all(
+        Radius.circular(4),
+      ),
+    ),
+    this.activateStyle = const HLayoutStyle(
+      minHeight: 28,
+      maxWidth: 100,
       border: HBorder.symmetric(vertical: HBorderSide(width: 1, color: Color(0xff409eff)), horizontal: HBorderSide(width: 1, color: Color(0xff409eff))),
       borderRadius: BorderRadius.all(
         Radius.circular(4),
       ),
     ),
+
   });
+
+  static lerp(HSelectStyle begin, HSelectStyle end, double t) {}
 }
 
 class HSelectTheme extends InheritedTheme {

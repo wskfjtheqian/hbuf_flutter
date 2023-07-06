@@ -157,6 +157,7 @@ class _HTagState extends State<HTag> {
       );
     }
 
+
     return HSize(
       style: HSizeStyle(
         minWidth: style.minWidth,
