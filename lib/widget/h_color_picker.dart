@@ -873,7 +873,10 @@ Future<Color?> showHColorPicker(BuildContext context, {required Color color}) as
     context: context,
     builder: (context) {
       return Center(
-        child: HColorPicker(color: color),
+        child: Material(child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: HColorPicker(color: color),
+        )),
       );
     },
   );
@@ -901,72 +904,66 @@ class _HColorPickerState extends State<HColorPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: const BorderRadius.all(Radius.circular(4)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 260,
-              height: 260,
-              child: HColorSelect(
-                color: HSVColor.fromColor(widget.color),
-                changed: (HSVColor color) {
-                  setState(() {
-                    _color = color.toColor();
-                  });
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: SizedBox(
-                width: 260,
-                child: SelectableText('HEX: 0x${_color.value.toRadixString(16).toUpperCase().padLeft(8, '0')}'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: SizedBox(
-                width: 260,
-                child: SelectableText('ARGB: (${_color.alpha},${_color.red},${_color.green},${_color.blue})'),
-              ),
-            ),
-            SizedBox(
-              width: 260,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: HButton(
-                      style: context.smallButton,
-                      child: Text(S.of(context).cancelButtonLabel),
-                      onTap: (context) async {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                  HButton(
-                    style: context.smallButton.copyWith(
-                      color: MaterialStatePropertyAll(context.brandColor),
-                    ),
-                    onTap: (context) async {
-                      Navigator.of(context).pop(_color);
-                    },
-                    child: Text(
-                      S.of(context).okButtonLabel,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 260,
+          height: 260,
+          child: HColorSelect(
+            color: HSVColor.fromColor(widget.color),
+            changed: (HSVColor color) {
+              setState(() {
+                _color = color.toColor();
+              });
+            },
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: SizedBox(
+            width: 260,
+            child: SelectableText('HEX: 0x${_color.value.toRadixString(16).toUpperCase().padLeft(8, '0')}'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: SizedBox(
+            width: 260,
+            child: SelectableText('ARGB: (${_color.alpha},${_color.red},${_color.green},${_color.blue})'),
+          ),
+        ),
+        SizedBox(
+          width: 260,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: HButton(
+                  style: context.smallButton,
+                  child: Text(S.of(context).cancelButtonLabel),
+                  onTap: (context) async {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              HButton(
+                style: context.smallButton.copyWith(
+                  color: MaterialStatePropertyAll(context.brandColor),
+                ),
+                onTap: (context) async {
+                  Navigator.of(context).pop(_color);
+                },
+                child: Text(
+                  S.of(context).okButtonLabel,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1006,9 +1003,14 @@ class HColorButton extends StatelessWidget {
                   showHMenu<Color>(context,
                       builder: (context) {
                         return [
-                          HCascaderItem<Color>(child: HColorPicker(color: color ?? const Color(0xffffffff))),
+                          HCascaderItem<Color>(
+                            child: HColorPicker(color: color ?? const Color(0xffffffff)),
+                          ),
                         ];
                       },
+                      style: HMenuStyle(maxHeight: 500,
+                          cascaderStyle:HCascaderStyle(maxWidth: 320,padding: EdgeInsets.all(18))
+                      ),
                       value: {color ?? const Color(0xffffffff)},
                       onChange: (value) {
                         onChanged?.call(value.first);

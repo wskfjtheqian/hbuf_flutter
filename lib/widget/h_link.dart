@@ -111,7 +111,9 @@ class _HLinkState extends State<HLink> {
       setState(() => _isWaiting = true);
       await callback();
     } finally {
-      setState(() => _isWaiting = false);
+      if(mounted){
+        setState(() => _isWaiting = false);
+      }
     }
   }
 }

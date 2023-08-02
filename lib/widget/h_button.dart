@@ -47,7 +47,9 @@ class _HButtonState extends State<HButton> {
     super.initState();
     _controller.addListener(() {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       });
     });
   }
