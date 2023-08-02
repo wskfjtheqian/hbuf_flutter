@@ -17,33 +17,35 @@ class DateTimeFormField extends FormField<List<DateTime?>?> {
     InputDecoration? decoration = const InputDecoration(),
     this.focusNode,
   }) : super(
-          key: key,
-          restorationId: restorationId,
-          initialValue: initialValue,
-          onSaved: onSaved,
-          validator: validator,
-          enabled: enabled ?? decoration?.enabled ?? true,
-          autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
-          builder: (FormFieldState<List<DateTime?>?> field) {
-            final _DateTimeFormFieldState state = field as _DateTimeFormFieldState;
-            InputDecoration effectiveDecoration = (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
-            void onChangedHandler(List<DateTime> value) {
-              field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
-            }
+    key: key,
+    restorationId: restorationId,
+    initialValue: initialValue,
+    onSaved: onSaved,
+    validator: validator,
+    enabled: enabled ?? decoration?.enabled ?? true,
+    autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
+    builder: (FormFieldState<List<DateTime?>?> field) {
+      final _DateTimeFormFieldState state = field as _DateTimeFormFieldState;
+      InputDecoration effectiveDecoration = (decoration ?? const InputDecoration()).applyDefaults(Theme
+          .of(field.context)
+          .inputDecorationTheme);
+      void onChangedHandler(List<DateTime> value) {
+        field.didChange(value);
+        if (onChanged != null) {
+          onChanged(value);
+        }
+      }
 
-            return UnmanagedRestorationScope(
-              bucket: field.bucket,
-              child: _DateTimeField(
-                decoration: effectiveDecoration,
-                value: state.value ?? [],
-                onChanged: onChangedHandler,
-              ),
-            );
-          },
-        );
+      return UnmanagedRestorationScope(
+        bucket: field.bucket,
+        child: _DateTimeField(
+          decoration: effectiveDecoration,
+          value: state.value ?? [],
+          onChanged: onChangedHandler,
+        ),
+      );
+    },
+  );
 
   @override
   FormFieldState<List<DateTime?>?> createState() => _DateTimeFormFieldState();
@@ -110,6 +112,16 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
 
   @override
   void initState() {
+    if ((widget.value?.length ?? 0) > 0) {
+      _controller1.text = widget.value![0].toString().substring(0, 10);
+    } else {
+      _controller1.text = "";
+    }
+    if ((widget.value?.length ?? 0) > 1) {
+      _controller2.text = widget.value![1].toString().substring(0, 10);
+    } else {
+      _controller2.text = "";
+    }
     _focusNode1.addListener(_onFocusNode);
     _focusNode2.addListener(_onFocusNode);
     super.initState();
@@ -118,11 +130,16 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
   @override
   void didUpdateWidget(_DateTimeField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // if (null != widget.focusNode && widget.focusNode != oldWidget.focusNode) {
-    //   _focusNode?.removeListener(_onFocusNode);
-    //   _focusNode = widget.focusNode!;
-    //   _focusNode?.addListener(_onFocusNode);
-    // }
+    if ((widget.value?.length ?? 0) > 0) {
+      _controller1.text = widget.value![0].toString().substring(0, 10);
+    } else {
+      _controller1.text = "";
+    }
+    if ((widget.value?.length ?? 0) > 1) {
+      _controller2.text = widget.value![1].toString().substring(0, 10);
+    } else {
+      _controller2.text = "";
+    }
   }
 
   @override
@@ -240,7 +257,9 @@ class _DateTimeFieldState extends State<_DateTimeField> with RestorationMixin {
       });
     }
 
-    switch (Theme.of(context).platform) {
+    switch (Theme
+        .of(context)
+        .platform) {
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
         if (cause == SelectionChangedCause.longPress || cause == SelectionChangedCause.drag) {
